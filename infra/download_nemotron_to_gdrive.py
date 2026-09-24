@@ -119,11 +119,11 @@ def main():
 
         if os.path.exists(local_path):
             local_size = os.path.getsize(local_path)
-            if expected_size > 0 and local_size == expected_size:
+            if local_size == expected_size:
                 downloaded_bytes += expected_size
                 print(f"  [{idx}/{total_files}] ✅ VERIFIED: {f['name']} ({format_bytes(local_size)}) - Already completed!")
                 continue
-            elif local_size < expected_size:
+            elif expected_size > 0 and local_size < expected_size:
                 print(f"  [{idx}/{total_files}] ⚠️ PARTIAL: {f['name']} ({format_bytes(local_size)} / {format_bytes(expected_size)}) - Will re-download clean.")
                 try:
                     os.remove(local_path)
@@ -164,7 +164,6 @@ def main():
                     filename=fname,
                     local_dir=TARGET_DIR,
                     token=HF_TOKEN,
-                    local_dir_use_symlinks=False,
                     force_download=False,
                 )
                 duration = max(time.time() - start_t, 0.001)
@@ -172,15 +171,18 @@ def main():
                 # Verify downloaded size
                 if os.path.exists(local_path):
                     actual_size = os.path.getsize(local_path)
-                    if expected_size > 0 and actual_size == expected_size:
-                        speed = (actual_size / 1024 / 1024) / duration
+                    if actual_size == expected_size:
+                        speed = (actual_size / 1024 / 1024) / duration if actual_size > 0 else 0
                         downloaded_bytes += expected_size
                         print(f"      ✅ Completed & Verified! ({speed:.1f} MB/s)")
                         success = True
                         break
                     else:
                         print(f"      ⚠️ Size mismatch (got {actual_size} bytes, expected {expected_size}). Retrying...")
-                        os.remove(local_path)
+                        try:
+                            os.remove(local_path)
+                        except OSError:
+                            pass
 
             except Exception as e:
                 print(f"      ❌ Download error on attempt {attempt}: {e}")
