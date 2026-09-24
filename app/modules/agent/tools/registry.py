@@ -6,8 +6,8 @@ and dispatches execution to sandboxed tool implementations.
 """
 
 from typing import Dict, Any, List
-from app.tools.terminal import terminal_tool
-from app.tools.filesystem import filesystem_tool
+from app.modules.agent.tools.terminal import terminal_tool
+from app.modules.agent.tools.filesystem import filesystem_tool
 
 
 TOOLS_SCHEMA: List[Dict[str, Any]] = [

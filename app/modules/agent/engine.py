@@ -10,7 +10,7 @@ import json
 import uuid
 from typing import AsyncGenerator, Dict, Any, List
 from app.core.llm_gateway import llm_gateway
-from app.tools.registry import TOOLS_SCHEMA, dispatch_tool
+from app.modules.agent.tools.registry import TOOLS_SCHEMA, dispatch_tool
 from app.core.logging_config import get_logger
 
 logger = get_logger(__name__)
@@ -72,7 +72,6 @@ class AgentEngine:
                 chunk_type = chunk.get("type")
 
                 if chunk_type == "thought":
-                    # Stream internal reasoning thoughts to UI
                     yield {
                         "type": "thought",
                         "content": chunk.get("content", ""),
