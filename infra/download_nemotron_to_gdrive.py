@@ -153,6 +153,14 @@ def main():
         max_attempts = 5
         success = False
 
+        # If file is an empty 0-byte placeholder (like __init__.py), create it directly
+        if expected_size == 0:
+            with open(local_path, "wb") as empty_f:
+                pass
+            print(f"      ✅ Created verified empty file ({fname})")
+            success = True
+            break
+
         for attempt in range(1, max_attempts + 1):
             pct = (downloaded_bytes / total_bytes * 100) if total_bytes > 0 else 0
             print(f"[{idx}/{total_files}] ({pct:.1f}%) 📥 Downloading: {fname} ({format_bytes(expected_size)}) [Attempt {attempt}/{max_attempts}]...")
