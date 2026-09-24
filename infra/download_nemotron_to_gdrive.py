@@ -157,9 +157,8 @@ def main():
         if expected_size == 0:
             with open(local_path, "wb") as empty_f:
                 pass
-            print(f"      ✅ Created verified empty file ({fname})")
-            success = True
-            break
+            print(f"[{idx}/{total_files}] ✅ Created verified empty file ({fname})")
+            continue
 
         for attempt in range(1, max_attempts + 1):
             pct = (downloaded_bytes / total_bytes * 100) if total_bytes > 0 else 0
