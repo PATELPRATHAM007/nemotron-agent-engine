@@ -23,8 +23,9 @@ drive.mount('/content/drive')
 print("✅ Google Drive Mounted Successfully!")
 print("ℹ️ Note: Files written to /content/drive/MyDrive stream directly to your 5TB Google Drive cloud storage.")
 
-# 2. Enable High-Speed Multi-Threaded HF Transfer (Rust-accelerated)
+# 2. Enable High-Speed HF Transfer
 os.environ["HF_HUB_ENABLE_HF_TRANSFER"] = "1"
+os.environ["HF_XET_HIGH_PERFORMANCE"] = "1"
 
 # -------------------------------------------------------------------------
 # PASTE YOUR HUGGING FACE TOKEN HERE (starts with hf_...)
@@ -32,9 +33,11 @@ os.environ["HF_HUB_ENABLE_HF_TRANSFER"] = "1"
 # -------------------------------------------------------------------------
 HF_TOKEN = os.getenv("HF_TOKEN", "PASTE_YOUR_HF_TOKEN_HERE")
 
-# Target storage directory inside your 4TB Google Drive
+# Target storage directory inside your 5TB Google Drive
 TARGET_DIR = "/content/drive/MyDrive/models/nemotron-3-ultra-bf16"
-MODEL_REPO = "nvidia/Nemotron-3-Ultra"
+
+# Exact Official NVIDIA Hugging Face Repository ID
+MODEL_REPO = "nvidia/NVIDIA-Nemotron-3-Ultra-550B-A55B-BF16"
 
 
 def format_bytes(num_bytes: int) -> str:
