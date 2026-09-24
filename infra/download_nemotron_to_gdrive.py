@@ -16,33 +16,12 @@ import os
 import sys
 import time
 
-# 1. Mount Google Drive (if in Google Colab)
-try:
-    from google.colab import drive
-    import shutil
-    print("Mounting your Google Drive...")
-    drive.mount('/content/drive')
-
-    # Verify storage quota to ensure the user connected the 4TB account
-    total, used, free = shutil.disk_usage('/content/drive/MyDrive')
-    total_gb = total / (1024**3)
-    free_gb = free / (1024**3)
-
-    print("\n" + "=" * 60)
-    print(f"📊 Connected Google Drive Storage:")
-    print(f"   • Total Storage: {total_gb:,.1f} GB")
-    print(f"   • Free Space:    {free_gb:,.1f} GB")
-
-    if total_gb < 1000:
-        print("⚠️ [WARNING]: This Google account has less than 1,000 GB!")
-        print("   Nemotron 3 Ultra requires ~1,120 GB (1.12 TB).")
-        print("   If you have multiple Gmail accounts, make sure to choose")
-        print("   your specific Gmail account with the 4TB Jio plan!")
-    else:
-        print("✅ 4TB Jio Account Verified! Ample storage available.")
-    print("=" * 60 + "\n")
-except ImportError:
-    print("[INFO] Running in standard environment (ensure TARGET_DIR is accessible).")
+# 1. Mount your 5TB Google Drive
+from google.colab import drive
+print("Mounting your Google Drive...")
+drive.mount('/content/drive')
+print("✅ Google Drive Mounted Successfully!")
+print("ℹ️ Note: Files written to /content/drive/MyDrive stream directly to your 5TB Google Drive cloud storage.")
 
 # 2. Enable High-Speed Multi-Threaded HF Transfer (Rust-accelerated)
 os.environ["HF_HUB_ENABLE_HF_TRANSFER"] = "1"
