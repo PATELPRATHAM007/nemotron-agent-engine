@@ -33,3 +33,11 @@ def test_chat_stream_endpoint():
     # Check that streamed response contains data
     content = resp.text
     assert len(content) > 0
+
+
+def test_favicon_endpoint():
+    resp = client.get("/favicon.ico")
+    assert resp.status_code == 200
+    assert "image/svg+xml" in resp.headers.get("content-type", "")
+    assert "⚡" in resp.text
+

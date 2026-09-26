@@ -375,26 +375,41 @@ document.addEventListener('DOMContentLoaded', () => {
                 ]);
 
                 if (sumResp.ok) {
-                    const sum = await sumResp.json();
-                    modalTotalMissions.textContent = sum.total_missions;
-                    modalTotalTokens.textContent = sum.total_tokens.toLocaleString();
-                    modalTotalCost.textContent = `$${sum.total_cost_usd.toFixed(6)}`;
+                    const sumJson = await sumResp.json();
+                    const sum = sumJson.data || sumJson || {};
+                    modalTotalMissions.textContent = sum.total_missions || 0;
+                    const tokens = sum.total_tokens || 0;
+                    modalTotalTokens.textContent = Number(tokens).toLocaleString();
+                    const cost = sum.total_spend_usd ?? sum.total_cost_usd ?? 0.0;
+                    modalTotalCost.textContent = `$${Number(cost).toFixed(6)}`;
                 }
 
                 if (ledgerResp.ok) {
-                    const records = await ledgerResp.json();
+                    const recordsJson = await ledgerResp.json();
+                    const records = Array.isArray(recordsJson.data)
+                        ? recordsJson.data
+                        : (Array.isArray(recordsJson) ? recordsJson : []);
+
                     if (records.length === 0) {
                         modalLedgerTableBody.innerHTML = '<tr><td colspan="5" class="text-center text-muted py-3">No recorded missions yet.</td></tr>';
                     } else {
-                        modalLedgerTableBody.innerHTML = records.map(r => `
-                            <tr>
-                                <td><code title="${r.mission_id}">${r.mission_id.substring(0, 8)}...</code></td>
-                                <td>${r.tokens_used.toLocaleString()}</td>
-                                <td class="text-success">$${r.cost_usd.toFixed(6)}</td>
-                                <td>${r.duration_seconds.toFixed(1)}s</td>
-                                <td><span class="badge bg-success-subtle text-success border border-success-subtle">Completed</span></td>
-                            </tr>
-                        `).join('');
+                        modalLedgerTableBody.innerHTML = records.map(r => {
+                            const missionId = r.mission_id || 'unknown';
+                            const tokens = (r.usage && r.usage.total_tokens !== undefined)
+                                ? r.usage.total_tokens
+                                : (r.tokens_used || 0);
+                            const cost = r.total_cost_usd ?? r.cost_usd ?? 0.0;
+                            const duration = r.duration_seconds || 0.0;
+                            return `
+                                <tr>
+                                    <td><code title="${escapeHtml(missionId)}">${escapeHtml(missionId.substring(0, 8))}...</code></td>
+                                    <td>${Number(tokens).toLocaleString()}</td>
+                                    <td class="text-success">$${Number(cost).toFixed(6)}</td>
+                                    <td>${Number(duration).toFixed(1)}s</td>
+                                    <td><span class="badge bg-success-subtle text-success border border-success-subtle">Completed</span></td>
+                                </tr>
+                            `;
+                        }).join('');
                     }
                 }
             } catch (err) {
@@ -403,3 +418,4 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 });
+
