@@ -13,7 +13,9 @@ def root():
         "service": settings.PROJECT_NAME,
         "status": "running",
         "docs": "/docs",
+        "ui": "/ui",
     }
+
 
 
 # Also expose /health at root level for orchestrator/docker health probes

@@ -12,14 +12,38 @@ from fastapi import APIRouter, Query
 from sse_starlette.sse import EventSourceResponse
 
 from app.core.config import settings
+from app.core.llm_gateway import llm_gateway
 from app.modules.agent.engine import agent_engine
 from app.modules.agent.schemas import (
     AgentConfigResponse,
+    ChatStreamRequest,
     MissionRequest,
     MissionResponse,
 )
 
 router = APIRouter(prefix="/agent", tags=["Agent"])
+
+
+@router.post("/chat/stream")
+async def stream_chat(payload: ChatStreamRequest):
+    """Direct conversational chat stream with Nemotron 3 Ultra reasoning tokens."""
+    formatted_messages = [
+        {"role": m.role, "content": m.content} for m in payload.messages
+    ]
+
+    async def chat_generator():
+        async for chunk in llm_gateway.stream_nemotron_reasoning(
+            messages=formatted_messages,
+            temperature=payload.temperature,
+            max_tokens=payload.max_tokens,
+        ):
+            yield {
+                "event": chunk.get("type", "message"),
+                "data": json.dumps(chunk),
+            }
+
+    return EventSourceResponse(chat_generator())
+
 
 
 @router.post("/run", response_model=MissionResponse)

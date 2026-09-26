@@ -27,3 +27,16 @@ class AgentConfigResponse(BaseModel):
     thinking_enabled: bool
     gemini_model: str
     gemini_active: bool
+
+
+class ChatMessage(BaseModel):
+    role: str = Field(..., description="Role of the speaker: user, assistant, system")
+    content: str = Field(..., description="Message text")
+
+
+class ChatStreamRequest(BaseModel):
+    messages: list[ChatMessage] = Field(..., description="Chat conversation history")
+    temperature: float = Field(default=0.6, ge=0.0, le=2.0)
+    max_tokens: int = Field(default=4096, ge=1, le=16384)
+    enable_thinking: bool = Field(default=True)
+
