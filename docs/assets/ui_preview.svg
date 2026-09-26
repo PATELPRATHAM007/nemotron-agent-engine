@@ -1,0 +1,129 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 800" width="100%" height="100%">
+  <defs>
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#EDEBE4"/>
+      <stop offset="100%" stop-color="#E2DFD6"/>
+    </linearGradient>
+    <linearGradient id="primaryGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#1D4ED8"/>
+      <stop offset="100%" stop-color="#1E40AF"/>
+    </linearGradient>
+    <linearGradient id="logoGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#111111"/>
+      <stop offset="100%" stop-color="#1D4ED8"/>
+    </linearGradient>
+    <filter id="cardShadow" x="-5%" y="-5%" width="110%" height="115%">
+      <feDropShadow dx="0" dy="12" stdDeviation="16" flood-color="#111111" flood-opacity="0.08"/>
+    </filter>
+  </defs>
+
+  <!-- Canvas Background -->
+  <rect width="1200" height="800" fill="url(#bgGrad)"/>
+
+  <!-- Top Navbar -->
+  <rect width="1200" height="70" fill="#EDEBE4" fill-opacity="0.95" stroke="#DBD6C9" stroke-width="1"/>
+  
+  <!-- Logo Icon -->
+  <rect x="50" y="16" width="38" height="38" rx="10" fill="url(#logoGrad)"/>
+  <text x="69" y="42" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="20" fill="#76B900" font-weight="bold" text-anchor="middle">⚡</text>
+  
+  <!-- Brand Text -->
+  <text x="100" y="36" font-family="'Plus Jakarta Sans', sans-serif" font-size="16" font-weight="800" fill="#111111">Nemotron Agent</text>
+  <text x="100" y="50" font-family="'Plus Jakarta Sans', sans-serif" font-size="11" font-weight="600" fill="#6B6962" letter-spacing="0.5">550B LATENTMOE • AUTONOMOUS ENGINE</text>
+
+  <!-- Status Pill -->
+  <rect x="740" y="20" width="180" height="30" rx="15" fill="#F6F4ED" stroke="#DBD6C9" stroke-width="1"/>
+  <circle cx="756" cy="35" r="4" fill="#10B981"/>
+  <text x="768" y="39" font-family="'Plus Jakarta Sans', sans-serif" font-size="11" font-weight="600" fill="#4A4944">vLLM / GCP Spot Ready</text>
+
+  <!-- Nav Action Buttons -->
+  <rect x="935" y="20" width="115" height="30" rx="8" fill="#FFFFFF" stroke="#DBD6C9" stroke-width="1"/>
+  <text x="992" y="39" font-family="'Plus Jakarta Sans', sans-serif" font-size="12" font-weight="600" fill="#111111" text-anchor="middle">📊 Cost Ledger</text>
+
+  <rect x="1060" y="20" width="90" height="30" rx="8" fill="#FFFFFF" stroke="#DBD6C9" stroke-width="1"/>
+  <text x="1105" y="39" font-family="'Plus Jakarta Sans', sans-serif" font-size="12" font-weight="600" fill="#111111" text-anchor="middle">📖 API Docs</text>
+
+  <!-- Hero Section -->
+  <rect x="470" y="95" width="260" height="26" rx="13" fill="#1D4ED8" fill-opacity="0.1" stroke="#1D4ED8" stroke-opacity="0.25"/>
+  <text x="600" y="112" font-family="'Plus Jakarta Sans', sans-serif" font-size="11" font-weight="700" fill="#1D4ED8" text-anchor="middle" letter-spacing="0.5">⚡ NVIDIA NEMOTRON 3 ULTRA • 550B MOE</text>
+
+  <text x="600" y="150" font-family="'Plus Jakarta Sans', sans-serif" font-size="28" font-weight="800" fill="#111111" text-anchor="middle" letter-spacing="-0.5">Autonomous Repository Intelligence &amp; Coding Agent</text>
+  <text x="600" y="174" font-family="'Plus Jakarta Sans', sans-serif" font-size="13" font-weight="500" fill="#4A4944" text-anchor="middle">Multi-stage planning, AST indexing, SQL N+1 elimination, and Gate 1–5 verification.</text>
+
+  <!-- Central Workspace Panel -->
+  <rect x="160" y="205" width="880" height="550" rx="18" fill="#FFFFFF" stroke="#DBD6C9" stroke-width="1" filter="url(#cardShadow)"/>
+
+  <!-- Workspace Ribbon -->
+  <rect x="160" y="205" width="880" height="52" rx="18" fill="#FFFFFF"/>
+  <line x1="160" y1="257" x2="1040" y2="257" stroke="#DBD6C9" stroke-width="1"/>
+
+  <!-- Mode Selector Buttons -->
+  <rect x="178" y="214" width="310" height="34" rx="8" fill="#F6F4ED" stroke="#DBD6C9" stroke-width="1"/>
+  <rect x="180" y="216" width="158" height="30" rx="6" fill="#FFFFFF" filter="url(#cardShadow)"/>
+  <text x="259" y="235" font-family="'Plus Jakarta Sans', sans-serif" font-size="12" font-weight="700" fill="#1D4ED8" text-anchor="middle">🚀 Autonomous Mission</text>
+  <text x="415" y="235" font-family="'Plus Jakarta Sans', sans-serif" font-size="12" font-weight="600" fill="#6B6962" text-anchor="middle">💬 Direct Chat</text>
+
+  <!-- Telemetry Bar -->
+  <rect x="510" y="214" width="320" height="34" rx="17" fill="#F6F4ED" stroke="#DBD6C9" stroke-width="1"/>
+  <text x="560" y="235" font-family="'Plus Jakarta Sans', sans-serif" font-size="11" fill="#6B6962" text-anchor="middle">TOKENS: <tspan font-family="'JetBrains Mono', monospace" font-weight="700" fill="#1D4ED8">1,842</tspan></text>
+  <text x="660" y="235" font-family="'Plus Jakarta Sans', sans-serif" font-size="11" fill="#6B6962" text-anchor="middle">SPEED: <tspan font-family="'JetBrains Mono', monospace" font-weight="700" fill="#0284C7">54 t/s</tspan></text>
+  <text x="765" y="235" font-family="'Plus Jakarta Sans', sans-serif" font-size="11" fill="#6B6962" text-anchor="middle">SPOT: <tspan font-family="'JetBrains Mono', monospace" font-weight="700" fill="#10B981">$0.005526</tspan></text>
+
+  <!-- Presets Bar -->
+  <rect x="160" y="258" width="880" height="38" fill="#F6F4ED"/>
+  <line x1="160" y1="296" x2="1040" y2="296" stroke="#DBD6C9" stroke-width="1"/>
+  <text x="210" y="281" font-family="'JetBrains Mono', monospace" font-size="10" font-weight="700" fill="#6B6962">PRESETS:</text>
+
+  <rect x="250" y="265" width="130" height="24" rx="12" fill="#FFFFFF" stroke="#DBD6C9"/>
+  <text x="315" y="281" font-family="'Plus Jakarta Sans', sans-serif" font-size="11" font-weight="600" fill="#4A4944" text-anchor="middle">🔍 Audit SQL N+1</text>
+
+  <rect x="390" y="265" width="145" height="24" rx="12" fill="#FFFFFF" stroke="#DBD6C9"/>
+  <text x="462" y="281" font-family="'Plus Jakarta Sans', sans-serif" font-size="11" font-weight="600" fill="#4A4944" text-anchor="middle">📐 Verify Architecture</text>
+
+  <rect x="545" y="265" width="125" height="24" rx="12" fill="#FFFFFF" stroke="#DBD6C9"/>
+  <text x="607" y="281" font-family="'Plus Jakarta Sans', sans-serif" font-size="11" font-weight="600" fill="#4A4944" text-anchor="middle">🧪 Run Gates 1–5</text>
+
+  <rect x="680" y="265" width="135" height="24" rx="12" fill="#FFFFFF" stroke="#DBD6C9"/>
+  <text x="747" y="281" font-family="'Plus Jakarta Sans', sans-serif" font-size="11" font-weight="600" fill="#4A4944" text-anchor="middle">🛡️ Database Safety</text>
+
+  <!-- Message 1: User -->
+  <rect x="520" y="315" width="460" height="42" rx="12" fill="url(#primaryGrad)"/>
+  <text x="540" y="341" font-family="'Plus Jakarta Sans', sans-serif" font-size="13" font-weight="500" fill="#FFFFFF">Audit database models for N+1 query traps and generate fixes</text>
+  <circle cx="1000" cy="336" r="16" fill="#1D4ED8"/>
+  <text x="1000" y="341" font-family="'Plus Jakarta Sans', sans-serif" font-size="14" fill="#FFFFFF" text-anchor="middle">👤</text>
+
+  <!-- Message 2: Nemotron Response with Deep Thought Box -->
+  <rect x="180" y="375" width="36" height="36" rx="8" fill="url(#logoGrad)"/>
+  <text x="198" y="398" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="16" fill="#76B900" font-weight="bold" text-anchor="middle">⚡</text>
+
+  <rect x="228" y="375" width="770" height="235" rx="14" fill="#F6F4ED" stroke="#DBD6C9" stroke-width="1"/>
+
+  <!-- Thought Box -->
+  <rect x="244" y="390" width="738" height="65" rx="8" fill="#FBF8FF" stroke="#E9D5FF" stroke-width="1"/>
+  <circle cx="260" cy="406" r="4" fill="#9333EA"/>
+  <text x="272" y="410" font-family="'JetBrains Mono', monospace" font-size="10" font-weight="700" fill="#7E22CE">NEMOTRON 3 ULTRA — REASONING STREAM (CHAIN-OF-THOUGHT)</text>
+  <text x="260" y="430" font-family="'JetBrains Mono', monospace" font-size="11" fill="#581C87">Inspecting SQLAlchemy 2.0 query loops in app/modules/agent/orchestrator.py...</text>
+  <text x="260" y="445" font-family="'JetBrains Mono', monospace" font-size="11" fill="#581C87">Identified missing selectinload on Mission.steps. Preparing Gate 4 compliant fix.</text>
+
+  <!-- Tool Execution Badge -->
+  <rect x="244" y="465" width="340" height="26" rx="6" fill="#EFF6FF" stroke="#BFDBFE" stroke-width="1"/>
+  <text x="256" y="482" font-family="'JetBrains Mono', monospace" font-size="11" font-weight="700" fill="#1D4ED8">⚙️ Tool Executed: ast_parser (Checked 18 models)</text>
+
+  <!-- Output Text -->
+  <text x="244" y="515" font-family="'Plus Jakarta Sans', sans-serif" font-size="13" font-weight="700" fill="#111111">SQL Query Optimization Complete:</text>
+  <text x="244" y="535" font-family="'Plus Jakarta Sans', sans-serif" font-size="12" fill="#4A4944">To eliminate the N+1 query loop, replace lazy loading with SQLAlchemy 2.0 eager loading:</text>
+
+  <rect x="244" y="548" width="738" height="48" rx="6" fill="#111111"/>
+  <text x="260" y="570" font-family="'JetBrains Mono', monospace" font-size="11" fill="#8CE300">stmt = select(Mission).options(selectinload(Mission.steps)).where(Mission.status == "done")</text>
+  <text x="260" y="586" font-family="'JetBrains Mono', monospace" font-size="11" fill="#9CA3AF">results = (await session.execute(stmt)).scalars().all()</text>
+
+  <!-- Input Dock -->
+  <rect x="180" y="630" width="840" height="95" rx="12" fill="#FFFFFF" stroke="#DBD6C9" stroke-width="1"/>
+  <text x="200" y="660" font-family="'Plus Jakarta Sans', sans-serif" font-size="13" fill="#9CA3AF">Type a coding mission or question... (Enter to dispatch, Shift+Enter for newline)</text>
+
+  <line x1="180" y1="680" x2="1020" y2="680" stroke="#F6F4ED" stroke-width="1"/>
+  <text x="200" y="705" font-family="'JetBrains Mono', monospace" font-size="11" fill="#6B6962">⚙️ Mode: Autonomous Multi-Turn Mission (Tools &amp; Gates Active)</text>
+
+  <rect x="890" y="688" width="118" height="30" rx="8" fill="url(#primaryGrad)"/>
+  <text x="949" y="707" font-family="'Plus Jakarta Sans', sans-serif" font-size="12" font-weight="700" fill="#FFFFFF" text-anchor="middle">Dispatch ⚡</text>
+</svg>
