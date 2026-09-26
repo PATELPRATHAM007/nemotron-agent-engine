@@ -310,6 +310,7 @@ This tests:
 | `The resource '.../common-cu121-debian-11' was not found` | Google deprecated Debian 11 deep learning images. | Automatically resolved in `launch_gcp_nemotron_spot.sh` by using `common-cu129-ubuntu-2204-nvidia-580` (Ubuntu 22.04, CUDA 12.9, NVIDIA 580 drivers). |
 | `The selected machine type(a2-ultragpu-8g) should have [8] local SSD(s)` | `a2-ultragpu-8g` requires exactly 8 NVMe SSDs (3 TB RAID-0). | Automatically resolved in `launch_gcp_nemotron_spot.sh` by dynamically attaching 8x Local NVMe SSDs. |
 | `Quota 'NVIDIA_A100_GPUS' exceeded. Limit: 0.0 in region us-central1` | New GCP accounts start with `0` GPU quota. | Request a quota increase of `8` GPUs for `us-central1` in [IAM & Admin > Quotas](https://console.cloud.google.com/iam-admin/quotas). |
+| `ZONE_RESOURCE_POOL_EXHAUSTED_WITH_DETAILS (stockout)` | Zone has temporarily run out of surplus Spot A100 capacity. | `launch_gcp_nemotron_spot.sh` automatically falls back across candidate zones (`us-central1-c`, `us-east4-c`, `europe-west4-a`, `asia-southeast1-c`) until an available slot is secured. |
 
 ---
 

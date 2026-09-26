@@ -75,37 +75,67 @@ else
     LOCAL_SSD_COUNT=8
 fi
 
-# Base instance configuration
-CREATE_ARGS=(
-    "$INSTANCE_NAME"
-    --project="$PROJECT_ID"
-    --zone="$ZONE"
-    --machine-type="$MACHINE_TYPE"
-    --provisioning-model=SPOT
-    --instance-termination-action=STOP
-    --boot-disk-size="$BOOT_DISK_SIZE"
-    --boot-disk-type="pd-balanced"
-    --image-family="$IMAGE_FAMILY"
-    --image-project="$IMAGE_PROJECT"
-    --maintenance-policy=TERMINATE
-    --tags=vllm-server
-    --metadata="install-nvidia-driver=True"
-)
-
-# Attach required Local NVMe SSDs (e.g. 8x 375GB = 3TB NVMe array for a2-ultragpu-8g)
-for ((i=0; i<LOCAL_SSD_COUNT; i++)); do
-    CREATE_ARGS+=(--local-ssd=interface=NVME)
+# Candidate zones supporting A2 UltraGPU (8x A100 80GB)
+CANDIDATE_ZONES=("$ZONE")
+for candidate in "us-central1-c" "us-east4-c" "europe-west4-a" "asia-southeast1-c"; do
+    if [[ "$candidate" != "$ZONE" ]]; then
+        CANDIDATE_ZONES+=("$candidate")
+    fi
 done
 
-# For non-A2/G2 types (e.g. n1-standard with attached GPUs), add accelerator flag
-if [[ ! "$MACHINE_TYPE" =~ ^(a2|g2)- ]]; then
-    CREATE_ARGS+=(--accelerator="type=$ACCELERATOR_TYPE,count=$ACCELERATOR_COUNT")
+SUCCESS=false
+ACTIVE_ZONE=""
+
+for TRY_ZONE in "${CANDIDATE_ZONES[@]}"; do
+    echo "------------------------------------------------------------------"
+    echo "🛰️ Attempting Spot allocation in zone: $TRY_ZONE..."
+    echo "------------------------------------------------------------------"
+
+    ZONE_ARGS=(
+        "$INSTANCE_NAME"
+        --project="$PROJECT_ID"
+        --zone="$TRY_ZONE"
+        --machine-type="$MACHINE_TYPE"
+        --provisioning-model=SPOT
+        --instance-termination-action=STOP
+        --boot-disk-size="$BOOT_DISK_SIZE"
+        --boot-disk-type="pd-balanced"
+        --image-family="$IMAGE_FAMILY"
+        --image-project="$IMAGE_PROJECT"
+        --maintenance-policy=TERMINATE
+        --tags=vllm-server
+        --metadata="install-nvidia-driver=True"
+    )
+
+    # Attach required Local NVMe SSDs (e.g. 8x 375GB = 3TB NVMe array for a2-ultragpu-8g)
+    for ((i=0; i<LOCAL_SSD_COUNT; i++)); do
+        ZONE_ARGS+=(--local-ssd=interface=NVME)
+    done
+
+    # For non-A2/G2 types (e.g. n1-standard with attached GPUs), add accelerator flag
+    if [[ ! "$MACHINE_TYPE" =~ ^(a2|g2)- ]]; then
+        ZONE_ARGS+=(--accelerator="type=$ACCELERATOR_TYPE,count=$ACCELERATOR_COUNT")
+    fi
+
+    if gcloud compute instances create "${ZONE_ARGS[@]}"; then
+        SUCCESS=true
+        ACTIVE_ZONE="$TRY_ZONE"
+        ZONE="$TRY_ZONE"
+        echo "✅ Instance successfully provisioned in $ACTIVE_ZONE!"
+        break
+    else
+        echo "⚠️ Zone $TRY_ZONE is temporarily out of Spot capacity. Checking next zone..."
+    fi
+done
+
+if [ "$SUCCESS" = false ]; then
+    echo "❌ Error: Could not allocate Spot GPU instance across candidate zones (${CANDIDATE_ZONES[*]})."
+    echo "Google Cloud Spot capacity fluctuates dynamically. Try running again in a few minutes, or set GCP_ZONE manually."
+    exit 1
 fi
 
-gcloud compute instances create "${CREATE_ARGS[@]}"
-
 # 5. Retrieve External IP
-EXTERNAL_IP=$(gcloud compute instances describe "$INSTANCE_NAME" --zone="$ZONE" --project="$PROJECT_ID" --format='get(networkInterfaces[0].accessConfigs[0].natIP)')
+EXTERNAL_IP=$(gcloud compute instances describe "$INSTANCE_NAME" --zone="$ACTIVE_ZONE" --project="$PROJECT_ID" --format='get(networkInterfaces[0].accessConfigs[0].natIP)')
 
 
 echo ""
