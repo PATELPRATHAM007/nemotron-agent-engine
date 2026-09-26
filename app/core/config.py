@@ -37,7 +37,8 @@ class Settings(BaseSettings):
 
     # Tier-1 Fast Triage & Scraper (Jio Gemini Plan)
     GEMINI_API_KEY: str = ""
-    GEMINI_MODEL_NAME: str = "gemini-2.5-flash"
+    GEMINI_MODEL_NAME: str = "gemini-3.8-flash"
+    GEMINI_MODEL: str = ""
 
     # Cloud Storage & Google Drive
     GDRIVE_MODEL_PATH: str = "/content/drive/MyDrive/models/nemotron-3-ultra-bf16"

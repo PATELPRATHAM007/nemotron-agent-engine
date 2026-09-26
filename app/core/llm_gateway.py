@@ -28,7 +28,10 @@ class LLMGateway:
         self.nemotron_api_key = settings.NEMOTRON_API_KEY
         self.nemotron_model = settings.NEMOTRON_MODEL_NAME
         self.gemini_api_key = settings.GEMINI_API_KEY
-        self.gemini_model = settings.GEMINI_MODEL_NAME
+        gemini_model = settings.GEMINI_MODEL or settings.GEMINI_MODEL_NAME
+        if gemini_model in ("gemini-2.5-flash", "gemini-3.6-flash"):
+            gemini_model = "gemini-3.8-flash"
+        self.gemini_model = gemini_model
 
     async def stream_nemotron_reasoning(
         self,
