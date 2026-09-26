@@ -53,3 +53,37 @@ def register_exception_handlers(app: FastAPI) -> None:
         else:
             api_logger.warning("HTTPException [%d]: %s", exc.status_code, detail)
         return _error_response(exc.status_code, detail, headers=exc.headers)
+
+    from app.core.exceptions import NemotronEngineError
+
+    @app.exception_handler(NemotronEngineError)
+    async def nemotron_exception_handler(
+        _: Request, exc: NemotronEngineError
+    ) -> JSONResponse:
+        api_logger.error(
+            "NemotronEngineError [%s] in %s: %s (Fix: %s)",
+            exc.error_code,
+            exc.component,
+            exc.message,
+            exc.suggested_fix,
+        )
+        return JSONResponse(
+            status_code=exc.http_status,
+            content={
+                "success": False,
+                "statusCode": exc.http_status,
+                "errorCode": exc.error_code,
+                "component": exc.component,
+                "message": exc.message,
+                "errors": [
+                    {
+                        "field": exc.component,
+                        "message": exc.message,
+                        "code": exc.error_code,
+                        "suggestedFix": exc.suggested_fix,
+                        "details": exc.details,
+                    }
+                ],
+                "data": {},
+            },
+        )
