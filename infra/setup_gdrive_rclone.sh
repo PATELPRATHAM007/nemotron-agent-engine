@@ -30,10 +30,33 @@ else
     mkdir -p "$NVME_MOUNT"
 fi
 
-# 2. Verify rclone installation
+# 2. Verify rclone installation & auto-configure if needed
 if ! command -v rclone &> /dev/null; then
     echo "[2/3] Installing rclone..."
     curl -s https://rclone.org/install.sh | sudo bash
+fi
+
+RCLONE_CONF_DIR="$HOME/.config/rclone"
+RCLONE_CONF="$RCLONE_CONF_DIR/rclone.conf"
+mkdir -p "$RCLONE_CONF_DIR"
+
+# Auto-configure rclone if credentials provided in environment
+if [ -n "${GDRIVE_SA_JSON:-}" ] && [ -f "${GDRIVE_SA_JSON}" ]; then
+    echo "🔑 Configuring rclone with Google Cloud Service Account ($GDRIVE_SA_JSON)..."
+    cat <<EOF > "$RCLONE_CONF"
+[gdrive]
+type = drive
+scope = drive
+service_account_file = $GDRIVE_SA_JSON
+EOF
+elif [ -n "${RCLONE_GDRIVE_TOKEN:-}" ]; then
+    echo "🔑 Configuring rclone with OAuth Token..."
+    cat <<EOF > "$RCLONE_CONF"
+[gdrive]
+type = drive
+scope = drive
+token = $RCLONE_GDRIVE_TOKEN
+EOF
 fi
 
 # 3. Stream 1.12 TB Sharded Weights from 4TB Google Drive
