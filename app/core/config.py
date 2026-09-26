@@ -1,4 +1,5 @@
 from functools import lru_cache
+from pathlib import Path
 
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
@@ -18,9 +19,17 @@ class Settings(BaseSettings):
     DEBUG: bool = True
     HOST: str = "0.0.0.0"
     PORT: int = 8000
+    ENABLE_UI: bool = True
+
+    # Template and Static Asset Directories
+    BASE_DIR: Path = Path(__file__).resolve().parent.parent
+    ROOT_DIR: Path = Path(__file__).resolve().parent.parent.parent
+    TEMPLATES_DIR: Path = Path(__file__).resolve().parent.parent / "templates"
+    STATIC_DIR: Path = Path(__file__).resolve().parent.parent / "static"
 
     # Nemotron 3 Ultra LLM Engine Settings
     NEMOTRON_API_BASE: str = "http://localhost:8000/v1"  # vLLM or NVIDIA NIM endpoint
+
     NEMOTRON_API_KEY: str = "EMPTY"
     NEMOTRON_MODEL_NAME: str = "nvidia/Nemotron-3-Ultra"
     NEMOTRON_MAX_TOKENS: int = 16384

@@ -1,16 +1,12 @@
-from pathlib import Path
 from typing import Any
 
 from fastapi import APIRouter, Request
-from fastapi.templating import Jinja2Templates
 
 from app.api.v1.endpoints.health import health_check
 from app.core.config import settings
+from app.core.templates import templates
 
 router = APIRouter(tags=["root"])
-
-templates_dir = Path(__file__).resolve().parent.parent / "templates"
-templates = Jinja2Templates(directory=str(templates_dir))
 
 
 @router.get("/", tags=["root"])
@@ -20,18 +16,9 @@ def root(request: Request) -> Any:
     or return JSON service information for API clients.
     """
     accept = request.headers.get("accept", "")
-    if "text/html" in accept and templates_dir.exists():
-        return templates.TemplateResponse(
-            request=request,
-            name="index.html",
-            context={
-                "project_name": settings.PROJECT_NAME,
-                "version": settings.VERSION,
-                "model_name": settings.NEMOTRON_MODEL_NAME,
-                "api_base": settings.NEMOTRON_API_BASE,
-                "environment": settings.ENVIRONMENT,
-            },
-        )
+    if "text/html" in accept and settings.TEMPLATES_DIR.exists():
+        return templates.TemplateResponse(request=request, name="index.html")
+
     return {
         "service": settings.PROJECT_NAME,
         "status": "running",

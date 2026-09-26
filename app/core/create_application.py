@@ -1,4 +1,3 @@
-from pathlib import Path
 
 from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
@@ -38,9 +37,11 @@ def create_application() -> FastAPI:
     setup_middleware(app)
     register_exception_handlers(app)
 
-    static_dir = Path(__file__).resolve().parent.parent / "static"
-    if static_dir.exists():
-        app.mount("/static", StaticFiles(directory=str(static_dir)), name="static")
+    if settings.STATIC_DIR.exists():
+        app.mount(
+            "/static", StaticFiles(directory=str(settings.STATIC_DIR)), name="static"
+        )
+
 
     setup_routers(app)
 
