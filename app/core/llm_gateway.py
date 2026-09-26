@@ -8,6 +8,7 @@ Provides async streaming communication with:
    High-throughput Tier-1 fast triage, parsing, and preprocessing ($0 cost).
 """
 
+import asyncio
 import json
 from collections.abc import AsyncGenerator
 from typing import Any
@@ -200,6 +201,36 @@ class LLMGateway:
 
         return thought, content
 
+    async def _generate_gemini_content(
+        self, contents: list[dict[str, Any]], max_tokens: int, temperature: float
+    ) -> str | None:
+        """Call generateContent across candidate models with high reliability."""
+        for candidate in [self.gemini_model, "gemini-flash-latest", "gemini-3.8-flash"]:
+            url = f"https://generativelanguage.googleapis.com/v1beta/models/{candidate}:generateContent?key={self.gemini_api_key}"
+            payload = {
+                "contents": contents,
+                "generationConfig": {
+                    "temperature": temperature,
+                    "maxOutputTokens": max_tokens,
+                },
+            }
+            try:
+                async with httpx.AsyncClient(timeout=30.0) as client:
+                    resp = await client.post(url, json=payload)
+                    if resp.status_code == 200:
+                        data = resp.json()
+                        parts = (
+                            data.get("candidates", [{}])[0]
+                            .get("content", {})
+                            .get("parts", [])
+                        )
+                        texts = [p.get("text", "") for p in parts if p.get("text")]
+                        if texts:
+                            return "".join(texts)
+            except Exception as e:
+                logger.warning(f"Fallback to {candidate} failed: {e}")
+        return None
+
     async def stream_gemini_reasoning(
         self,
         messages: list[dict[str, str]],
@@ -233,48 +264,78 @@ class LLMGateway:
             },
         }
 
+        received_any_token = False
+
         async with httpx.AsyncClient(timeout=60.0) as client:
             try:
                 async with client.stream("POST", url, json=payload) as response:
-                    if response.status_code != 200:
-                        error_text = await response.aread()
-                        logger.error(
-                            f"Gemini streaming error ({response.status_code}): {error_text.decode('utf-8', 'ignore')}"
-                        )
-                        yield {
-                            "type": "error",
-                            "content": f"Gemini API returned status {response.status_code}",
-                        }
-                        return
+                    if response.status_code == 200:
+                        async for line in response.aiter_lines():
+                            if not line or not line.startswith("data: "):
+                                continue
+                            data_str = line[6:].strip()
+                            try:
+                                data = json.loads(data_str)
+                                candidates = data.get("candidates", [])
+                                if candidates:
+                                    parts = (
+                                        candidates[0]
+                                        .get("content", {})
+                                        .get("parts", [])
+                                    )
+                                    for p in parts:
+                                        text_chunk = p.get("text", "")
+                                        if text_chunk:
+                                            received_any_token = True
+                                            yield {
+                                                "type": "token",
+                                                "content": text_chunk,
+                                            }
+                            except json.JSONDecodeError:
+                                continue
 
-                    async for line in response.aiter_lines():
-                        if not line or not line.startswith("data: "):
-                            continue
-                        data_str = line[6:].strip()
-                        try:
-                            data = json.loads(data_str)
-                            candidates = data.get("candidates", [])
-                            if candidates:
-                                parts = (
-                                    candidates[0]
-                                    .get("content", {})
-                                    .get("parts", [])
-                                )
-                                for p in parts:
-                                    text_chunk = p.get("text", "")
-                                    if text_chunk:
-                                        yield {
-                                            "type": "token",
-                                            "content": text_chunk,
-                                        }
-                        except json.JSONDecodeError:
-                            continue
+                    if not received_any_token:
+                        logger.warning(
+                            f"Gemini SSE streaming did not yield tokens (status {response.status_code}). Triggering resilient fallback..."
+                        )
+                        fallback_text = await self._generate_gemini_content(
+                            contents, max_tokens, temperature
+                        )
+                        if fallback_text:
+                            words = fallback_text.split(" ")
+                            for i, word in enumerate(words):
+                                sep = " " if i < len(words) - 1 else ""
+                                yield {
+                                    "type": "token",
+                                    "content": word + sep,
+                                }
+                                await asyncio.sleep(0.015)
+                            return
+                        else:
+                            thought, content = self._generate_standby_response(messages)
+                            yield {"type": "thought", "content": thought}
+                            yield {"type": "token", "content": content}
+                            return
+
             except Exception as e:
-                logger.error(f"Error streaming Gemini: {e}")
-                yield {
-                    "type": "error",
-                    "content": f"Gemini connection error: {str(e)}",
-                }
+                logger.warning(f"Error during Gemini streaming: {e}. Triggering fallback...")
+                fallback_text = await self._generate_gemini_content(
+                    contents, max_tokens, temperature
+                )
+                if fallback_text:
+                    words = fallback_text.split(" ")
+                    for i, word in enumerate(words):
+                        sep = " " if i < len(words) - 1 else ""
+                        yield {
+                            "type": "token",
+                            "content": word + sep,
+                        }
+                        await asyncio.sleep(0.015)
+                    return
+
+                thought, content = self._generate_standby_response(messages)
+                yield {"type": "thought", "content": thought}
+                yield {"type": "token", "content": content}
 
 
     async def run_gemini_fast_triage(self, prompt: str) -> str:
