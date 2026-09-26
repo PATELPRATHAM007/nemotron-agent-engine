@@ -19,8 +19,8 @@ MACHINE_TYPE="${GCP_MACHINE_TYPE:-a2-ultragpu-8g}"  # 8x NVIDIA A100 80GB (640 G
 ACCELERATOR_TYPE="${GCP_ACCELERATOR:-nvidia-a100-80gb}"
 ACCELERATOR_COUNT="${GCP_ACCELERATOR_COUNT:-8}"
 BOOT_DISK_SIZE="${GCP_BOOT_DISK_SIZE:-200GB}"
-IMAGE_FAMILY="common-cu121-debian-11"
-IMAGE_PROJECT="deeplearning-platform-release"
+IMAGE_FAMILY="${GCP_IMAGE_FAMILY:-common-cu129-ubuntu-2204-nvidia-580}"
+IMAGE_PROJECT="${GCP_IMAGE_PROJECT:-deeplearning-platform-release}"
 
 echo "=================================================================="
 echo "⚡ GCP SPOT GPU CLUSTER LAUNCHER: NEMOTRON 3 ULTRA"
@@ -29,7 +29,7 @@ echo "Project ID:      $PROJECT_ID"
 echo "Zone:            $ZONE"
 echo "Instance:        $INSTANCE_NAME"
 echo "Machine Type:    $MACHINE_TYPE"
-echo "GPUs:            $ACCELERATOR_COUNT x $ACCELERATOR_TYPE"
+echo "OS Image:        $IMAGE_FAMILY ($IMAGE_PROJECT)"
 echo "Pricing Model:   SPOT (Max Credit Longevity - saves up to 90%)"
 echo "=================================================================="
 
@@ -62,27 +62,38 @@ fi
 
 # 4. Provision Spot GPU Instance
 echo "[3/4] Provisioning Spot GPU Instance on Google Cloud..."
-gcloud compute instances create "$INSTANCE_NAME" \
-    --project="$PROJECT_ID" \
-    --zone="$ZONE" \
-    --machine-type="$MACHINE_TYPE" \
-    --accelerator="type=$ACCELERATOR_TYPE,count=$ACCELERATOR_COUNT" \
-    --provisioning-model=SPOT \
-    --instance-termination-action=STOP \
-    --boot-disk-size="$BOOT_DISK_SIZE" \
-    --boot-disk-type="pd-balanced" \
-    --image-family="$IMAGE_FAMILY" \
-    --image-project="$IMAGE_PROJECT" \
-    --maintenance-policy=TERMINATE \
-    --tags=vllm-server \
-    --local-ssd=interface=NVME \
-    --local-ssd=interface=NVME \
-    --local-ssd=interface=NVME \
-    --local-ssd=interface=NVME \
+
+# A2 and G2 machine families have GPUs embedded directly into the machine type
+CREATE_ARGS=(
+    "$INSTANCE_NAME"
+    --project="$PROJECT_ID"
+    --zone="$ZONE"
+    --machine-type="$MACHINE_TYPE"
+    --provisioning-model=SPOT
+    --instance-termination-action=STOP
+    --boot-disk-size="$BOOT_DISK_SIZE"
+    --boot-disk-type="pd-balanced"
+    --image-family="$IMAGE_FAMILY"
+    --image-project="$IMAGE_PROJECT"
+    --maintenance-policy=TERMINATE
+    --tags=vllm-server
+    --local-ssd=interface=NVME
+    --local-ssd=interface=NVME
+    --local-ssd=interface=NVME
+    --local-ssd=interface=NVME
     --metadata="install-nvidia-driver=True"
+)
+
+# For non-A2/G2 types (e.g. n1-standard with attached GPUs), add accelerator flag
+if [[ ! "$MACHINE_TYPE" =~ ^(a2|g2)- ]]; then
+    CREATE_ARGS+=(--accelerator="type=$ACCELERATOR_TYPE,count=$ACCELERATOR_COUNT")
+fi
+
+gcloud compute instances create "${CREATE_ARGS[@]}"
 
 # 5. Retrieve External IP
 EXTERNAL_IP=$(gcloud compute instances describe "$INSTANCE_NAME" --zone="$ZONE" --project="$PROJECT_ID" --format='get(networkInterfaces[0].accessConfigs[0].natIP)')
+
 
 echo ""
 echo "=================================================================="
