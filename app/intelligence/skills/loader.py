@@ -109,7 +109,7 @@ class SkillRegistry:
         return [s[0] for s in scored[:limit]]
 
     def format_skills_for_context(
-        self, skills: list[SkillMetadata], max_chars: int = 2500
+        self, skills: list[SkillMetadata], max_chars: int = 6000
     ) -> str:
         """Format matching skills into compact cheatsheets for prompt injection."""
         if not skills:
@@ -120,8 +120,15 @@ class SkillRegistry:
         for s in skills:
             snippet = f"### Skill: {s.name} ({s.category})\n{s.content}\n"
             if current_len + len(snippet) > max_chars:
+                remaining_budget = max_chars - current_len
+                if remaining_budget > 300:
+                    truncated = snippet[: remaining_budget - 40].rstrip()
+                    sections.append(f"{truncated}\n... [content truncated to preserve token budget]\n")
                 break
             sections.append(snippet)
             current_len += len(snippet)
+
+        if len(sections) == 1:
+            return ""
 
         return "\n".join(sections)
