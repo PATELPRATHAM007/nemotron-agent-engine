@@ -94,19 +94,59 @@ async def get_agent_config():
 
 @router.get("/cost/summary")
 async def get_cost_summary():
-    """Return aggregated token and expenditure metrics across all missions."""
-    from app.intelligence.cost import CostLedger
+    """Return aggregated token and expenditure metrics across all missions (DB-backed)."""
+    try:
+        from app.db.session import DatabaseService
+        from app.intelligence.cost import CostRepository
 
-    ledger = CostLedger(workspace_root=".")
-    return ledger.get_summary().model_dump()
+        session = DatabaseService.get_session()
+        try:
+            repo = CostRepository(session)
+            return repo.get_summary().model_dump()
+        finally:
+            session.close()
+    except Exception:
+        from app.intelligence.cost import CostLedger
+
+        ledger = CostLedger(workspace_root=".")
+        return ledger.get_summary().model_dump()
 
 
 @router.get("/cost/ledger")
 async def get_cost_ledger(
     limit: int = Query(10, description="Max historical missions to retrieve"),
 ):
-    """Return historical mission cost records."""
-    from app.intelligence.cost import CostLedger
+    """Return historical mission cost records from the database."""
+    try:
+        from app.db.session import DatabaseService
+        from app.intelligence.cost import CostRepository
 
-    ledger = CostLedger(workspace_root=".")
-    return [r.model_dump() for r in ledger.get_recent_missions(limit=limit)]
+        session = DatabaseService.get_session()
+        try:
+            repo = CostRepository(session)
+            return repo.get_recent_records(limit=limit)
+        finally:
+            session.close()
+    except Exception:
+        from app.intelligence.cost import CostLedger
+
+        ledger = CostLedger(workspace_root=".")
+        return [r.model_dump() for r in ledger.get_recent_missions(limit=limit)]
+
+
+@router.get("/cost/mission/{mission_id}")
+async def get_mission_cost(mission_id: str):
+    """Return cost records for a specific mission."""
+    try:
+        from app.db.session import DatabaseService
+        from app.intelligence.cost import CostRepository
+
+        session = DatabaseService.get_session()
+        try:
+            repo = CostRepository(session)
+            return repo.get_records_by_mission(mission_id)
+        finally:
+            session.close()
+    except Exception:
+        return []
+

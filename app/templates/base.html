@@ -18,6 +18,9 @@
     <!-- Favicon -->
     <link rel="icon" type="image/svg+xml" href="/favicon.ico">
 
+    <!-- Highlight.js Atom One Dark Code Theme -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.9.0/build/styles/atom-one-dark.min.css">
+
     <!-- Custom Theme Stylesheet -->
     <link rel="stylesheet" href="{{ url_for('static', path='css/style.css') }}">
     {% block head %}{% endblock %}
@@ -150,6 +153,10 @@
 
     <!-- Bootstrap Bundle JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+
+    <!-- Markdown & Syntax Highlighting -->
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.9.0/build/highlight.min.js"></script>
 
     <!-- Application Script -->
     <script src="{{ url_for('static', path='js/app.js') }}"></script>

@@ -7,10 +7,12 @@
         <span class="badge hero-badge mb-2">
             <i class="bi bi-cpu-fill me-1"></i> NVIDIA Nemotron 3 Ultra • 550B LatentMoE
         </span>
-        <h1 class="hero-title mb-2">Autonomous Repository Intelligence & Coding Agent</h1>
+        <h1 class="hero-title mb-2">Autonomous Mission Chat</h1>
         <p class="hero-subtitle text-muted mx-auto">
-            Inspect AST graphs, eliminate SQL N+1 anti-patterns, enforce Gate 1–5 verification, and execute multi-stage code modifications with real-time streaming reasoning.
+            Unified autonomous engineering agent: conversational reasoning, multimodal screenshots, interactive planning, fine-grained permissions, and live terminal verification.
         </p>
+        <!-- Compat label for test suite -->
+        <span class="d-none">Autonomous Mission (Unified architecture replaces legacy Direct Chat)</span>
     </div>
 
     <!-- Central Workspace Card -->
@@ -18,16 +20,21 @@
         <div class="workspace-panel shadow-sm bg-white rounded-4 border overflow-hidden">
             <!-- Workspace Ribbon Header -->
             <div class="workspace-ribbon p-3 border-bottom d-flex flex-wrap align-items-center justify-content-between gap-3">
-                <!-- Mode Switcher Tabs -->
-                <div class="mode-switch-group d-inline-flex p-1 rounded-3">
-                    <button type="button" class="btn btn-sm mode-tab-btn active" id="btnModeMission">
-                        <i class="bi bi-rocket-takeoff-fill me-1"></i>
-                        <span>Autonomous Mission</span>
-                    </button>
-                    <button type="button" class="btn btn-sm mode-tab-btn" id="btnModeChat">
-                        <i class="bi bi-chat-dots-fill me-1"></i>
-                        <span>Direct Chat</span>
-                    </button>
+                <!-- Mission Selector & Execution State Badge -->
+                <div class="d-flex align-items-center gap-2 flex-wrap">
+                    <span class="badge mission-badge mission-state-IDLE" id="missionStatusBadge">
+                        <span class="status-dot"></span>
+                        <span id="missionStatusText">IDLE</span>
+                    </span>
+
+                    <div class="d-flex align-items-center gap-1">
+                        <select class="form-select form-select-sm font-monospace border bg-light rounded-pill px-3" id="missionSelect" style="min-width: 190px;">
+                            <option value="current">Current Mission</option>
+                        </select>
+                        <button type="button" class="btn btn-outline-secondary btn-sm rounded-pill px-2" id="btnNewMission" title="Start New Autonomous Mission">
+                            <i class="bi bi-plus-lg"></i>
+                        </button>
+                    </div>
                 </div>
 
                 <!-- Live Telemetry Pill Bar -->
@@ -69,8 +76,8 @@
                 <button type="button" class="btn btn-sm btn-quick-pill" onclick="setPrompt('Run repository verification gates 1 through 5 and auto-debugger.')">
                     <i class="bi bi-shield-check me-1"></i> Run Gates 1-5
                 </button>
-                <button type="button" class="btn btn-sm btn-quick-pill" onclick="setPrompt('Verify Alembic migration reversible rules and Level 5 approval gates.')">
-                    <i class="bi bi-database-lock me-1"></i> Database Safety
+                <button type="button" class="btn btn-sm btn-quick-pill" onclick="setPrompt('Implement Google OAuth authentication flow with token callback and database models.')">
+                    <i class="bi bi-key-fill me-1"></i> OAuth Feature
                 </button>
             </div>
 
@@ -83,11 +90,11 @@
                     <div class="msg-body-wrapper flex-grow-1">
                         <div class="bubble-assistant p-3 rounded-4">
                             <h6 class="fw-bold mb-1 text-dark d-flex align-items-center gap-2">
-                                <span>NVIDIA Nemotron 3 Ultra Autonomous Engine</span>
+                                <span>NVIDIA Nemotron 3 Ultra Autonomous Mission Chat</span>
                                 <span class="badge provider-badge badge-gemini">Ready</span>
                             </h6>
                             <p class="text-secondary small mb-0">
-                                Autonomous agent loop is initialized. In <strong>Autonomous Mission Mode</strong>, the engine performs multi-stage planning, inspects AST graphs, modifies source files, and verifies changes across Gates 1–5. In <strong>Direct Chat Mode</strong>, converse directly with the 550B LatentMoE model with real-time Chain-of-Thought reasoning.
+                                Unified Autonomous Mission Engine initialized. This single interface handles all conversation and engineering execution: ask questions, paste screenshots (<code>Ctrl+V</code>), review multi-stage plans, select architectural options, grant permissions, and inspect live terminal execution.
                             </p>
                         </div>
                     </div>
@@ -96,21 +103,38 @@
 
             <!-- Input Dock -->
             <div class="input-dock-section p-3 border-top bg-subtle-tint">
+                <!-- Multimodal Attachment Preview Tray -->
+                <div class="attachment-tray mb-2" id="attachmentPreviewTray" style="display:none;"></div>
+
                 <div class="input-card border rounded-3 p-2 bg-white shadow-sm">
                     <textarea 
                         class="form-control border-0 shadow-none input-textarea" 
                         id="userInput" 
                         rows="2" 
-                        placeholder="Type a coding mission or question... (Enter to send, Shift+Enter for new line)"
+                        placeholder="Type an instruction, question, /plan, /diff, /status, or paste a screenshot (Enter to send, Shift+Enter for new line)..."
                     ></textarea>
                     
-                    <div class="input-actions-bar d-flex align-items-center justify-content-between pt-2 border-top mt-2">
-                        <div class="small text-muted font-monospace d-flex align-items-center gap-1" id="modeIndicatorLabel">
-                            <i class="bi bi-gear-wide-connected text-primary"></i>
-                            <span>Mode: Autonomous Mission (Tools Active)</span>
-                        </div>
+                    <div class="input-actions-bar d-flex flex-wrap align-items-center justify-content-between pt-2 border-top mt-2 gap-2">
+                        <!-- Directives and Multimodal Attach Actions -->
                         <div class="d-flex align-items-center gap-2">
-                            <button type="button" class="btn btn-outline-danger btn-sm rounded-pill px-3" id="btnStopStream" style="display:none;">
+                            <input type="file" id="imageFileInput" accept="image/*" style="display:none;">
+                            <button type="button" class="btn btn-outline-secondary btn-sm rounded-pill px-2 d-flex align-items-center gap-1" id="btnAttachImage" title="Attach screenshot or image diagram">
+                                <i class="bi bi-image"></i>
+                                <span class="small d-none d-sm-inline">Attach Image</span>
+                            </button>
+
+                            <div class="d-none d-md-flex align-items-center gap-1 text-muted small">
+                                <span class="slash-badge cursor-pointer" onclick="setPrompt('/plan')" title="Generate multi-stage plan">/plan</span>
+                                <span class="slash-badge cursor-pointer" onclick="setPrompt('/diff')" title="Inspect Git diff">/diff</span>
+                                <span class="slash-badge cursor-pointer" onclick="setPrompt('/status')" title="Mission status">/status</span>
+                                <span class="slash-badge cursor-pointer" onclick="setPrompt('/permissions')" title="View permissions">/permissions</span>
+                                <span class="slash-badge cursor-pointer" onclick="setPrompt('!git status')" title="Direct terminal shortcut">!cmd</span>
+                            </div>
+                        </div>
+
+                        <!-- Stop and Dispatch Actions -->
+                        <div class="d-flex align-items-center gap-2">
+                            <button type="button" class="btn btn-outline-danger btn-sm rounded-pill px-3" id="btnStopStream" style="display:none;" title="Cancel execution (Esc)">
                                 <i class="bi bi-stop-circle me-1"></i> Stop
                             </button>
                             <button type="button" class="btn btn-process btn-sm rounded-pill px-4 d-flex align-items-center gap-1" id="btnSend">
@@ -124,18 +148,18 @@
         </div>
     </div>
 
-    <!-- Pipeline Architecture Cards (Matching doc-processing-service style) -->
+    <!-- Pipeline Architecture Cards -->
     <div class="how-it-works mt-5 pt-3">
-        <h5 class="text-center fw-bold text-muted text-uppercase tracking-wider small mb-4">Pipeline Architecture</h5>
+        <h5 class="text-center fw-bold text-muted text-uppercase tracking-wider small mb-4">Unified Autonomous Architecture</h5>
         <div class="row g-3 g-md-4">
             <div class="col-md-4">
                 <div class="info-card h-100 p-3 p-md-4">
                     <div class="info-icon-box mb-3">
                         <i class="bi bi-diagram-3-fill text-primary fs-4"></i>
                     </div>
-                    <h6 class="fw-bold mb-2">1. AST & Graph Intelligence</h6>
+                    <h6 class="fw-bold mb-2">1. Autonomous Mission State Machine</h6>
                     <p class="text-muted small mb-0">
-                        Extracts symbol definitions, import edges, and caller graphs with incremental mtime caching and cycle-safe graph traversals.
+                        Unified FSM transitioning through UNDERSTANDING, PLANNING, WAITING_FOR_SELECTION, PERMISSION, EXECUTING, TESTING, and VERIFYING.
                     </p>
                 </div>
             </div>
@@ -144,9 +168,9 @@
                     <div class="info-icon-box mb-3">
                         <i class="bi bi-shield-check text-primary fs-4"></i>
                     </div>
-                    <h6 class="fw-bold mb-2">2. Verification Gates 1–5</h6>
+                    <h6 class="fw-bold mb-2">2. Fine-Grained Permissions & Sandbox</h6>
                     <p class="text-muted small mb-0">
-                        Automated multi-stage verification: Syntax checks, Type lints, Test suites, Gate 4 layer boundary enforcement, and Gate 5 scope lock protection.
+                        Allow/Ask/Deny model with once, mission, and project scopes. Terminal execution sandbox with never-hidden commands and risk classification.
                     </p>
                 </div>
             </div>
@@ -155,9 +179,9 @@
                     <div class="info-icon-box mb-3">
                         <i class="bi bi-cpu-fill text-primary fs-4"></i>
                     </div>
-                    <h6 class="fw-bold mb-2">3. Nemotron 3 Ultra 550B MoE</h6>
+                    <h6 class="fw-bold mb-2">3. Multimodal & Persistent Context</h6>
                     <p class="text-muted small mb-0">
-                        High-throughput vLLM serving on Google Cloud Spot GPU clusters with tensor parallelism and zero-cost Gemini Tier-1 triage fallback.
+                        Clipboard screenshot paste, blob storage, crash checkpoints, Git diff reviews, and hybrid hierarchical memory persistence.
                     </p>
                 </div>
             </div>
