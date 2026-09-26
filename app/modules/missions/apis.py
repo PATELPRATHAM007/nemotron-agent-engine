@@ -12,10 +12,10 @@ import uuid
 from fastapi import Depends, HTTPException, Query, status
 from sse_starlette.sse import EventSourceResponse
 
-from app.intelligence.missions.multimodal import multimodal_storage
-from app.intelligence.missions.permissions import PermissionScope, mission_permissions
-from app.intelligence.missions.repository import mission_repository
-from app.intelligence.missions.state_machine import MissionState
+from app.modules.missions.multimodal import multimodal_storage
+from app.modules.missions.permissions import PermissionScope, mission_permissions
+from app.modules.missions.repository import mission_repository
+from app.modules.missions.state_machine import MissionState
 from app.modules.missions import messages
 from app.modules.missions.schemas import (
     CreateMissionRequest,

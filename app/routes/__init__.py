@@ -1,5 +1,11 @@
-from app.routes.root import router as root_router
-from app.routes.ui import router as ui_router
+"""
+Server-rendered web routes (HTML), matching ad-automation-be pattern.
+"""
 
-__all__ = ["root_router", "ui_router"]
+from app.routes.pages import router as pages_router
 
+# Backward compatibility aliases
+root_router = pages_router
+ui_router = pages_router
+
+__all__ = ["pages_router", "root_router", "ui_router"]

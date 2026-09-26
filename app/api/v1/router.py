@@ -7,6 +7,8 @@ from app.modules.gateway.router import admin_router as model_admin_router
 from app.modules.gateway.router import router as model_gateway_router
 from app.modules.missions.router import router as missions_router
 from app.modules.agent.router import router as agent_router
+from app.modules.constitution.router import router as constitution_router
+from app.modules.intelligence.router import router as intelligence_router
 
 api_router = APIRouter()
 
@@ -19,6 +21,8 @@ api_router.include_router(model_gateway_router)
 api_router.include_router(model_admin_router)
 api_router.include_router(missions_router)
 api_router.include_router(cost_router)
+api_router.include_router(constitution_router)
+api_router.include_router(intelligence_router)
 
 # Agent Legacy / Direct compatibility
 api_router.include_router(agent_router)

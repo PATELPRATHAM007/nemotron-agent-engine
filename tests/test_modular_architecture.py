@@ -108,3 +108,11 @@ def test_modular_routes_availability():
     # Cost route
     cost_resp = client.get("/api/v1/cost/summary")
     assert cost_resp.status_code == 200
+
+    # Constitution route
+    const_resp = client.get("/api/v1/constitution/rules")
+    assert const_resp.status_code == 200
+
+    # Intelligence route
+    intel_resp = client.get("/api/v1/intelligence/graph")
+    assert intel_resp.status_code == 200

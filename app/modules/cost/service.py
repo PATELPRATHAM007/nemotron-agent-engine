@@ -4,19 +4,25 @@ Cost Module Business Logic Service
 Handles token tracking, cost formulas, budget circuit breaker, and database ledger.
 """
 
-from app.intelligence.cost import (
+from app.modules.cost.budget_guard import (
     BudgetGuard,
     CostAlertLevel,
     CostBudgetConfig,
-    CostCalculator,
+)
+from app.modules.cost.ledger import (
     CostLedger,
-    CostRecord,
-    CostRepository,
-    CostTracker,
     LedgerSummary,
     MissionCostReport,
+)
+from app.modules.cost.models import CostRecord
+from app.modules.cost.pricing import (
+    CostCalculator,
     PricingMode,
     PricingModel,
+)
+from app.modules.cost.repository import CostRepository
+from app.modules.cost.tracker import (
+    CostTracker,
     TokenUsageBreakdown,
 )
 

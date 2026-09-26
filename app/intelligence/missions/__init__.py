@@ -1,24 +1,15 @@
 """
-Autonomous Mission Intelligence Subsystem
-=========================================
-Persistent models, state machine, permission engine, multimodal context,
-slash commands, and mission repository.
+Backward compatibility re-export. Real missions module lives in app.modules.missions.
 """
-
-from app.intelligence.missions.models import (
+from app.modules.missions.models import (
     Mission,
     MissionArtifact,
-    MissionAttachment,
     MissionCheckpoint,
-    MissionDiff,
-    MissionEvent,
     MissionMessage,
-    MissionPermissionRequest,
     MissionPlan,
-    MissionSelection,
 )
-from app.intelligence.missions.multimodal import multimodal_storage
-from app.intelligence.missions.permissions import (
+from app.modules.missions.multimodal import MultimodalStorage, multimodal_storage
+from app.modules.missions.permissions import (
     CommandRiskClassifier,
     MissionPermissionEngine,
     PermissionDecision,
@@ -26,30 +17,27 @@ from app.intelligence.missions.permissions import (
     RiskLevel,
     mission_permissions,
 )
-from app.intelligence.missions.repository import mission_repository
-from app.intelligence.missions.slash_commands import SlashCommandParser
-from app.intelligence.missions.state_machine import MissionState, MissionStateMachine
+from app.modules.missions.repository import MissionRepository, mission_repository
+from app.modules.missions.slash_commands import SlashCommandParser
+from app.modules.missions.state_machine import MissionState, MissionStateMachine
 
 __all__ = [
     "Mission",
     "MissionMessage",
-    "MissionAttachment",
-    "MissionEvent",
     "MissionPlan",
-    "MissionSelection",
-    "MissionPermissionRequest",
-    "MissionDiff",
     "MissionCheckpoint",
     "MissionArtifact",
-    "MissionState",
     "MissionStateMachine",
-    "RiskLevel",
-    "PermissionDecision",
-    "PermissionScope",
-    "CommandRiskClassifier",
+    "MissionState",
     "MissionPermissionEngine",
+    "CommandRiskClassifier",
+    "RiskLevel",
+    "PermissionScope",
+    "PermissionDecision",
     "mission_permissions",
+    "MultimodalStorage",
     "multimodal_storage",
     "SlashCommandParser",
+    "MissionRepository",
     "mission_repository",
 ]

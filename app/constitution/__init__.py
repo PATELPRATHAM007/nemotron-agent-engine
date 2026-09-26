@@ -1,9 +1,6 @@
 """
-Agent Constitution Package
-==========================
-Manages repository rules, coding standards, and constitutional scaffolding.
+Backward compatibility re-export. Real module lives in app.modules.constitution.
 """
-
-from app.constitution.scaffold import ConstitutionScaffolder
+from app.modules.constitution.service import ConstitutionScaffolder
 
 __all__ = ["ConstitutionScaffolder"]
