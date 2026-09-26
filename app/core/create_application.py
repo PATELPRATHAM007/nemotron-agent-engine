@@ -1,4 +1,7 @@
+from pathlib import Path
+
 from fastapi import FastAPI
+from fastapi.staticfiles import StaticFiles
 
 from app.core.config import settings
 from app.core.exception_handlers import register_exception_handlers
@@ -27,13 +30,19 @@ def create_application() -> FastAPI:
 
     app = FastAPI(
         title=settings.PROJECT_NAME,
-        description="Asynchronous Document Processing Service API",
+        description="NVIDIA Nemotron 3 Ultra Autonomous Agent Engine API",
         version=settings.VERSION,
         lifespan=lifespan,
     )
 
     setup_middleware(app)
     register_exception_handlers(app)
+
+    static_dir = Path(__file__).resolve().parent.parent / "static"
+    if static_dir.exists():
+        app.mount("/static", StaticFiles(directory=str(static_dir)), name="static")
+
     setup_routers(app)
 
     return app
+

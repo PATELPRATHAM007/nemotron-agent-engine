@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}{{ project_name|default("Nemotron Agent Engine") }} — Autonomous Repository Intelligence{% endblock %}</title>
+    <meta name="description" content="Production-Grade Autonomous Coding & Repository Intelligence Agent powered by NVIDIA Nemotron 3 Ultra (550B LatentMoE).">
+
+    <!-- Fonts: Plus Jakarta Sans & JetBrains Mono -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Bootstrap 5 & Bootstrap Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
+    <!-- Custom Theme Stylesheet -->
+    <link rel="stylesheet" href="{{ url_for('static', path='css/style.css') }}">
+    {% block head %}{% endblock %}
+</head>
+<body class="d-flex flex-column min-vh-100">
+    <!-- Navbar Header -->
+    <header class="app-header py-3 sticky-top">
+        <div class="container d-flex align-items-center justify-content-between">
+            <a href="/" class="brand-link d-flex align-items-center gap-2 text-decoration-none" id="brandLogo">
+                <span class="brand-icon-wrapper">
+                    <i class="bi bi-cpu-fill"></i>
+                </span>
+                <div class="d-flex flex-column">
+                    <span class="brand-title">Nemotron Agent</span>
+                    <span class="brand-subtitle d-none d-sm-inline">550B LatentMoE • Autonomous Engine</span>
+                </div>
+            </a>
+
+            <!-- Navbar Telemetry & Actions -->
+            <nav class="d-flex align-items-center gap-2">
+                <span class="badge status-pill d-none d-lg-inline-flex align-items-center gap-1">
+                    <span class="status-dot"></span>
+                    <span id="navEngineStatus">vLLM / GCP Spot Ready</span>
+                </span>
+
+                <button type="button" class="btn btn-outline-nav btn-sm d-flex align-items-center gap-1" id="navCostLedger" data-bs-toggle="modal" data-bs-target="#ledgerModal">
+                    <i class="bi bi-bar-chart-line-fill text-success"></i>
+                    <span class="d-none d-sm-inline">Cost Ledger</span>
+                </button>
+
+                <a href="/docs" target="_blank" rel="noopener noreferrer" class="btn btn-outline-nav btn-sm d-flex align-items-center gap-1" id="navApiDocs">
+                    <i class="bi bi-code-slash"></i>
+                    <span>API Docs</span>
+                </a>
+
+                <a href="/api/v1/health" target="_blank" rel="noopener noreferrer" class="btn btn-outline-nav btn-sm d-flex align-items-center gap-1" id="navHealth">
+                    <i class="bi bi-activity"></i>
+                    <span class="d-none d-sm-inline">Health</span>
+                </a>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Main Content Area -->
+    <main class="flex-grow-1 py-4 py-md-5">
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- Historical Cost Ledger Modal -->
+    <div class="modal fade" id="ledgerModal" tabindex="-1" aria-labelledby="ledgerModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content shadow-lg border-0 rounded-4">
+                <div class="modal-header border-bottom px-4 py-3">
+                    <h5 class="modal-title fw-bold d-flex align-items-center gap-2" id="ledgerModalLabel">
+                        <i class="bi bi-wallet2 text-primary"></i>
+                        <span>Autonomous Mission Cost & Token Ledger</span>
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body p-4">
+                    <!-- Ledger Summary Metrics -->
+                    <div class="row g-3 mb-4" id="ledgerSummaryCards">
+                        <div class="col-sm-4">
+                            <div class="p-3 bg-light rounded-3 border">
+                                <div class="text-muted small text-uppercase fw-semibold">Total Missions</div>
+                                <div class="fs-4 fw-bold text-dark" id="modalTotalMissions">0</div>
+                            </div>
+                        </div>
+                        <div class="col-sm-4">
+                            <div class="p-3 bg-light rounded-3 border">
+                                <div class="text-muted small text-uppercase fw-semibold">Total Tokens</div>
+                                <div class="fs-4 fw-bold text-primary" id="modalTotalTokens">0</div>
+                            </div>
+                        </div>
+                        <div class="col-sm-4">
+                            <div class="p-3 bg-light rounded-3 border">
+                                <div class="text-muted small text-uppercase fw-semibold">GCP Amortized Cost</div>
+                                <div class="fs-4 fw-bold text-success" id="modalTotalCost">$0.000000</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Recent Missions Table -->
+                    <h6 class="fw-bold text-muted text-uppercase small mb-2">Recent Execution History</h6>
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle small font-monospace">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Mission ID</th>
+                                    <th>Tokens</th>
+                                    <th>Cost (USD)</th>
+                                    <th>Duration</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody id="modalLedgerTableBody">
+                                <tr>
+                                    <td colspan="5" class="text-center text-muted py-3">Loading mission telemetry...</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="modal-footer border-top px-4 py-3 bg-light rounded-bottom-4 d-flex justify-content-between">
+                    <span class="text-muted small font-monospace">Pricing Tier: GCP Spot ($0.003/1k tokens)</span>
+                    <button type="button" class="btn btn-secondary btn-sm rounded-pill px-3" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Application Footer -->
+    <footer class="app-footer py-4 mt-auto">
+        <div class="container d-flex flex-column flex-md-row align-items-center justify-content-between gap-3">
+            <div class="d-flex align-items-center gap-2 text-muted small">
+                <span>&copy; 2026 Nemotron Agent Engine.</span>
+                <span>•</span>
+                <span>Powered by NVIDIA Nemotron 3 Ultra (550B LatentMoE) & FastAPI.</span>
+            </div>
+            <div class="d-flex align-items-center gap-3 small">
+                <a href="/docs" class="footer-link">Swagger UI</a>
+                <span class="text-muted">•</span>
+                <a href="/redoc" class="footer-link">ReDoc</a>
+                <span class="text-muted">•</span>
+                <a href="/openapi.json" class="footer-link">OpenAPI JSON</a>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Bootstrap Bundle JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+
+    <!-- Application Script -->
+    <script src="{{ url_for('static', path='js/app.js') }}"></script>
+    {% block scripts %}{% endblock %}
+</body>
+</html>

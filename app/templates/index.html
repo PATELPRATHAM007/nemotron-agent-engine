@@ -1,0 +1,167 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container">
+    <!-- Hero Banner Section -->
+    <div class="hero-banner text-center mb-4 mb-md-5 pt-2">
+        <span class="badge hero-badge mb-2">
+            <i class="bi bi-cpu-fill me-1"></i> NVIDIA Nemotron 3 Ultra • 550B LatentMoE
+        </span>
+        <h1 class="hero-title mb-2">Autonomous Repository Intelligence & Coding Agent</h1>
+        <p class="hero-subtitle text-muted mx-auto">
+            Inspect AST graphs, eliminate SQL N+1 anti-patterns, enforce Gate 1–5 verification, and execute multi-stage code modifications with real-time streaming reasoning.
+        </p>
+    </div>
+
+    <!-- Central Workspace Card -->
+    <div class="workspace-wrapper mx-auto">
+        <div class="workspace-panel shadow-sm bg-white rounded-4 border overflow-hidden">
+            <!-- Workspace Ribbon Header -->
+            <div class="workspace-ribbon p-3 border-bottom d-flex flex-wrap align-items-center justify-content-between gap-3">
+                <!-- Mode Switcher Tabs -->
+                <div class="mode-switch-group d-inline-flex p-1 rounded-3">
+                    <button type="button" class="btn btn-sm mode-tab-btn active" id="btnModeMission">
+                        <i class="bi bi-rocket-takeoff-fill me-1"></i>
+                        <span>Autonomous Mission</span>
+                    </button>
+                    <button type="button" class="btn btn-sm mode-tab-btn" id="btnModeChat">
+                        <i class="bi bi-chat-dots-fill me-1"></i>
+                        <span>Direct Chat</span>
+                    </button>
+                </div>
+
+                <!-- Live Telemetry Pill Bar -->
+                <div class="live-telemetry-pill d-flex align-items-center gap-3 px-3 py-1 rounded-pill">
+                    <div class="telemetry-item">
+                        <span class="telemetry-label">Tokens:</span>
+                        <strong class="telemetry-val text-primary font-monospace" id="statTokens">0</strong>
+                    </div>
+                    <span class="text-muted small">•</span>
+                    <div class="telemetry-item">
+                        <span class="telemetry-label">Speed:</span>
+                        <strong class="telemetry-val text-info font-monospace" id="statSpeed">0 t/s</strong>
+                    </div>
+                    <span class="text-muted small">•</span>
+                    <div class="telemetry-item">
+                        <span class="telemetry-label">GCP Spot Cost:</span>
+                        <strong class="telemetry-val text-success font-monospace" id="statCost">$0.000000</strong>
+                    </div>
+                </div>
+
+                <!-- Deep Thought Toggle -->
+                <div class="form-check form-switch m-0 d-flex align-items-center gap-2">
+                    <input class="form-check-input" type="checkbox" role="switch" id="chkThinking" checked>
+                    <label class="form-check-label small fw-semibold text-secondary" for="chkThinking">
+                        Deep Reasoning Stream
+                    </label>
+                </div>
+            </div>
+
+            <!-- Quick Mission Prompts Bar -->
+            <div class="quick-prompts-ribbon px-3 py-2 border-bottom bg-subtle-tint d-flex flex-wrap align-items-center gap-2">
+                <span class="text-muted small fw-semibold text-uppercase font-monospace me-1">Presets:</span>
+                <button type="button" class="btn btn-sm btn-quick-pill" onclick="setPrompt('Audit repository database queries for N+1 anti-patterns and suggest selectinload fixes.')">
+                    <i class="bi bi-search me-1"></i> Audit SQL N+1
+                </button>
+                <button type="button" class="btn btn-sm btn-quick-pill" onclick="setPrompt('Inspect repository AST and verify clean 4-tier layer boundaries (Gate 4).')">
+                    <i class="bi bi-diagram-3 me-1"></i> Verify Architecture
+                </button>
+                <button type="button" class="btn btn-sm btn-quick-pill" onclick="setPrompt('Run repository verification gates 1 through 5 and auto-debugger.')">
+                    <i class="bi bi-shield-check me-1"></i> Run Gates 1-5
+                </button>
+                <button type="button" class="btn btn-sm btn-quick-pill" onclick="setPrompt('Verify Alembic migration reversible rules and Level 5 approval gates.')">
+                    <i class="bi bi-database-lock me-1"></i> Database Safety
+                </button>
+            </div>
+
+            <!-- Chat & Reasoning Messages Container -->
+            <div class="chat-viewport p-3 p-md-4" id="chatContainer">
+                <div class="msg-row d-flex gap-3 mb-3">
+                    <div class="msg-avatar avatar-nemotron">
+                        <i class="bi bi-cpu-fill"></i>
+                    </div>
+                    <div class="msg-body-wrapper flex-grow-1">
+                        <div class="bubble-assistant p-3 rounded-4">
+                            <h6 class="fw-bold mb-1 text-dark d-flex align-items-center gap-2">
+                                <span>NVIDIA Nemotron 3 Ultra Autonomous Engine</span>
+                                <span class="badge provider-badge badge-gemini">Ready</span>
+                            </h6>
+                            <p class="text-secondary small mb-0">
+                                Autonomous agent loop is initialized. In <strong>Autonomous Mission Mode</strong>, the engine performs multi-stage planning, inspects AST graphs, modifies source files, and verifies changes across Gates 1–5. In <strong>Direct Chat Mode</strong>, converse directly with the 550B LatentMoE model with real-time Chain-of-Thought reasoning.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Input Dock -->
+            <div class="input-dock-section p-3 border-top bg-subtle-tint">
+                <div class="input-card border rounded-3 p-2 bg-white shadow-sm">
+                    <textarea 
+                        class="form-control border-0 shadow-none input-textarea" 
+                        id="userInput" 
+                        rows="2" 
+                        placeholder="Type a coding mission or question... (Enter to send, Shift+Enter for new line)"
+                    ></textarea>
+                    
+                    <div class="input-actions-bar d-flex align-items-center justify-content-between pt-2 border-top mt-2">
+                        <div class="small text-muted font-monospace d-flex align-items-center gap-1" id="modeIndicatorLabel">
+                            <i class="bi bi-gear-wide-connected text-primary"></i>
+                            <span>Mode: Autonomous Mission (Tools Active)</span>
+                        </div>
+                        <div class="d-flex align-items-center gap-2">
+                            <button type="button" class="btn btn-outline-danger btn-sm rounded-pill px-3" id="btnStopStream" style="display:none;">
+                                <i class="bi bi-stop-circle me-1"></i> Stop
+                            </button>
+                            <button type="button" class="btn btn-process btn-sm rounded-pill px-4 d-flex align-items-center gap-1" id="btnSend">
+                                <span id="btnSendText">Dispatch</span>
+                                <i class="bi bi-lightning-charge-fill" id="btnSendIcon"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Pipeline Architecture Cards (Matching doc-processing-service style) -->
+    <div class="how-it-works mt-5 pt-3">
+        <h5 class="text-center fw-bold text-muted text-uppercase tracking-wider small mb-4">Pipeline Architecture</h5>
+        <div class="row g-3 g-md-4">
+            <div class="col-md-4">
+                <div class="info-card h-100 p-3 p-md-4">
+                    <div class="info-icon-box mb-3">
+                        <i class="bi bi-diagram-3-fill text-primary fs-4"></i>
+                    </div>
+                    <h6 class="fw-bold mb-2">1. AST & Graph Intelligence</h6>
+                    <p class="text-muted small mb-0">
+                        Extracts symbol definitions, import edges, and caller graphs with incremental mtime caching and cycle-safe graph traversals.
+                    </p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="info-card h-100 p-3 p-md-4">
+                    <div class="info-icon-box mb-3">
+                        <i class="bi bi-shield-check text-primary fs-4"></i>
+                    </div>
+                    <h6 class="fw-bold mb-2">2. Verification Gates 1–5</h6>
+                    <p class="text-muted small mb-0">
+                        Automated multi-stage verification: Syntax checks, Type lints, Test suites, Gate 4 layer boundary enforcement, and Gate 5 scope lock protection.
+                    </p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="info-card h-100 p-3 p-md-4">
+                    <div class="info-icon-box mb-3">
+                        <i class="bi bi-cpu-fill text-primary fs-4"></i>
+                    </div>
+                    <h6 class="fw-bold mb-2">3. Nemotron 3 Ultra 550B MoE</h6>
+                    <p class="text-muted small mb-0">
+                        High-throughput vLLM serving on Google Cloud Spot GPU clusters with tensor parallelism and zero-cost Gemini Tier-1 triage fallback.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
