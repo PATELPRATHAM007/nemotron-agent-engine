@@ -63,7 +63,19 @@ fi
 # 4. Provision Spot GPU Instance
 echo "[3/4] Provisioning Spot GPU Instance on Google Cloud..."
 
-# A2 and G2 machine families have GPUs embedded directly into the machine type
+# Determine required local SSD count
+# A2 UltraGPU machine types have fixed local SSD topologies matching GPU count (a2-ultragpu-8g requires 8)
+if [ -n "${GCP_LOCAL_SSD_COUNT:-}" ]; then
+    LOCAL_SSD_COUNT="$GCP_LOCAL_SSD_COUNT"
+elif [[ "$MACHINE_TYPE" =~ ^a2-ultragpu-([0-9]+)g ]]; then
+    LOCAL_SSD_COUNT="${BASH_REMATCH[1]}"
+elif [[ "$MACHINE_TYPE" =~ ^a2-highgpu-([0-9]+)g ]]; then
+    LOCAL_SSD_COUNT="${BASH_REMATCH[1]}"
+else
+    LOCAL_SSD_COUNT=8
+fi
+
+# Base instance configuration
 CREATE_ARGS=(
     "$INSTANCE_NAME"
     --project="$PROJECT_ID"
@@ -77,12 +89,13 @@ CREATE_ARGS=(
     --image-project="$IMAGE_PROJECT"
     --maintenance-policy=TERMINATE
     --tags=vllm-server
-    --local-ssd=interface=NVME
-    --local-ssd=interface=NVME
-    --local-ssd=interface=NVME
-    --local-ssd=interface=NVME
     --metadata="install-nvidia-driver=True"
 )
+
+# Attach required Local NVMe SSDs (e.g. 8x 375GB = 3TB NVMe array for a2-ultragpu-8g)
+for ((i=0; i<LOCAL_SSD_COUNT; i++)); do
+    CREATE_ARGS+=(--local-ssd=interface=NVME)
+done
 
 # For non-A2/G2 types (e.g. n1-standard with attached GPUs), add accelerator flag
 if [[ ! "$MACHINE_TYPE" =~ ^(a2|g2)- ]]; then

@@ -197,7 +197,7 @@ bash infra/launch_gcp_nemotron_spot.sh
 * Creates the firewall rule `allow-vllm-8000` opening TCP port 8000.
 * Provisions an `a2-ultragpu-8g` Spot GPU instance (`nemotron-spot-node`) with **8x NVIDIA A100 80GB GPUs**.
 * Configures **Google Deep Learning OS** with CUDA 12.9 and pre-installed NVIDIA 580 drivers (`common-cu129-ubuntu-2204-nvidia-580`).
-* Attaches 4x Local NVMe SSD scratch drives assembled into a fast 20 GB/s RAID-0 array.
+* Attaches 8x Local NVMe SSD scratch drives (3 TB total) assembled into a fast 20 GB/s RAID-0 array.
 * Prints the **`EXTERNAL_IP`** of your instance.
 
 ---
