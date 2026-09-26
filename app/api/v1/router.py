@@ -1,26 +1,24 @@
 from fastapi import APIRouter
 
-from app.api.v1.endpoints import auth as auth_endpoints
 from app.api.v1.endpoints import health
-from app.gateway.routes import admin_router as model_admin_router
-from app.gateway.routes import router as model_gateway_router
-from app.modules.agent.missions_routes import router as missions_router
+from app.modules.auth.router import router as auth_router
+from app.modules.cost.router import router as cost_router
+from app.modules.gateway.router import admin_router as model_admin_router
+from app.modules.gateway.router import router as model_gateway_router
+from app.modules.missions.router import router as missions_router
 from app.modules.agent.routes import router as agent_router
 
 api_router = APIRouter()
 
-# Health check endpoints
+# Health check
 api_router.include_router(health.router)
 
-# Identity & Authentication endpoints
-api_router.include_router(auth_endpoints.router)
-
-# Model Gateway endpoints
+# Domain Modules
+api_router.include_router(auth_router)
 api_router.include_router(model_gateway_router)
 api_router.include_router(model_admin_router)
-
-# Unified Autonomous Missions endpoints
 api_router.include_router(missions_router)
+api_router.include_router(cost_router)
 
-# Nemotron Autonomous Agent legacy/compatible endpoints
+# Agent Legacy / Direct compatibility
 api_router.include_router(agent_router)
