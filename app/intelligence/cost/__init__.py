@@ -2,12 +2,14 @@
 Token Tracking & Cost Analytics Package
 =======================================
 Real-time token counting, multi-model pricing calculation, budget guardrails,
-and persistent financial ledger for the Nemotron Agent Engine.
+persistent financial ledger, and SQL database repository for the Nemotron Agent Engine.
 """
 
 from app.intelligence.cost.budget_guard import BudgetGuard
 from app.intelligence.cost.ledger import CostLedger
+from app.intelligence.cost.models import CostRecord
 from app.intelligence.cost.pricing import CostCalculator
+from app.intelligence.cost.repository import CostRepository
 from app.intelligence.cost.schema import (
     CostAlertLevel,
     CostBudgetConfig,
@@ -25,6 +27,8 @@ __all__ = [
     "CostBudgetConfig",
     "CostCalculator",
     "CostLedger",
+    "CostRecord",
+    "CostRepository",
     "CostTracker",
     "LedgerSummary",
     "MissionCostReport",

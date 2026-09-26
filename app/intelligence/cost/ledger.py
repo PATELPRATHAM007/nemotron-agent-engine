@@ -1,7 +1,8 @@
 """
 Persistent Cost Ledger & Financial Audit Store
 ==============================================
-Records mission telemetry and spend audit trails to `.agent/memory/cost_ledger.json`.
+Dual-write architecture: records mission telemetry to both
+`.agent/memory/cost_ledger.json` (file backup) and the SQL database (primary store).
 Provides rollups for daily budgets, historical analytics, and savings reports.
 """
 
@@ -20,7 +21,12 @@ logger = get_logger(__name__)
 
 
 class CostLedger:
-    """Manages append-only persistent audit records for agent token and dollar expenditures."""
+    """Manages append-only persistent audit records for agent token and dollar expenditures.
+
+    Dual-write strategy:
+    1. Primary: SQL database via CostRepository (queryable, indexed, concurrent-safe)
+    2. Backup: JSON file at `.agent/memory/cost_ledger.json` (portable, human-readable)
+    """
 
     def __init__(self, workspace_root: str):
         self.workspace_root = os.path.abspath(workspace_root)
@@ -52,17 +58,57 @@ class CostLedger:
         except (OSError, TypeError, ValueError) as e:
             logger.error(f"Failed to save cost ledger: {e}")
 
-    def record_mission(self, report: MissionCostReport) -> None:
-        """Record a completed mission's financial and token report."""
+    def _save_to_db(self, report: MissionCostReport, model_engine: str = "nemotron-3-ultra") -> None:
+        """Persist report to the SQL database (primary store)."""
+        try:
+            from app.db.session import DatabaseService
+            from app.intelligence.cost.repository import CostRepository
+
+            session = DatabaseService.get_session()
+            try:
+                repo = CostRepository(session)
+                repo.save_record(report, model_engine=model_engine)
+            finally:
+                session.close()
+        except Exception as e:
+            # DB write failure should not crash the agent — JSON backup is the safety net
+            logger.warning(f"Failed to persist cost record to database: {e}")
+
+    def record_mission(
+        self, report: MissionCostReport, model_engine: str = "nemotron-3-ultra"
+    ) -> None:
+        """Record a completed mission's financial and token report (dual-write)."""
+        # 1. JSON file backup
         self._records.append(report)
         self._save()
+
+        # 2. SQL database primary store
+        self._save_to_db(report, model_engine=model_engine)
+
         logger.info(
             f"Ledger recorded mission {report.mission_id}: "
             f"{report.usage.total_tokens} tokens, ${report.total_cost_usd:.4f} USD"
         )
 
     def get_daily_spend(self, target_date: str | None = None) -> float:
-        """Calculate cumulative spend for a given day (format: YYYY-MM-DD)."""
+        """Calculate cumulative spend for a given day (format: YYYY-MM-DD).
+
+        Tries the database first, falls back to JSON records.
+        """
+        try:
+            from app.db.session import DatabaseService
+            from app.intelligence.cost.repository import CostRepository
+
+            session = DatabaseService.get_session()
+            try:
+                repo = CostRepository(session)
+                return repo.get_daily_spend(target_date)
+            finally:
+                session.close()
+        except Exception:
+            pass
+
+        # Fallback: JSON records
         date_prefix = target_date or datetime.fromtimestamp(
             time.time(), tz=timezone.utc
         ).strftime("%Y-%m-%d")
@@ -82,7 +128,25 @@ class CostLedger:
         return sorted(self._records, key=lambda x: x.timestamp, reverse=True)[:limit]
 
     def get_summary(self) -> LedgerSummary:
-        """Compute aggregated audit metrics across all recorded missions."""
+        """Compute aggregated audit metrics.
+
+        Tries the database first for accurate SQL aggregations,
+        falls back to in-memory JSON records.
+        """
+        try:
+            from app.db.session import DatabaseService
+            from app.intelligence.cost.repository import CostRepository
+
+            session = DatabaseService.get_session()
+            try:
+                repo = CostRepository(session)
+                return repo.get_summary()
+            finally:
+                session.close()
+        except Exception:
+            pass
+
+        # Fallback: JSON records
         total_tokens = sum(r.usage.total_tokens for r in self._records)
         total_spend = sum(r.total_cost_usd for r in self._records)
         total_saved = sum(r.estimated_savings_usd for r in self._records)

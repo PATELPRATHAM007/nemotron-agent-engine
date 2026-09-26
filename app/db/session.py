@@ -52,10 +52,27 @@ class DatabaseService:
             return False
 
     @classmethod
+    def init_db_schema(cls) -> None:
+        """Create all database tables if they do not exist."""
+        try:
+            import app.gateway.models  # noqa: F401
+            import app.intelligence.cost.models  # noqa: F401
+            import app.intelligence.missions.models  # noqa: F401
+            import app.security.models  # noqa: F401
+
+            Base.metadata.create_all(bind=cls.engine, checkfirst=True)
+            database_logger.info("Database schema initialized successfully.")
+        except Exception as exc:
+            database_logger.warning("Database schema auto-creation encountered error: %s", exc)
+
+    @classmethod
     def close(cls) -> None:
-        """Dispose of the connection pool."""
-        database_logger.info("Disposing database connection pool.")
-        cls.engine.dispose()
+        """Dispose of database engine connections on application shutdown."""
+        try:
+            cls.engine.dispose()
+            database_logger.info("Database engine disposed.")
+        except Exception as exc:
+            database_logger.warning("Error disposing database engine: %s", exc)
 
 
 def get_db() -> Generator[Session, None, None]:
