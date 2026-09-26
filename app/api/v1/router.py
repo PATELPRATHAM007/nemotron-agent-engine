@@ -6,7 +6,7 @@ from app.modules.cost.router import router as cost_router
 from app.modules.gateway.router import admin_router as model_admin_router
 from app.modules.gateway.router import router as model_gateway_router
 from app.modules.missions.router import router as missions_router
-from app.modules.agent.routes import router as agent_router
+from app.modules.agent.router import router as agent_router
 
 api_router = APIRouter()
 

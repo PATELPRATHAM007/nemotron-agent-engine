@@ -20,7 +20,15 @@ from app.gateway.models import (
     RegisteredModel,
 )
 from app.gateway.router import ModelRouter, ModelRoutingError, model_router
-from app.gateway.routes import admin_router, router
+
+
+def __getattr__(name: str):
+    if name in ("router", "admin_router"):
+        from app.modules.gateway.router import admin_router, router
+        if name == "router":
+            return router
+        return admin_router
+    raise AttributeError(f"module {__name__!r} has no attribute {name!r}")
 
 __all__ = [
     "ModelProvider",

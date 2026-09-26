@@ -12,26 +12,55 @@ from app.modules.cost.service import budget_guard, cost_ledger, cost_tracker
 
 async def get_cost_summary():
     """Retrieve aggregated token counts and costs."""
-    summary = cost_ledger.get_summary()
-    return {
-        "success": True,
-        "summary": summary.model_dump() if hasattr(summary, "model_dump") else summary,
-        "message": messages.LEDGER_FETCHED,
-    }
+    try:
+        from app.db.session import DatabaseService
+        from app.intelligence.cost import CostRepository
+
+        session = DatabaseService.get_session()
+        try:
+            repo = CostRepository(session)
+            return repo.get_summary().model_dump()
+        finally:
+            session.close()
+    except Exception:
+        summary = cost_ledger.get_summary()
+        return summary.model_dump() if hasattr(summary, "model_dump") else summary
 
 
 async def list_cost_records(
     limit: int = Query(50, ge=1, le=500),
 ):
     """List recent persistent cost reports from the ledger."""
-    records = cost_ledger.get_recent_missions(limit=limit)
-    return [r.model_dump() if hasattr(r, "model_dump") else r for r in records]
+    try:
+        from app.db.session import DatabaseService
+        from app.intelligence.cost import CostRepository
+
+        session = DatabaseService.get_session()
+        try:
+            repo = CostRepository(session)
+            return repo.get_recent_records(limit=limit)
+        finally:
+            session.close()
+    except Exception:
+        records = cost_ledger.get_recent_missions(limit=limit)
+        return [r.model_dump() if hasattr(r, "model_dump") else r for r in records]
 
 
 async def get_mission_cost(mission_id: str):
     """Get total cost and tokens for a specific mission."""
-    cost_info = cost_tracker.get_mission_cost(mission_id)
-    return {"mission_id": mission_id, "cost": cost_info}
+    try:
+        from app.db.session import DatabaseService
+        from app.intelligence.cost import CostRepository
+
+        session = DatabaseService.get_session()
+        try:
+            repo = CostRepository(session)
+            return repo.get_records_by_mission(mission_id)
+        finally:
+            session.close()
+    except Exception:
+        cost_info = cost_tracker.get_mission_cost(mission_id)
+        return cost_info
 
 
 async def check_budget(payload: BudgetCheckPayload):
