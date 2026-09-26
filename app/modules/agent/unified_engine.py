@@ -391,12 +391,29 @@ class UnifiedMissionEngine:
     def _classify_intent(self, text: str) -> str:
         """Classify user prompt into question, ambiguous, or complex engineering task."""
         lower = text.strip().lower()
-        if any(lower.startswith(q) for q in ["what", "how does", "why", "where is", "explain", "who", "tell me"]):
+
+        # 1. Common greetings, salutations & pleasantries
+        greetings = {
+            "hi", "hii", "hiii", "hello", "hey", "heyy", "hola",
+            "good morning", "good evening", "good afternoon", "good day",
+            "greetings", "howdy", "sup", "yo", "thanks", "thank you",
+            "ok", "okay", "bye", "goodbye",
+        }
+        words = lower.split()
+        if lower in greetings or (words and words[0] in greetings and len(words) <= 3):
             return "question"
-        if "?" in lower and len(lower.split()) < 15:
+
+        # 2. Informational questions
+        if any(lower.startswith(q) for q in ["what", "how", "why", "where", "explain", "who", "tell me", "can you explain", "describe", "is there", "are there"]):
             return "question"
+        if "?" in lower and len(words) < 20:
+            return "question"
+
+        # 3. Architectural choices / option comparisons
         if any(phrase in lower for phrase in ["which approach", "compare options", "what are the options", "improve the"]):
             return "ambiguous"
+
+        # 4. Action / engineering tasks
         return "complex"
 
     def _generate_plan(self, mission_id: str, goal: str) -> dict[str, Any]:
