@@ -141,6 +141,33 @@ class ContextBudgetExceededError(NemotronEngineError):
         )
 
 
+class CostBudgetExceededError(NemotronEngineError):
+    """Raised when an operation or mission exceeds financial cost boundaries."""
+
+    def __init__(
+        self,
+        message: str,
+        current_cost_usd: float = 0.0,
+        max_cost_usd: float = 1.0,
+        currency: str = "USD",
+    ):
+        self.current_cost_usd = current_cost_usd
+        self.max_cost_usd = max_cost_usd
+        self.currency = currency
+        super().__init__(
+            message=message,
+            error_code="ERR_COST_BUDGET_EXCEEDED",
+            component="cost_analytics",
+            http_status=402,  # Payment Required
+            details={
+                "current_cost_usd": self.current_cost_usd,
+                "max_cost_usd": self.max_cost_usd,
+                "currency": self.currency,
+            },
+            suggested_fix="Increase the mission/daily budget limit or optimize prompt token consumption.",
+        )
+
+
 class VerificationGateFailedError(NemotronEngineError):
     """Raised when an 8-Gate verification battery check fails."""
 

@@ -105,8 +105,27 @@ async def check_vllm_endpoint() -> bool:
             print(f"\n⚠️ Stream Warning: {content}")
 
     total_time = time.perf_counter() - t_start
+    tps = tokens_received / max(0.01, total_time)
     print(
-        f"\n\n✅ Stream Complete in {total_time:.2f}s ({tokens_received} tokens, {thoughts_received} thoughts)"
+        f"\n\n✅ Stream Complete in {total_time:.2f}s ({tokens_received} tokens, {thoughts_received} thoughts, {tps:.1f} tokens/sec)"
+    )
+
+    from app.intelligence.cost import CostCalculator, PricingMode, TokenUsageBreakdown
+
+    calc = CostCalculator()
+    sample_usage = TokenUsageBreakdown(
+        prompt_tokens=25,
+        completion_tokens=tokens_received,
+        thinking_tokens=thoughts_received,
+        total_tokens=25 + tokens_received + thoughts_received,
+    )
+    spot_cost = calc.calculate_cost(
+        sample_usage, duration_seconds=total_time, mode=PricingMode.GCP_SPOT
+    )
+    api_cost = calc.calculate_cost(sample_usage, mode=PricingMode.SERVERLESS_API)
+
+    print(
+        f"💰 Estimated Query Cost: ${spot_cost:.6f} (GCP Spot Amortized) | ${api_cost:.6f} (Serverless API)"
     )
     return True
 

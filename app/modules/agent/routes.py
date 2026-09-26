@@ -66,3 +66,23 @@ async def get_agent_config():
         gemini_model=settings.GEMINI_MODEL_NAME,
         gemini_active=bool(settings.GEMINI_API_KEY),
     )
+
+
+@router.get("/cost/summary")
+async def get_cost_summary():
+    """Return aggregated token and expenditure metrics across all missions."""
+    from app.intelligence.cost import CostLedger
+
+    ledger = CostLedger(workspace_root=".")
+    return ledger.get_summary().model_dump()
+
+
+@router.get("/cost/ledger")
+async def get_cost_ledger(
+    limit: int = Query(10, description="Max historical missions to retrieve"),
+):
+    """Return historical mission cost records."""
+    from app.intelligence.cost import CostLedger
+
+    ledger = CostLedger(workspace_root=".")
+    return [r.model_dump() for r in ledger.get_recent_missions(limit=limit)]

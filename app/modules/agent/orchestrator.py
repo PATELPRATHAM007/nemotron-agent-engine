@@ -68,6 +68,12 @@ class MissionOrchestrator:
         self.multi_stage_planner = MultiStagePlanner(self.workspace_root)
         self.database_safety = DatabaseSafetyGuard()
 
+        # Cost & Budget Telemetry
+        from app.intelligence.cost import BudgetGuard, CostLedger
+
+        self.cost_ledger = CostLedger(self.workspace_root)
+        self.budget_guard = BudgetGuard()
+
         # State
         self.state: AgentState = AgentState.IDLE
         self.active_scope: TaskScope | None = None
@@ -102,8 +108,14 @@ class MissionOrchestrator:
         Execute full mission FSM and stream events.
         """
         from app.core.permissions import PermissionLevel
+        from app.intelligence.cost import CostTracker
 
         self.debug_attempts = 0
+        tracker = CostTracker()
+        tracker.record_prompt(f"{goal} {feature_context}", role="Planner")
+        self.budget_guard.check_mission_budget(
+            tracker, daily_accumulated_spend=self.cost_ledger.get_daily_spend()
+        )
         yield self.transition_to(AgentState.PLANNING, f"Starting mission {mission_id}")
 
         # -------------------------------------------------------------
@@ -262,11 +274,28 @@ class MissionOrchestrator:
                 yield self.transition_to(
                     AgentState.COMPLETED, f"Mission {mission_id} finished successfully"
                 )
+                cost_report = tracker.generate_report(
+                    mission_id=mission_id, target_feature=self.plan.target_feature
+                )
+                self.cost_ledger.record_mission(cost_report)
+                yield {
+                    "type": "mission_cost_report",
+                    "report": cost_report.model_dump(),
+                }
                 return
 
             # Verification Failed -> Debugging Loop
             self.debug_attempts += 1
             if self.debug_attempts > self.max_auto_fix_attempts:
+                cost_report = tracker.generate_report(
+                    mission_id=mission_id,
+                    target_feature=self.plan.target_feature if self.plan else "general",
+                )
+                self.cost_ledger.record_mission(cost_report)
+                yield {
+                    "type": "mission_cost_report",
+                    "report": cost_report.model_dump(),
+                }
                 yield {
                     "type": "debug_limit_exceeded",
                     "attempts": self.debug_attempts - 1,
