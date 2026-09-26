@@ -170,6 +170,37 @@ By taking advantage of Google Cloud's **$300 Free Trial Credit** and **Spot GPU 
 
 ---
 
+### 📋 Prerequisites & Unlocking GPU Quotas on Google Cloud
+
+Before running the automated launcher, Google Cloud accounts (especially new accounts with the **$300 / ₹28,000 Free Trial Credit**) must unlock GPU compute resources.
+
+#### 1. Upgrade from Free Trial Evaluator to Full Account
+By default, Google Cloud restricts high-end non-TPU hardware accelerators (NVIDIA A100, H100, L4) on free-trial evaluator accounts to prevent automated abuse:
+* **Will you be charged immediately?** **NO.**
+* Under [Google Cloud's Official Policy](https://cloud.google.com/free/docs/gcp-free-tier#how-to-upgrade), clicking **Upgrade** keeps **100% of your remaining trial credit active** until expiration. You are only billed if you exhaust the full credit and continue running instances.
+
+**Steps to Upgrade in Google Cloud Console:**
+1. Navigate to the [Google Cloud Billing Overview](https://console.cloud.google.com/billing).
+2. Select your active billing account (e.g., `My Billing Account`).
+3. In the top-right corner of the top banner (`Free trial status: ... credit and ... days remaining`), click the blue **[Upgrade]** button.
+4. **Payment Method Verification (RBI / 3D-Secure)**:
+   * If a red banner appears stating: *"To avoid losing access to Google Cloud services, an administrator must verify this account"*, click **[Verify account]**.
+   * Complete the standard 3D-Secure card verification (e.g. ₹2 refundable micro-auth) required by banking regulations.
+
+#### 2. Request GPU Quota for NVIDIA A100
+New Google Cloud projects have a default quota of `0` for A100 GPUs:
+1. Navigate to [IAM & Admin > Quotas & System Limits](https://console.cloud.google.com/iam-admin/quotas?project=netron-3-models).
+2. In the filter bar, search for:
+   * **`GPUs (all regions)`**
+   * **`NVIDIA A100 GPUs`** (or **`Preemptible/Spot NVIDIA A100 GPUs`**)
+3. Select the quota for your target region (e.g., `us-central1`), click **Edit Quota** (or **Request Increase**).
+4. Enter requested limit: **`8`**.
+5. In the business justification box, enter:  
+   *`"Academic & open-source LLM inference research with NVIDIA Nemotron 3 Ultra 550B LatentMoE."`*
+6. Submit the request. Approvals are typically processed by Google's automated quota evaluation engine.
+
+---
+
 ### Step 1: Install & Authenticate Google Cloud CLI
 
 On your local Mac/PC:
@@ -267,6 +298,18 @@ This tests:
 2. Live streaming token generation and Chain-of-Thought thinking tokens.
 3. Real-time generation speed (tokens/sec).
 4. Amortized query cost calculation.
+
+---
+
+### 🛠️ Google Cloud Troubleshooting & Error Resolution
+
+| Error Message Observed | Root Cause | Automated Resolution |
+| :--- | :--- | :--- |
+| `Your billing account is currently in the free tier where non-TPU accelerators are not available` | Account is in evaluator trial mode where GPUs are locked. | Navigate to [Google Cloud Billing](https://console.cloud.google.com/billing) and click the blue **[Upgrade]** button at the top banner. Trial credits remain 100% active. |
+| `To avoid losing access to Google Cloud services, an administrator must verify this account` | Banking regulation (e.g. RBI 3DS) payment method verification pending. | Click **[Verify account]** on the Billing Overview page and complete the ₹2 refundable micro-auth. |
+| `The resource '.../common-cu121-debian-11' was not found` | Google deprecated Debian 11 deep learning images. | Automatically resolved in `launch_gcp_nemotron_spot.sh` by using `common-cu129-ubuntu-2204-nvidia-580` (Ubuntu 22.04, CUDA 12.9, NVIDIA 580 drivers). |
+| `The selected machine type(a2-ultragpu-8g) should have [8] local SSD(s)` | `a2-ultragpu-8g` requires exactly 8 NVMe SSDs (3 TB RAID-0). | Automatically resolved in `launch_gcp_nemotron_spot.sh` by dynamically attaching 8x Local NVMe SSDs. |
+| `Quota 'NVIDIA_A100_GPUS' exceeded. Limit: 0.0 in region us-central1` | New GCP accounts start with `0` GPU quota. | Request a quota increase of `8` GPUs for `us-central1` in [IAM & Admin > Quotas](https://console.cloud.google.com/iam-admin/quotas). |
 
 ---
 
