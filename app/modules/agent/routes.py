@@ -7,12 +7,17 @@ thought tokens, tool calls, and diffs to the Next.js frontend.
 
 import json
 import uuid
+
 from fastapi import APIRouter, Query
 from sse_starlette.sse import EventSourceResponse
 
-from app.modules.agent.engine import agent_engine
-from app.modules.agent.schemas import MissionRequest, MissionResponse, AgentConfigResponse
 from app.core.config import settings
+from app.modules.agent.engine import agent_engine
+from app.modules.agent.schemas import (
+    AgentConfigResponse,
+    MissionRequest,
+    MissionResponse,
+)
 
 router = APIRouter(prefix="/agent", tags=["Agent"])
 

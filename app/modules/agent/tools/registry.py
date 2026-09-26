@@ -5,12 +5,12 @@ Defines the tool calling specifications in OpenAI function format
 and dispatches execution to sandboxed tool implementations.
 """
 
-from typing import Dict, Any, List
-from app.modules.agent.tools.terminal import terminal_tool
+from typing import Any
+
 from app.modules.agent.tools.filesystem import filesystem_tool
+from app.modules.agent.tools.terminal import terminal_tool
 
-
-TOOLS_SCHEMA: List[Dict[str, Any]] = [
+TOOLS_SCHEMA: list[dict[str, Any]] = [
     {
         "type": "function",
         "function": {
@@ -91,7 +91,7 @@ TOOLS_SCHEMA: List[Dict[str, Any]] = [
 ]
 
 
-async def dispatch_tool(tool_name: str, arguments: Dict[str, Any]) -> Dict[str, Any]:
+async def dispatch_tool(tool_name: str, arguments: dict[str, Any]) -> dict[str, Any]:
     """Execute the tool by name and return structured observations."""
     if tool_name == "execute_bash":
         return await terminal_tool.execute(

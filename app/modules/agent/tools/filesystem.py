@@ -4,23 +4,23 @@ Filesystem & Code Diff Tool for Nemotron 3 Ultra Agents
 
 import difflib
 import os
-from typing import Dict, Any, List
+from typing import Any
 
 
 class FilesystemTool:
     """Provides file read, write, directory listing, and git-style unified diff generation."""
 
-    def read_file(self, filepath: str) -> Dict[str, Any]:
+    def read_file(self, filepath: str) -> dict[str, Any]:
         if not os.path.exists(filepath):
             return {"success": False, "error": f"File not found: {filepath}"}
         try:
             with open(filepath, "r", encoding="utf-8", errors="replace") as f:
                 content = f.read()
             return {"success": True, "filepath": filepath, "content": content}
-        except Exception as e:
+        except OSError as e:
             return {"success": False, "error": str(e)}
 
-    def write_file(self, filepath: str, content: str) -> Dict[str, Any]:
+    def write_file(self, filepath: str, content: str) -> dict[str, Any]:
         try:
             os.makedirs(os.path.dirname(os.path.abspath(filepath)), exist_ok=True)
             old_content = ""
@@ -47,25 +47,27 @@ class FilesystemTool:
                 "bytes_written": len(content.encode("utf-8")),
                 "diff": diff,
             }
-        except Exception as e:
+        except OSError as e:
             return {"success": False, "error": str(e)}
 
-    def list_dir(self, directory: str) -> Dict[str, Any]:
+    def list_dir(self, directory: str) -> dict[str, Any]:
         if not os.path.exists(directory):
             return {"success": False, "error": f"Directory not found: {directory}"}
         try:
-            entries: List[Dict[str, Any]] = []
+            entries: list[dict[str, Any]] = []
             for item in os.listdir(directory):
                 full_path = os.path.join(directory, item)
                 entries.append(
                     {
                         "name": item,
                         "is_dir": os.path.isdir(full_path),
-                        "size": os.path.getsize(full_path) if os.path.isfile(full_path) else 0,
+                        "size": os.path.getsize(full_path)
+                        if os.path.isfile(full_path)
+                        else 0,
                     }
                 )
             return {"success": True, "directory": directory, "entries": entries}
-        except Exception as e:
+        except OSError as e:
             return {"success": False, "error": str(e)}
 
 

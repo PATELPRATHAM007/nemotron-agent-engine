@@ -9,8 +9,11 @@ Provides async streaming communication with:
 """
 
 import json
-from typing import AsyncGenerator, Dict, Any, List, Optional
+from collections.abc import AsyncGenerator
+from typing import Any
+
 import httpx
+
 from app.core.config import settings
 from app.core.logging_config import get_logger
 
@@ -29,13 +32,13 @@ class LLMGateway:
 
     async def stream_nemotron_reasoning(
         self,
-        messages: List[Dict[str, str]],
+        messages: list[dict[str, str]],
         temperature: float = 0.6,
         max_tokens: int = 8192,
-        tools: Optional[List[Dict[str, Any]]] = None,
-    ) -> AsyncGenerator[Dict[str, Any], None]:
+        tools: list[dict[str, Any]] | None = None,
+    ) -> AsyncGenerator[dict[str, Any], None]:
         """Stream reasoning tokens and tool calls from Nemotron 3 Ultra via SSE."""
-        payload: Dict[str, Any] = {
+        payload: dict[str, Any] = {
             "model": self.nemotron_model,
             "messages": messages,
             "temperature": temperature,
@@ -60,10 +63,14 @@ class LLMGateway:
 
         async with httpx.AsyncClient(timeout=180.0) as client:
             try:
-                async with client.stream("POST", url, json=payload, headers=headers) as response:
+                async with client.stream(
+                    "POST", url, json=payload, headers=headers
+                ) as response:
                     if response.status_code != 200:
                         error_body = await response.aread()
-                        logger.error(f"Nemotron API error ({response.status_code}): {error_body.decode('utf-8', 'ignore')}")
+                        logger.error(
+                            f"Nemotron API error ({response.status_code}): {error_body.decode('utf-8', 'ignore')}"
+                        )
                         yield {
                             "type": "error",
                             "content": f"Nemotron API returned status {response.status_code}: {error_body.decode('utf-8', 'ignore')}",
@@ -83,7 +90,9 @@ class LLMGateway:
                             delta = choice.get("delta", {})
 
                             # 1. Check for thinking / reasoning tokens
-                            reasoning_chunk = delta.get("reasoning_content") or delta.get("thinking")
+                            reasoning_chunk = delta.get(
+                                "reasoning_content"
+                            ) or delta.get("thinking")
                             if reasoning_chunk:
                                 yield {
                                     "type": "thought",
@@ -111,7 +120,9 @@ class LLMGateway:
 
             except httpx.ConnectError:
                 # If local vLLM isn't running, yield simulated response or fallback
-                logger.warning(f"Could not connect to Nemotron at {url}. Yielding standby status.")
+                logger.warning(
+                    f"Could not connect to Nemotron at {url}. Yielding standby status."
+                )
                 yield {
                     "type": "warning",
                     "content": f"[Standby] Nemotron 3 Ultra endpoint at {url} is initializing or offline.",

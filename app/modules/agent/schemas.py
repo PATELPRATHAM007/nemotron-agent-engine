@@ -2,13 +2,16 @@
 Pydantic Schemas for Agent Module
 """
 
-from typing import Optional, Dict, Any, List
 from pydantic import BaseModel, Field
 
 
 class MissionRequest(BaseModel):
-    goal: str = Field(..., description="The objective for the autonomous agent to solve")
-    max_iterations: Optional[int] = Field(15, ge=1, le=50, description="Max autonomous reasoning loops")
+    goal: str = Field(
+        ..., description="The objective for the autonomous agent to solve"
+    )
+    max_iterations: int | None = Field(
+        15, ge=1, le=50, description="Max autonomous reasoning loops"
+    )
 
 
 class MissionResponse(BaseModel):

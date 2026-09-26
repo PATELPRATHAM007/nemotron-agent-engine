@@ -4,7 +4,7 @@ Sandboxed Terminal Execution Tool for Nemotron 3 Ultra Agents
 
 import asyncio
 import os
-from typing import Dict, Any
+from typing import Any
 
 
 class TerminalTool:
@@ -13,7 +13,9 @@ class TerminalTool:
     def __init__(self, default_cwd: str = "/tmp"):
         self.default_cwd = default_cwd
 
-    async def execute(self, command: str, cwd: str = None, timeout: int = 30) -> Dict[str, Any]:
+    async def execute(
+        self, command: str, cwd: str | None = None, timeout: int = 30
+    ) -> dict[str, Any]:
         target_dir = cwd or self.default_cwd
         os.makedirs(target_dir, exist_ok=True)
 
@@ -26,14 +28,18 @@ class TerminalTool:
             )
 
             try:
-                stdout_bytes, stderr_bytes = await asyncio.wait_for(proc.communicate(), timeout=timeout)
+                stdout_bytes, stderr_bytes = await asyncio.wait_for(
+                    proc.communicate(), timeout=timeout
+                )
                 stdout = stdout_bytes.decode("utf-8", "replace")
                 stderr = stderr_bytes.decode("utf-8", "replace")
                 exit_code = proc.returncode
 
                 # Truncate if output exceeds 8000 chars to protect context window
                 if len(stdout) > 8000:
-                    stdout = stdout[:8000] + "\n...[Output truncated to 8,000 characters]..."
+                    stdout = (
+                        stdout[:8000] + "\n...[Output truncated to 8,000 characters]..."
+                    )
                 if len(stderr) > 4000:
                     stderr = stderr[:4000] + "\n...[Stderr truncated]..."
 
@@ -55,12 +61,12 @@ class TerminalTool:
                     "stderr": f"Command timed out after {timeout} seconds.",
                 }
 
-        except Exception as e:
+        except OSError as e:
             return {
                 "success": False,
                 "exit_code": -1,
                 "stdout": "",
-                "stderr": f"Execution error: {str(e)}",
+                "stderr": f"Execution error: {e!s}",
             }
 
 

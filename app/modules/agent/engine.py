@@ -8,10 +8,12 @@ Yields structured events for real-time Server-Sent Events (SSE) streaming.
 
 import json
 import uuid
-from typing import AsyncGenerator, Dict, Any, List
+from collections.abc import AsyncGenerator
+from typing import Any
+
 from app.core.llm_gateway import llm_gateway
-from app.modules.agent.tools.registry import TOOLS_SCHEMA, dispatch_tool
 from app.core.logging_config import get_logger
+from app.modules.agent.tools.registry import TOOLS_SCHEMA, dispatch_tool
 
 logger = get_logger(__name__)
 
@@ -35,7 +37,7 @@ class AgentEngine:
         mission_id: str,
         goal: str,
         max_iterations: int = 15,
-    ) -> AsyncGenerator[Dict[str, Any], None]:
+    ) -> AsyncGenerator[dict[str, Any], None]:
         """Run an autonomous mission and yield real-time SSE event objects."""
         logger.info(f"Starting mission {mission_id}: {goal[:100]}")
 
@@ -46,7 +48,7 @@ class AgentEngine:
             "goal": goal,
         }
 
-        messages: List[Dict[str, str]] = [
+        messages: list[dict[str, str]] = [
             {"role": "system", "content": SYSTEM_PROMPT},
             {"role": "user", "content": goal},
         ]
@@ -61,8 +63,7 @@ class AgentEngine:
             }
 
             accumulated_content = ""
-            current_tool_call: Dict[str, Any] = {}
-            tool_calls_detected: List[Dict[str, Any]] = []
+            tool_calls_detected: list[dict[str, Any]] = []
 
             # 1. Stream Nemotron reasoning & token generation
             async for chunk in llm_gateway.stream_nemotron_reasoning(
@@ -101,7 +102,9 @@ class AgentEngine:
                         if func.get("name"):
                             tool_calls_detected[idx]["name"] = func.get("name")
                         if func.get("arguments"):
-                            tool_calls_detected[idx]["arguments"] += func.get("arguments")
+                            tool_calls_detected[idx]["arguments"] += func.get(
+                                "arguments"
+                            )
 
                 elif chunk_type == "warning" or chunk_type == "error":
                     yield chunk
