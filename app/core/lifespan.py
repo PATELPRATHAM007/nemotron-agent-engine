@@ -22,7 +22,16 @@ async def lifespan(app: FastAPI):
     # 1. Structured startup report
     log_startup_report(app)
 
-    # 2. Ready notification
+    # 2. Ensure database tables exist (cost_records, missions, security, gateway)
+    try:
+        from app.db.session import DatabaseService as DBService
+
+        DBService.init_db_schema()
+        system_logger.info("Database tables verified/created (missions, security, gateway, cost_records).")
+    except Exception as e:
+        system_logger.warning(f"Could not initialize database tables: {e}")
+
+    # 3. Ready notification
     log_ready(startup_began_at)
 
     yield

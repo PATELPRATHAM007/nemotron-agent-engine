@@ -29,9 +29,9 @@ class LLMGateway:
         self.nemotron_api_key = settings.NEMOTRON_API_KEY
         self.nemotron_model = settings.NEMOTRON_MODEL_NAME
         self.gemini_api_key = settings.GEMINI_API_KEY
-        gemini_model = settings.GEMINI_MODEL or settings.GEMINI_MODEL_NAME
+        gemini_model = settings.GEMINI_MODEL or settings.GEMINI_MODEL_NAME or "gemini-3.1-flash-lite"
         if gemini_model in ("gemini-2.5-flash", "gemini-3.6-flash"):
-            gemini_model = "gemini-3.8-flash"
+            gemini_model = "gemini-3.1-flash-lite"
         self.gemini_model = gemini_model
 
     async def stream_nemotron_reasoning(
@@ -41,7 +41,28 @@ class LLMGateway:
         max_tokens: int = 8192,
         tools: list[dict[str, Any]] | None = None,
     ) -> AsyncGenerator[dict[str, Any], None]:
-        """Stream reasoning tokens and tool calls from Nemotron 3 Ultra via SSE."""
+        """Stream reasoning tokens and tool calls from Nemotron 3 Ultra via SSE with resilient failover."""
+        # 1. Fast detection: if NEMOTRON_API_BASE points to our local app port (e.g. localhost:8000)
+        # where no vLLM server is running, failover immediately without making a 404 self-call
+        is_local_self = any(
+            host in self.nemotron_base_url
+            for host in ("localhost:8000", "127.0.0.1:8000", "0.0.0.0:8000")
+        )
+
+        if is_local_self:
+            if self.gemini_api_key:
+                logger.info("Nemotron local cluster on standby; streaming via Tier-1 Gemini...")
+                async for chunk in self.stream_gemini_reasoning(
+                    messages, temperature, max_tokens
+                ):
+                    yield chunk
+                return
+
+            thought, content = self._generate_standby_response(messages)
+            yield {"type": "thought", "content": thought}
+            yield {"type": "token", "content": content}
+            return
+
         payload: dict[str, Any] = {
             "model": self.nemotron_model,
             "messages": messages,
@@ -65,7 +86,8 @@ class LLMGateway:
 
         url = f"{self.nemotron_base_url}/chat/completions"
 
-        async with httpx.AsyncClient(timeout=180.0) as client:
+        # 4.0s connect timeout prevents long hangs if the remote GPU is offline
+        async with httpx.AsyncClient(timeout=httpx.Timeout(120.0, connect=4.0)) as client:
             try:
                 async with client.stream(
                     "POST", url, json=payload, headers=headers
@@ -75,7 +97,7 @@ class LLMGateway:
                         logger.warning(
                             f"Nemotron API returned status {response.status_code}: {error_body.decode('utf-8', 'ignore')}"
                         )
-                        # Check for Tier-1 Gemini streaming fallback
+                        # Transparent failover without emitting raw error chunk to user
                         if self.gemini_api_key:
                             logger.info("Failing over to Tier-1 Gemini streaming...")
                             async for chunk in self.stream_gemini_reasoning(
@@ -84,7 +106,6 @@ class LLMGateway:
                                 yield chunk
                             return
 
-                        # Intelligent local standby responder
                         thought, content = self._generate_standby_response(messages)
                         yield {"type": "thought", "content": thought}
                         yield {"type": "token", "content": content}
@@ -205,7 +226,11 @@ class LLMGateway:
         self, contents: list[dict[str, Any]], max_tokens: int, temperature: float
     ) -> str | None:
         """Call generateContent across candidate models with high reliability."""
-        for candidate in [self.gemini_model, "gemini-flash-latest", "gemini-3.8-flash"]:
+        candidate_models = [self.gemini_model, "gemini-3.1-flash-lite", "gemini-3.5-flash-lite", "gemini-flash-latest"]
+        seen = set()
+        candidates = [c for c in candidate_models if not (c in seen or seen.add(c))]
+
+        for candidate in candidates:
             url = f"https://generativelanguage.googleapis.com/v1beta/models/{candidate}:generateContent?key={self.gemini_api_key}"
             payload = {
                 "contents": contents,
@@ -241,12 +266,9 @@ class LLMGateway:
         if not self.gemini_api_key:
             return
 
-        yield {
-            "type": "thought",
-            "content": f"Routing query to Tier-1 Fast Triage Engine ({self.gemini_model})...\nGenerating streaming response...",
-        }
-
-        url = f"https://generativelanguage.googleapis.com/v1beta/models/{self.gemini_model}:streamGenerateContent?key={self.gemini_api_key}&alt=sse"
+        candidate_models = [self.gemini_model, "gemini-3.1-flash-lite", "gemini-3.5-flash-lite", "gemini-flash-latest"]
+        seen = set()
+        candidates = [c for c in candidate_models if not (c in seen or seen.add(c))]
 
         contents = []
         for m in messages:
@@ -264,78 +286,69 @@ class LLMGateway:
             },
         }
 
+        yield {
+            "type": "thought",
+            "content": f"Routing query to Tier-1 Fast Triage Engine ({candidates[0]})...\nGenerating streaming response...",
+        }
+
         received_any_token = False
-
         async with httpx.AsyncClient(timeout=60.0) as client:
-            try:
-                async with client.stream("POST", url, json=payload) as response:
-                    if response.status_code == 200:
-                        async for line in response.aiter_lines():
-                            if not line or not line.startswith("data: "):
-                                continue
-                            data_str = line[6:].strip()
-                            try:
-                                data = json.loads(data_str)
-                                candidates = data.get("candidates", [])
-                                if candidates:
-                                    parts = (
-                                        candidates[0]
-                                        .get("content", {})
-                                        .get("parts", [])
-                                    )
-                                    for p in parts:
-                                        text_chunk = p.get("text", "")
-                                        if text_chunk:
-                                            received_any_token = True
-                                            yield {
-                                                "type": "token",
-                                                "content": text_chunk,
-                                            }
-                            except json.JSONDecodeError:
-                                continue
-
-                    if not received_any_token:
-                        logger.warning(
-                            f"Gemini SSE streaming did not yield tokens (status {response.status_code}). Triggering resilient fallback..."
-                        )
-                        fallback_text = await self._generate_gemini_content(
-                            contents, max_tokens, temperature
-                        )
-                        if fallback_text:
-                            words = fallback_text.split(" ")
-                            for i, word in enumerate(words):
-                                sep = " " if i < len(words) - 1 else ""
-                                yield {
-                                    "type": "token",
-                                    "content": word + sep,
-                                }
-                                await asyncio.sleep(0.015)
-                            return
+            for model_name in candidates:
+                url = f"https://generativelanguage.googleapis.com/v1beta/models/{model_name}:streamGenerateContent?key={self.gemini_api_key}&alt=sse"
+                try:
+                    async with client.stream("POST", url, json=payload) as response:
+                        if response.status_code == 200:
+                            async for line in response.aiter_lines():
+                                if not line or not line.startswith("data: "):
+                                    continue
+                                data_str = line[6:].strip()
+                                try:
+                                    data = json.loads(data_str)
+                                    stream_candidates = data.get("candidates", [])
+                                    if stream_candidates:
+                                        parts = (
+                                            stream_candidates[0]
+                                            .get("content", {})
+                                            .get("parts", [])
+                                        )
+                                        for p in parts:
+                                            text_chunk = p.get("text", "")
+                                            if text_chunk:
+                                                received_any_token = True
+                                                yield {
+                                                    "type": "token",
+                                                    "content": text_chunk,
+                                                }
+                                except json.JSONDecodeError:
+                                    continue
+                            if received_any_token:
+                                return
                         else:
-                            thought, content = self._generate_standby_response(messages)
-                            yield {"type": "thought", "content": thought}
-                            yield {"type": "token", "content": content}
-                            return
+                            logger.warning(
+                                f"Gemini model {model_name} returned status {response.status_code}. Trying next candidate..."
+                            )
+                except Exception as e:
+                    logger.warning(f"Error streaming from {model_name}: {e}. Trying next candidate...")
 
-            except Exception as e:
-                logger.warning(f"Error during Gemini streaming: {e}. Triggering fallback...")
-                fallback_text = await self._generate_gemini_content(
-                    contents, max_tokens, temperature
-                )
-                if fallback_text:
-                    words = fallback_text.split(" ")
-                    for i, word in enumerate(words):
-                        sep = " " if i < len(words) - 1 else ""
-                        yield {
-                            "type": "token",
-                            "content": word + sep,
-                        }
-                        await asyncio.sleep(0.015)
-                    return
-
+        if not received_any_token:
+            fallback_text = await self._generate_gemini_content(
+                contents, max_tokens, temperature
+            )
+            if fallback_text:
+                words = fallback_text.split(" ")
+                for i, word in enumerate(words):
+                    sep = " " if i < len(words) - 1 else ""
+                    yield {
+                        "type": "token",
+                        "content": word + sep,
+                    }
+                    await asyncio.sleep(0.015)
+                return
+            else:
                 thought, content = self._generate_standby_response(messages)
                 yield {"type": "thought", "content": thought}
                 yield {"type": "token", "content": content}
+
 
 
     async def run_gemini_fast_triage(self, prompt: str) -> str:
