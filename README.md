@@ -22,9 +22,12 @@
    - [Why Nemotron 3 Ultra is Built for Agents](#why-nemotron-3-ultra-is-built-for-agents)
    - [Technical Specifications & Architecture](#technical-specifications--architecture)
    - [Multi-Tier Dual-Engine Routing](#multi-tier-dual-engine-routing)
+   - [The 4 Frontier Agent Workflows](#the-4-frontier-agent-workflows)
 3. [End-to-End System Topology](#-end-to-end-system-topology)
    - [High-Level Architectural Diagram](#high-level-architectural-diagram)
    - [The Autonomous Mission Lifecycle](#the-autonomous-mission-lifecycle)
+   - [29 Required Engineering Disciplines & Architectural Mapping](#29-required-engineering-disciplines--architectural-mapping)
+   - [Architectural Evaluation Across 7 Engineering Lenses](#architectural-evaluation-across-7-engineering-lenses)
 4. [Deep-Dive: Core Subsystems](#-deep-dive-core-subsystems)
    - [Subsystem 1: Deterministic AST & Invariant Code Fingerprinting](#subsystem-1-deterministic-ast--invariant-code-fingerprinting)
    - [Subsystem 2: Multi-Layer Repository Knowledge Graph & Feature Mapping](#subsystem-2-multi-layer-repository-knowledge-graph--feature-mapping)
@@ -158,6 +161,41 @@ flowchart LR
     B -->|"Batch Enterprise Private Execution"| E["GCP Spot GPU Cluster (vLLM)<br>(8x A100 80GB • Auto-Shutdown)"]
 ```
 
+### The 4 Frontier Agent Workflows
+
+Nemotron 3 Ultra is uniquely capable across four high-value enterprise engineering workflows:
+
+```mermaid
+graph TD
+    subgraph W1 ["1. Autonomous Coding & Repo Engineering"]
+        Task["User Task / Feature / Bug"] --> Plan["Nemotron Repo Plan (Phases A-H)"]
+        Plan --> Diff["Surgical Code Diffs"]
+        Diff --> Sandbox["Sandboxed Test Runner"]
+        Sandbox -->|Tests Fail| Debug["Nemotron Auto-Debug (<= 3 tries)"]
+        Debug --> Sandbox
+        Sandbox -->|Tests Pass| PR["Git Commit & Clean PR"]
+    end
+
+    subgraph W2 ["2. High-Stakes 1M-Token RAG"]
+        Docs["Dozens of Technical Specs & PDFs"] --> Ingest["Dense & Lexical Indexing"]
+        Ingest --> Retrieve["Top-K + 1M Direct Context"]
+        Retrieve --> Synthesis["Nemotron Deep Cross-Doc Reasoning"]
+        Synthesis --> Report["Fact-Checked Architecture Synthesis"]
+    end
+```
+
+1. **Autonomous Software Engineering & Refactoring Agent**:
+   - Takes an issue description or feature request, analyzes the entire Git repository, proposes surgical file modifications, runs tests in a sandbox, analyzes stack traces, and self-corrects until tests pass.
+   - *Nemotron Superpower*: 1M context lets it hold the AST, dependencies, and full codebase architecture simultaneously without forgetting context or hallucinating interfaces.
+2. **Deep Research & High-Stakes 1M-Token RAG**:
+   - Ingests hundreds of financial filings, legal contracts, or technical architecture specs.
+   - *Nemotron Superpower*: Traditional RAG is limited to small 2k–4k chunks, losing cross-document context. Nemotron 3 Ultra feeds up to **1,000,000 tokens directly into active reasoning**, allowing it to identify subtle contradictions and cross-cutting dependencies across disparate files.
+3. **Autonomous Browser & Sandboxed Tool-Calling Agent**:
+   - *Workflow*: Goal $\rightarrow$ Task Decomposition $\rightarrow$ Tool Call (Search, SQL, Terminal, AST, Git) $\rightarrow$ Observe Result $\rightarrow$ Verify Completion $\rightarrow$ Next Action.
+   - *Nemotron Superpower*: Native reasoning loops that detect tool failures (e.g., API 429 rate limit or schema mismatch) and dynamically reroute to alternate tools.
+4. **Hierarchical Multi-Agent Swarm**:
+   - Nemotron 3 Ultra serves as the **Executive Planner**, delegating sub-tasks to specialized worker personas (Planner, Reviewer, Coder, Tester, Debugger).
+
 ---
 
 ## 🏛️ End-to-End System Topology
@@ -236,6 +274,67 @@ sequenceDiagram
         end
     end
 ```
+
+### 29 Required Engineering Disciplines & Architectural Mapping
+
+The engine directly addresses all 29 core engineering capabilities required for enterprise-grade autonomous software engineering:
+
+| # | Required Discipline | Subsystem / Component | Implementation Strategy & Guarantees |
+| :---: | :--- | :--- | :--- |
+| **1** | **Repository discovery** | `app/modules/intelligence/indexing/ast_parser.py` | Directory walker, file type classification, ignore lists |
+| **2** | **Repository indexing** | `app/modules/intelligence/indexing/symbol_extractor.py` | Incremental catalog, file/AST hash cache with $O(1)$ lookups |
+| **3** | **AST & symbol analysis** | `app/modules/intelligence/indexing/ast_parser.py` | Python AST visitor, classes, methods, routes, calls |
+| **4** | **Dependency analysis** | `app/modules/intelligence/indexing/import_resolver.py` | Absolute & relative resolver, internal vs third-party packages |
+| **5** | **Feature discovery** | `app/modules/intelligence/graph/feature_mapper.py` | Route-to-service clustering and architectural boundary detection |
+| **6** | **Feature knowledge graphs** | `app/modules/intelligence/graph/repo_graph.py` | 8 node layers, 11 edge kinds, feature subgraph extraction |
+| **7** | **Repository memory** | `app/modules/intelligence/memory/memory_store.py` | Persistent lessons with adaptive confidence scoring (+0.1 / -0.2) |
+| **8** | **Hybrid retrieval** | `app/modules/intelligence/context/ranker.py` | Proximity + exact symbol + semantic + lexical ranker |
+| **9** | **Context engineering** | `app/modules/intelligence/context/budget_manager.py` | Strict $\le 32\text{k}$ ceiling, 4-tier progressive hierarchy |
+| **10**| **Coding-style discovery** | `app/modules/constitution/` & rules | Conventional pattern detection vs legacy tech debt |
+| **11**| **Project rules & skills** | `skills/` & `app/modules/constitution/` | General skills (`skills/`) vs repo memory (`.agent/`) |
+| **12**| **Task analysis** | `app/modules/agent/roles/planner.py` | Goal $\rightarrow$ Feature $\rightarrow$ Files $\rightarrow$ Scope Lock |
+| **13**| **Impact analysis** | `app/modules/intelligence/impact/impact_analyzer.py` | Direct & transitive blast radius, affected routes/tests |
+| **14**| **Implementation planning** | `app/modules/agent/planning/multi_stage.py` | 8-phase planning pipeline (Phases A through H) |
+| **15**| **Plan review** | `app/modules/agent/planning/review_loops.py` | 6 review loops (Arch, Correct, Sec, Perf, Maint, Best Pract) |
+| **16**| **Code implementation** | `app/modules/agent/roles/coder.py` | Surgical edits strictly within `TaskScope` |
+| **17**| **Automatic debugging** | `app/modules/agent/verification/auto_debugger.py` | Bounded root-cause diagnosis, max 3 attempts, auto-rollback |
+| **18**| **Test generation/exec** | `app/modules/agent/roles/tester.py` | Pytest automation, boundary value and regression asserts |
+| **19**| **Static analysis** | `app/modules/agent/verification/gates.py` | Gate 8: Ruff check with zero critical syntax/lint breaks |
+| **20**| **Build verification** | `app/modules/agent/verification/gates.py` | Compilation and import graph sanity checks |
+| **21**| **Regression verification** | `app/modules/agent/verification/gates.py` | Gate 7: Regression test suite on affected features |
+| **22**| **Git/diff verification** | `app/modules/agent/verification/gates.py` | Git diff audit preventing accidental modifications |
+| **23**| **Database intelligence** | `app/modules/intelligence/database/schema_introspect.py` | Schema, tables, columns, indexes, foreign keys, ORM |
+| **24**| **DB performance analysis** | `app/modules/intelligence/database/query_analyzer.py` | N+1, full table scan, EXPLAIN plan, covering index, pagination |
+| **25**| **Security & permissions** | `app/core/permissions.py` & `app/modules/auth/` | 7-Level permissions, default read-only, credential safety |
+| **26**| **Incremental learning** | `app/modules/intelligence/indexing/watcher.py` | $O(\Delta)$ invalidation on AST change, whitespace invariant |
+| **27**| **Observability** | `app/core/logging_config.py` & telemetry | Structured JSON logs, latency, token usage, audit trails |
+| **28**| **Failure recovery** | `app/modules/agent/verification/auto_debugger.py` | Automatic Git checkout / stash rollback |
+| **29**| **Human approval gates** | `app/core/permissions.py` | Mandatory approval token for DB mutations & deployment |
+
+### Architectural Evaluation Across 7 Engineering Lenses
+
+1. **Architecture & Modular Decomposition**:
+   - Clean domain isolation inside `app/modules/` (`agent`, `auth`, `constitution`, `cost`, `gateway`, `intelligence`, `missions`, `security`).
+   - Abstract interfaces for storage and models, permitting seamless drop-in replacements.
+2. **Dependencies & Technology Selection**:
+   - Zero-bloat philosophy: Python standard library `ast` and `symtable` provide native, ultra-fast AST parsing without heavy C-extensions.
+   - Pydantic v2 ensures microsecond-level serialization and strict schema validation.
+3. **Edge Cases & Failure Mode Analysis**:
+   - Cycle detection in dependency graphs prevents infinite loops on circular imports.
+   - Catching `SyntaxError` and `UnicodeDecodeError` gracefully during AST traversal.
+   - Bounded debug loops ($\le 3$ attempts) prevent infinite self-healing cost burns.
+4. **Scalability & Incremental Performance**:
+   - Three-tier code fingerprinting (`file_hash`, `ast_hash`, `symbol_hash`). When 1 file changes in a 20,000-file repo, only that single file is re-indexed in $\sim 5\text{ms}$.
+   - Hierarchical summarization serves minimal context on demand.
+5. **Security, Isolation & Secret Redaction**:
+   - Automated redaction pipeline scrubs AWS keys, private tokens, and passwords from logs and prompts.
+   - Scope lock enforces directory containment, blocking writes to `/etc`, `.git/`, or `.env`.
+   - Subprocesses execute with timeouts and command blocklists.
+6. **Token Efficiency & Context Budgeting**:
+   - Strict 32,000-token ceiling ensures high attention focus and fast inference times.
+7. **Production SOTA Best Practices**:
+   - Decoupled FastAPI backend with Server-Sent Events (SSE).
+   - High-performance Jinja2 web interface with JetBrains Mono styling.
 
 ---
 
