@@ -13,9 +13,9 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
 from app.db.session import Base
-from app.intelligence.cost.models import CostRecord
-from app.intelligence.cost.repository import CostRepository
-from app.intelligence.cost.schema import (
+from app.modules.cost.models import CostRecord
+from app.modules.cost.repository import CostRepository
+from app.modules.cost.schema import (
     MissionCostReport,
     PricingMode,
     TokenUsageBreakdown,
@@ -156,7 +156,7 @@ def test_repository_mission_lookup(db_session, sample_report):
 
 def test_dual_write_ledger_persists_to_json_and_db(tmp_path):
     """Test CostLedger dual-write stores to both JSON file and (attempts) DB."""
-    from app.intelligence.cost.ledger import CostLedger
+    from app.modules.cost.ledger import CostLedger
 
     ledger = CostLedger(workspace_root=str(tmp_path))
     report = MissionCostReport(

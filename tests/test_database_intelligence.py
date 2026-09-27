@@ -1,17 +1,17 @@
 import pytest
 from sqlalchemy import create_engine, text
 
-from app.intelligence.database.explain_engine import ExplainPlanEngine
-from app.intelligence.database.graph_connector import DatabaseGraphConnector
-from app.intelligence.database.performance_baseline import DatabasePerformanceBaseline
-from app.intelligence.database.query_analyzer import QueryAnalyzer
-from app.intelligence.database.safety_guard import (
+from app.modules.intelligence.database.explain_engine import ExplainPlanEngine
+from app.modules.intelligence.database.graph_connector import DatabaseGraphConnector
+from app.modules.intelligence.database.performance_baseline import DatabasePerformanceBaseline
+from app.modules.intelligence.database.query_analyzer import QueryAnalyzer
+from app.modules.intelligence.database.safety_guard import (
     DatabaseSafetyGuard,
     DatabaseSafetyViolationError,
 )
-from app.intelligence.database.schema import DatabaseType, QueryRiskLevel
-from app.intelligence.database.schema_introspect import DatabaseIntrospectionEngine
-from app.intelligence.graph.repo_graph import RepoGraph
+from app.modules.intelligence.database.schema import DatabaseType, QueryRiskLevel
+from app.modules.intelligence.database.schema_introspect import DatabaseIntrospectionEngine
+from app.modules.intelligence.graph.repo_graph import RepoGraph
 
 
 def test_database_introspection_sqlite(tmp_path):
@@ -149,7 +149,7 @@ def test_database_safety_guard():
 
 
 def test_database_graph_connector():
-    from app.intelligence.database.schema import (
+    from app.modules.intelligence.database.schema import (
         ColumnMetadata,
         DatabaseSchemaSnapshot,
         IndexMetadata,

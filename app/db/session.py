@@ -55,10 +55,10 @@ class DatabaseService:
     def init_db_schema(cls) -> None:
         """Create all database tables if they do not exist."""
         try:
-            import app.gateway.models  # noqa: F401
-            import app.intelligence.cost.models  # noqa: F401
-            import app.intelligence.missions.models  # noqa: F401
-            import app.security.models  # noqa: F401
+            import app.modules.gateway.models  # noqa: F401
+            import app.modules.cost.models  # noqa: F401
+            import app.modules.missions.models  # noqa: F401
+            import app.modules.auth.models  # noqa: F401
 
             Base.metadata.create_all(bind=cls.engine, checkfirst=True)
             database_logger.info("Database schema initialized successfully.")

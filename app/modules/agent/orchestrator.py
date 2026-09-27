@@ -14,7 +14,7 @@ from collections.abc import AsyncGenerator
 from typing import Any
 
 from app.core.logging_config import get_logger
-from app.intelligence.impact.scope_lock import TaskScope
+from app.modules.intelligence.impact.scope_lock import TaskScope
 from app.modules.agent.roles.base import (
     AgentState,
     DebugHypothesisOutput,
@@ -58,7 +58,7 @@ class MissionOrchestrator:
             PermissionLevel,
             PermissionManager,
         )
-        from app.intelligence.database.safety_guard import DatabaseSafetyGuard
+        from app.modules.intelligence.database.safety_guard import DatabaseSafetyGuard
         from app.modules.agent.planning.multi_stage import MultiStagePlanner
 
         self.permission_manager = PermissionManager(
@@ -69,7 +69,7 @@ class MissionOrchestrator:
         self.database_safety = DatabaseSafetyGuard()
 
         # Cost & Budget Telemetry
-        from app.intelligence.cost import BudgetGuard, CostLedger
+        from app.modules.cost import BudgetGuard, CostLedger
 
         self.cost_ledger = CostLedger(self.workspace_root)
         self.budget_guard = BudgetGuard()
@@ -108,7 +108,7 @@ class MissionOrchestrator:
         Execute full mission FSM and stream events.
         """
         from app.core.permissions import PermissionLevel
-        from app.intelligence.cost import CostTracker
+        from app.modules.cost import CostTracker
 
         self.debug_attempts = 0
         tracker = CostTracker()

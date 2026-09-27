@@ -20,8 +20,8 @@ import time
 
 from app.core.exceptions import ScopeViolationError, VerificationGateFailedError
 from app.core.logging_config import get_logger
-from app.intelligence.impact.scope_lock import TaskScope
-from app.intelligence.indexing.import_resolver import ImportResolver
+from app.modules.intelligence.impact.scope_lock import TaskScope
+from app.modules.intelligence.indexing.import_resolver import ImportResolver
 from app.modules.agent.verification.schema import (
     GateResult,
     GateStatus,

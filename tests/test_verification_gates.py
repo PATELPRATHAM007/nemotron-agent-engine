@@ -1,4 +1,4 @@
-from app.intelligence.impact.scope_lock import TaskScope
+from app.modules.intelligence.impact.scope_lock import TaskScope
 from app.modules.agent.verification.auto_debugger import BoundedAutoDebugger
 from app.modules.agent.verification.gates import VerificationPipeline
 from app.modules.agent.verification.schema import GateStatus

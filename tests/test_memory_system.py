@@ -2,10 +2,10 @@ import os
 
 import pytest
 
-from app.constitution.scaffold import ConstitutionScaffolder
-from app.intelligence.memory.adr_manager import ADRManager
-from app.intelligence.memory.memory_store import InstitutionalMemoryStore
-from app.intelligence.memory.schema import (
+from app.modules.constitution.service import ConstitutionScaffolder
+from app.modules.intelligence.memory.adr_manager import ADRManager
+from app.modules.intelligence.memory.memory_store import InstitutionalMemoryStore
+from app.modules.intelligence.memory.schema import (
     ADRRecord,
     ADRStatus,
     HistoricalLesson,

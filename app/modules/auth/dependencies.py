@@ -8,7 +8,7 @@ Constructs authoritative server-side AuthContext.
 from fastapi import Depends, Header, HTTPException, Request, status
 
 from app.modules.auth.service import auth_service
-from app.security.context import AuthContext
+from app.modules.auth.context import AuthContext
 
 
 async def get_current_auth_context(

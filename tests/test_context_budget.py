@@ -1,13 +1,13 @@
-from app.intelligence.context.budget_manager import (
+from app.modules.intelligence.context.budget_manager import (
     ContextBudget,
     ContextBudgetManager,
     estimate_tokens,
     truncate_to_tokens,
 )
-from app.intelligence.context.hierarchical import HierarchicalContextBuilder
-from app.intelligence.context.ranker import ContextRanker
-from app.intelligence.graph.repo_graph import RepoGraph
-from app.intelligence.graph.schema import FeatureSubgraph, GraphNode, NodeKind
+from app.modules.intelligence.context.hierarchical import HierarchicalContextBuilder
+from app.modules.intelligence.context.ranker import ContextRanker
+from app.modules.intelligence.graph.repo_graph import RepoGraph
+from app.modules.intelligence.graph.schema import FeatureSubgraph, GraphNode, NodeKind
 
 
 def test_token_estimation_and_truncation():

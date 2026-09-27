@@ -25,8 +25,8 @@ from app.modules.missions.schemas import (
     SelectionDecisionRequest,
 )
 from app.modules.missions.service import unified_mission_engine
-from app.security.context import AuthContext
-from app.security.dependencies import get_current_auth_context
+from app.modules.auth.context import AuthContext
+from app.modules.auth.dependencies import get_current_auth_context
 
 
 async def create_mission(

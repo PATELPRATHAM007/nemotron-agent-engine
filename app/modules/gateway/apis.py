@@ -17,9 +17,9 @@ from app.modules.gateway.schemas import (
     CredentialRotatePayload,
 )
 from app.modules.gateway.service import model_gateway, model_router
-from app.security.context import AuthContext
-from app.security.dependencies import get_current_auth_context
-from app.security.secrets import secret_manager
+from app.modules.auth.context import AuthContext
+from app.modules.auth.dependencies import get_current_auth_context
+from app.modules.auth.secrets import secret_manager
 
 
 async def list_authorized_models(auth: AuthContext = Depends(get_current_auth_context)):

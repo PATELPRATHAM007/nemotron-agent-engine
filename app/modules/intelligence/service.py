@@ -11,19 +11,19 @@ Central facade integrating:
   - Procedural Skills Engine
 """
 
-from app.intelligence.context.budget_manager import ContextBudgetManager
-from app.intelligence.database.query_analyzer import QueryAnalyzer
-from app.intelligence.database.schema_introspect import DatabaseIntrospectionEngine
-from app.intelligence.graph.repo_graph import RepoGraph
-from app.intelligence.impact import ImpactAnalyzer
-from app.intelligence.indexing.ast_parser import (
+from app.modules.intelligence.context.budget_manager import ContextBudgetManager
+from app.modules.intelligence.database.query_analyzer import QueryAnalyzer
+from app.modules.intelligence.database.schema_introspect import DatabaseIntrospectionEngine
+from app.modules.intelligence.graph.repo_graph import RepoGraph
+from app.modules.intelligence.impact import ImpactAnalyzer
+from app.modules.intelligence.indexing.ast_parser import (
     CodeASTVisitor,
     ParsedModule,
     SymbolDefinition,
     parse_python_file,
 )
-from app.intelligence.memory import InstitutionalMemoryStore
-from app.intelligence.skills import SkillRegistry
+from app.modules.intelligence.memory import InstitutionalMemoryStore
+from app.modules.intelligence.skills import SkillRegistry
 
 __all__ = [
     "CodeASTVisitor",

@@ -17,8 +17,8 @@ from app.core.exceptions import (
     ToolExecutionError,
     VerificationGateFailedError,
 )
-from app.intelligence.context.budget_manager import ContextBudget, ContextBudgetManager
-from app.intelligence.indexing.ast_parser import (
+from app.modules.intelligence.context.budget_manager import ContextBudget, ContextBudgetManager
+from app.modules.intelligence.indexing.ast_parser import (
     clear_ast_cache,
     parse_python_file,
 )

@@ -1,4 +1,4 @@
-from app.intelligence.skills.loader import SkillRegistry
+from app.modules.intelligence.skills.loader import SkillRegistry
 
 
 def test_skill_registry_discovery():

@@ -110,7 +110,7 @@ async def check_vllm_endpoint() -> bool:
         f"\n\n✅ Stream Complete in {total_time:.2f}s ({tokens_received} tokens, {thoughts_received} thoughts, {tps:.1f} tokens/sec)"
     )
 
-    from app.intelligence.cost import CostCalculator, PricingMode, TokenUsageBreakdown
+    from app.modules.cost import CostCalculator, PricingMode, TokenUsageBreakdown
 
     calc = CostCalculator()
     sample_usage = TokenUsageBreakdown(

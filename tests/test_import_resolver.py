@@ -2,8 +2,8 @@
 Tests for Import Resolution Engine (Phase 1)
 """
 
-from app.intelligence.indexing.ast_parser import ImportDefinition
-from app.intelligence.indexing.import_resolver import (
+from app.modules.intelligence.indexing.ast_parser import ImportDefinition
+from app.modules.intelligence.indexing.import_resolver import (
     ImportResolver,
     resolve_relative_module,
 )

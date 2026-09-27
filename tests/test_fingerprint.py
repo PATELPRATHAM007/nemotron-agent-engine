@@ -4,7 +4,7 @@ Tests for Multi-Dimensional Code Fingerprinting (Phase 1)
 
 import ast
 
-from app.intelligence.indexing.fingerprint import (
+from app.modules.intelligence.indexing.fingerprint import (
     compute_ast_hash,
     compute_file_hash,
     compute_symbol_hash,

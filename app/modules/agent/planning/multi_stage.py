@@ -16,8 +16,8 @@ Followed by the 6-Review Loop battery before plan finalization.
 from typing import Any
 
 from app.core.logging_config import get_logger
-from app.intelligence.graph.repo_graph import RepoGraph
-from app.intelligence.skills.loader import SkillRegistry
+from app.modules.intelligence.graph.repo_graph import RepoGraph
+from app.modules.intelligence.skills.loader import SkillRegistry
 from app.modules.agent.planning.review_loops import ReviewLoopEngine
 from app.modules.agent.planning.schema import (
     MultiStagePlanContract,

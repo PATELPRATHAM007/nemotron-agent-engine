@@ -2,7 +2,7 @@ import pytest
 from fastapi.testclient import TestClient
 
 from app.core.exceptions import CostBudgetExceededError
-from app.intelligence.cost import (
+from app.modules.cost import (
     BudgetGuard,
     CostAlertLevel,
     CostBudgetConfig,

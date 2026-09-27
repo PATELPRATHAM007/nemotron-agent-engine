@@ -20,9 +20,9 @@ from app.modules.auth.schemas import (
 )
 from app.modules.auth.service import auth_service
 from app.modules.auth.validation import AuthValidator
-from app.security.auditing import security_audit
-from app.security.context import AuthContext
-from app.security.dependencies import get_current_auth_context
+from app.modules.auth.auditing import security_audit
+from app.modules.auth.context import AuthContext
+from app.modules.auth.dependencies import get_current_auth_context
 
 
 async def register(payload: RegisterRequest):

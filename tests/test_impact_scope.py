@@ -4,10 +4,10 @@ Tests for Change Impact Analysis and Task Scope Lock (Phase 3)
 
 import pytest
 
-from app.intelligence.graph.repo_graph import RepoGraph
-from app.intelligence.graph.schema import EdgeKind, GraphEdge, GraphNode, NodeKind
-from app.intelligence.impact.impact_analyzer import ImpactAnalyzer
-from app.intelligence.impact.scope_lock import ScopeViolationError, TaskScope
+from app.modules.intelligence.graph.repo_graph import RepoGraph
+from app.modules.intelligence.graph.schema import EdgeKind, GraphEdge, GraphNode, NodeKind
+from app.modules.intelligence.impact.impact_analyzer import ImpactAnalyzer
+from app.modules.intelligence.impact.scope_lock import ScopeViolationError, TaskScope
 
 
 def test_impact_analyzer_calculates_blast_radius():

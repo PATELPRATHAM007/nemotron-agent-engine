@@ -62,7 +62,7 @@ class CostLedger:
         """Persist report to the SQL database (primary store)."""
         try:
             from app.db.session import DatabaseService
-            from app.intelligence.cost.repository import CostRepository
+            from app.modules.cost.repository import CostRepository
 
             session = DatabaseService.get_session()
             try:
@@ -97,7 +97,7 @@ class CostLedger:
         """
         try:
             from app.db.session import DatabaseService
-            from app.intelligence.cost.repository import CostRepository
+            from app.modules.cost.repository import CostRepository
 
             session = DatabaseService.get_session()
             try:
@@ -135,7 +135,7 @@ class CostLedger:
         """
         try:
             from app.db.session import DatabaseService
-            from app.intelligence.cost.repository import CostRepository
+            from app.modules.cost.repository import CostRepository
 
             session = DatabaseService.get_session()
             try:

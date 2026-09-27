@@ -12,7 +12,7 @@ from typing import Any
 from app.core.config import settings
 from app.core.llm_gateway import llm_gateway
 from app.core.logging_config import get_logger
-from app.security.secrets import secret_manager
+from app.modules.auth.secrets import secret_manager
 
 logger = get_logger(__name__)
 

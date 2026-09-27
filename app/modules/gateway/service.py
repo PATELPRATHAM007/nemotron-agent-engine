@@ -17,9 +17,9 @@ import uuid
 from app.core.logging_config import get_logger
 from app.modules.gateway.adapters import get_provider_adapter
 from app.modules.gateway.models import RegisteredModel
-from app.security.auditing import security_audit
-from app.security.context import AuthContext
-from app.security.policy_engine import AuthorizationDecision, policy_engine
+from app.modules.auth.auditing import security_audit
+from app.modules.auth.context import AuthContext
+from app.modules.auth.policy_engine import AuthorizationDecision, policy_engine
 
 logger = get_logger(__name__)
 

@@ -15,15 +15,15 @@ import json
 from fastapi.testclient import TestClient
 import pytest
 
-from app.intelligence.missions.permissions import (
+from app.modules.missions.permissions import (
     CommandRiskClassifier,
     MissionPermissionEngine,
     PermissionDecision,
     PermissionScope,
     RiskLevel,
 )
-from app.intelligence.missions.slash_commands import SlashCommandParser
-from app.intelligence.missions.state_machine import MissionState, MissionStateMachine
+from app.modules.missions.slash_commands import SlashCommandParser
+from app.modules.missions.state_machine import MissionState, MissionStateMachine
 from app.main import app
 
 client = TestClient(app)

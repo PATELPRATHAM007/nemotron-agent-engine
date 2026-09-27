@@ -8,7 +8,7 @@ attributes costs to autonomous roles, and computes active financial burn.
 import time
 from typing import Any
 
-from app.intelligence.context.budget_manager import estimate_tokens
+from app.modules.intelligence.context.budget_manager import estimate_tokens
 from app.modules.cost.pricing import CostCalculator
 from app.modules.cost.schemas import (
     MissionCostReport,
