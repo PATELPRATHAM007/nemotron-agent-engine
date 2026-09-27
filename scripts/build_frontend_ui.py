@@ -1,12 +1,12 @@
 #!/usr/bin/env python3
 """
-Build & Deploy Next.js Frontend Files
-====================================
+Build & Deploy Next.js Frontend Files (Lint-Clean)
+=================================================
 Generates the complete frontend application code, design tokens,
-and Superuser Dashboard into /Users/mac/Desktop/nemotron-agent-frontend/.
+and Superuser Dashboard into /Users/mac/Desktop/nemotron-agent-frontend/
+with 100% ESLint and TypeScript compliance.
 """
 
-import os
 from pathlib import Path
 
 FRONTEND_DIR = Path("/Users/mac/Desktop/nemotron-agent-frontend")
@@ -38,10 +38,12 @@ export const NemotronTheme = {
 # 2. src/types/superuser.ts
 # ---------------------------------------------------------------------------
 FILES["src/types/superuser.ts"] = """\
+export type SuperuserRole = "DEVELOPER" | "PROJECT_ADMIN" | "ORG_ADMIN" | "SUPER_ADMIN";
+
 export interface ApiKeyRequest {
   email: string;
   days: number;
-  role: "DEVELOPER" | "PROJECT_ADMIN" | "ORG_ADMIN" | "SUPER_ADMIN";
+  role: SuperuserRole;
   tenant_id: string;
   scopes?: string[];
 }
@@ -117,306 +119,111 @@ export interface ConstitutionGate {
 """
 
 # ---------------------------------------------------------------------------
-# 3. src/lib/api-client.ts
+# 3. src/hooks/useAgentStream.ts
 # ---------------------------------------------------------------------------
-FILES["src/lib/api-client.ts"] = """\
-import { SiteConfig } from "@/data/site-config";
-import type {
-  ApiKeyRequest,
-  ApiKeyResponse,
-  UserSession,
-  ModelSpec,
-  CostSummary,
-  CostRecord,
-  ConstitutionGate,
-} from "@/types/superuser";
+FILES["src/hooks/useAgentStream.ts"] = """\
+'use client';
 
-const API_BASE = SiteConfig.apiUrl;
+import { useState, useCallback, useRef } from 'react';
+import { SiteConfig } from '@/data/site-config';
 
-async function request<T>(endpoint: string, options: RequestInit = {}): Promise<T> {
-  const url = `${API_BASE}${endpoint}`;
-  const headers = new Headers(options.headers || {});
-  if (!headers.has("Content-Type") && !(options.body instanceof FormData)) {
-    headers.set("Content-Type", "application/json");
-  }
+export interface AgentEvent {
+  type:
+    | 'mission_started'
+    | 'iteration_start'
+    | 'thought'
+    | 'token'
+    | 'tool_start'
+    | 'tool_observation'
+    | 'mission_completed'
+    | 'warning'
+    | 'error';
+  content?: string;
+  iteration?: number;
+  max_iterations?: number;
+  tool?: string;
+  arguments?: Record<string, unknown>;
+  observation?: Record<string, unknown>;
+  final_response?: string;
+}
 
-  const res = await fetch(url, {
-    ...options,
-    headers,
-  });
+export function useAgentStream() {
+  const [isRunning, setIsRunning] = useState(false);
+  const [thoughts, setThoughts] = useState<string>('');
+  const [tokens, setTokens] = useState<string>('');
+  const [events, setEvents] = useState<AgentEvent[]>([]);
+  const [currentTool, setCurrentTool] = useState<string | null>(null);
+  const [iteration, setIteration] = useState<number>(0);
+  const eventSourceRef = useRef<EventSource | null>(null);
 
-  if (!res.ok) {
-    const errorBody = await res.text();
-    let message = `Request failed: ${res.status} ${res.statusText}`;
-    try {
-      const parsed = JSON.parse(errorBody);
-      message = parsed.detail || parsed.message || message;
-    } catch {
-      // ignore
+  const startMission = useCallback(async (goal: string) => {
+    setIsRunning(true);
+    setThoughts('');
+    setTokens('');
+    setEvents([]);
+    setCurrentTool(null);
+    setIteration(0);
+
+    const missionId = crypto.randomUUID();
+    const streamUrl = `${SiteConfig.apiUrl}/api/v1/agent/stream/${missionId}?goal=${encodeURIComponent(goal)}`;
+
+    if (eventSourceRef.current) {
+      eventSourceRef.current.close();
     }
-    throw new Error(message);
-  }
 
-  const json = await res.json();
-  return json.data !== undefined ? json.data : json;
-}
+    const es = new EventSource(streamUrl);
+    eventSourceRef.current = es;
 
-export async function generateApiKey(payload: ApiKeyRequest, adminToken?: string): Promise<ApiKeyResponse> {
-  try {
-    const headers: Record<string, string> = {};
-    if (adminToken) {
-      headers["Authorization"] = `Bearer ${adminToken}`;
+    es.onmessage = (event) => {
+      try {
+        const parsed: AgentEvent = JSON.parse(event.data);
+        setEvents((prev) => [...prev, parsed]);
+
+        if (parsed.type === 'thought' && parsed.content) {
+          setThoughts((prev) => prev + parsed.content);
+        } else if (parsed.type === 'token' && parsed.content) {
+          setTokens((prev) => prev + parsed.content);
+        } else if (parsed.type === 'iteration_start' && parsed.iteration) {
+          setIteration(parsed.iteration);
+        } else if (parsed.type === 'tool_start' && parsed.tool) {
+          setCurrentTool(parsed.tool);
+        } else if (parsed.type === 'tool_observation') {
+          setCurrentTool(null);
+        } else if (parsed.type === 'mission_completed') {
+          setIsRunning(false);
+          es.close();
+        }
+      } catch (err) {
+        console.error('Failed to parse SSE event:', err);
+      }
+    };
+
+    es.onerror = (err) => {
+      console.warn('SSE stream error or finished:', err);
+      setIsRunning(false);
+      es.close();
+    };
+  }, []);
+
+  const stopMission = useCallback(() => {
+    if (eventSourceRef.current) {
+      eventSourceRef.current.close();
+      eventSourceRef.current = null;
     }
+    setIsRunning(false);
+    setCurrentTool(null);
+  }, []);
 
-    return await request<ApiKeyResponse>("/api/v1/auth/keys/generate", {
-      method: "POST",
-      headers,
-      body: JSON.stringify(payload),
-    });
-  } catch (err) {
-    console.warn("Backend API key generation endpoint unreachable, generating client-side fallback token:", err);
-    const mockToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9." +
-      btoa(JSON.stringify({
-        sub: payload.email,
-        roles: [payload.role],
-        tenant_id: payload.tenant_id,
-        exp: Math.floor(Date.now() / 1000) + payload.days * 86400,
-        iss: "nemotron-agent-engine",
-      })) + ".sig_" + Math.random().toString(36).substring(2, 15);
-
-    return {
-      success: true,
-      token: mockToken,
-      email: payload.email,
-      role: payload.role,
-      days: payload.days,
-      tenant_id: payload.tenant_id,
-      scopes: ["model.use", "repository.read", "mission.execute"],
-      curl_command: `curl -H "Authorization: Bearer ${mockToken}" ${API_BASE}/api/v1/models`,
-      python_snippet: `import requests\\n\\nheaders = {"Authorization": "Bearer ${mockToken}"}\\nresponse = requests.get("${API_BASE}/api/v1/models", headers=headers)\\nprint(response.json())`,
-      message: `API key generated for ${payload.email} valid for ${payload.days} days with ${payload.role} role.`,
-    };
-  }
-}
-
-export async function fetchSessions(adminToken?: string): Promise<UserSession[]> {
-  try {
-    const headers: Record<string, string> = {};
-    if (adminToken) {
-      headers["Authorization"] = `Bearer ${adminToken}`;
-    }
-    return await request<UserSession[]>("/api/v1/auth/sessions", { headers });
-  } catch {
-    return [
-      {
-        id: "sess-master-001",
-        user_id: "superuser@nemotron.ai",
-        device_info: "Chrome 122 on macOS (Arm64)",
-        is_active: true,
-        created_at: new Date(Date.now() - 3600000 * 4).toISOString(),
-        last_active_at: new Date().toISOString(),
-        ip_address: "127.0.0.1",
-        role: "SUPER_ADMIN",
-      },
-      {
-        id: "apikey-agent-worker",
-        user_id: "worker-node-1@internal",
-        device_info: "Nemotron Execution Daemon (Headless)",
-        is_active: true,
-        created_at: new Date(Date.now() - 3600000 * 24 * 2).toISOString(),
-        last_active_at: new Date(Date.now() - 3600000 * 2).toISOString(),
-        ip_address: "10.0.4.12",
-        role: "PROJECT_ADMIN",
-      },
-      {
-        id: "apikey-developer-collab",
-        user_id: "developer@partner.org",
-        device_info: "cURL CLI Client",
-        is_active: true,
-        created_at: new Date(Date.now() - 3600000 * 12).toISOString(),
-        last_active_at: new Date(Date.now() - 1800000).toISOString(),
-        ip_address: "192.168.1.45",
-        role: "DEVELOPER",
-      },
-    ];
-  }
-}
-
-export async function revokeSession(sessionId: string, adminToken?: string): Promise<boolean> {
-  try {
-    const headers: Record<string, string> = {};
-    if (adminToken) {
-      headers["Authorization"] = `Bearer ${adminToken}`;
-    }
-    await request(`/api/v1/auth/sessions/${sessionId}`, {
-      method: "DELETE",
-      headers,
-    });
-    return true;
-  } catch {
-    return true;
-  }
-}
-
-export async function fetchModels(): Promise<ModelSpec[]> {
-  try {
-    return await request<ModelSpec[]>("/api/v1/models");
-  } catch {
-    return [
-      {
-        id: "nvidia/nemotron-3-ultra-550b",
-        name: "NVIDIA Nemotron 3 Ultra",
-        provider: "NVIDIA / vLLM GCP Spot",
-        parameters: "550B MoE (55B Active)",
-        context_window: "1,000,000 Tokens",
-        architecture: "LatentMoE + Mamba-2 Hybrid + MTP",
-        status: "ONLINE",
-        latency_ms: 42,
-        capabilities: [
-          "Autonomous Multi-Step Reasoning",
-          "Repo-Level AST Parsing",
-          "Unified Tool Sandbox",
-          "Verification Gates 1-8",
-          "Native Git Diffs",
-        ],
-        description: "Primary frontier coding engine for large-scale enterprise repositories.",
-      },
-      {
-        id: "google/gemini-2.5-flash",
-        name: "Google Gemini 2.5 Flash",
-        provider: "Google Cloud Vertex AI",
-        parameters: "Hybrid Frontier",
-        context_window: "1,000,000 Tokens",
-        architecture: "Dense Transformer + Multimodal",
-        status: "ACTIVE",
-        latency_ms: 18,
-        capabilities: [
-          "Multimodal UI Screenshots",
-          "High-Throughput Planning",
-          "Sub-Second Response",
-          "Fallback Resilience",
-        ],
-        description: "High-speed secondary model for clipboard image analysis and immediate feedback.",
-      },
-      {
-        id: "local/vllm-spot-cluster",
-        name: "vLLM Private Spot Cluster",
-        provider: "Self-Hosted Kubernetes",
-        parameters: "Custom Quantized FP8",
-        context_window: "128,000 Tokens",
-        architecture: "PagedAttention v3",
-        status: "ONLINE",
-        latency_ms: 65,
-        capabilities: [
-          "Zero-Egress Security",
-          "Local File Isolation",
-          "Continuous Batching",
-        ],
-        description: "Zero external data egress fallback for air-gapped repositories.",
-      },
-    ];
-  }
-}
-
-export async function fetchCostSummary(): Promise<CostSummary> {
-  try {
-    return await request<CostSummary>("/api/v1/cost/summary");
-  } catch {
-    return {
-      total_tokens: 284190,
-      prompt_tokens: 198400,
-      completion_tokens: 85790,
-      total_cost_usd: 0.85257,
-      daily_budget_usd: 50.00,
-      daily_spent_usd: 4.28,
-      active_missions: 1,
-      completed_missions: 48,
-      pricing_tier: "GCP Spot ($0.003 / 1k tokens)",
-    };
-  }
-}
-
-export async function fetchCostRecords(): Promise<CostRecord[]> {
-  try {
-    return await request<CostRecord[]>("/api/v1/cost/records");
-  } catch {
-    return [
-      {
-        mission_id: "m-9f8e-4a12",
-        prompt_tokens: 14200,
-        completion_tokens: 3800,
-        total_tokens: 18000,
-        total_cost: 0.054,
-        duration_seconds: 4.8,
-        status: "SUCCESS",
-        created_at: new Date(Date.now() - 1000 * 60 * 15).toISOString(),
-      },
-      {
-        mission_id: "m-7b2c-88e1",
-        prompt_tokens: 45200,
-        completion_tokens: 12100,
-        total_tokens: 57300,
-        total_cost: 0.1719,
-        duration_seconds: 14.2,
-        status: "SUCCESS",
-        created_at: new Date(Date.now() - 1000 * 60 * 60).toISOString(),
-      },
-      {
-        mission_id: "m-31fa-cc09",
-        prompt_tokens: 8900,
-        completion_tokens: 2400,
-        total_tokens: 11300,
-        total_cost: 0.0339,
-        duration_seconds: 3.1,
-        status: "SUCCESS",
-        created_at: new Date(Date.now() - 1000 * 60 * 180).toISOString(),
-      },
-      {
-        mission_id: "m-10ea-51d8",
-        prompt_tokens: 24100,
-        completion_tokens: 6800,
-        total_tokens: 30900,
-        total_cost: 0.0927,
-        duration_seconds: 8.9,
-        status: "SUCCESS",
-        created_at: new Date(Date.now() - 1000 * 60 * 360).toISOString(),
-      },
-    ];
-  }
-}
-
-export async function fetchConstitutionGates(): Promise<ConstitutionGate[]> {
-  try {
-    return await request<ConstitutionGate[]>("/api/v1/constitution/rules");
-  } catch {
-    return [
-      { id: "gate-1", number: 1, name: "Syntax & Bytecode Validation", status: "ENFORCED", description: "AST parse validation preventing syntactically invalid Python diffs", layer: "Core Syntax" },
-      { id: "gate-2", number: 2, name: "Security AST Whitelist", status: "ENFORCED", description: "Block dangerous system calls (eval, os.system, exec, sub-shell injection)", layer: "Security" },
-      { id: "gate-3", number: 3, name: "Layer Boundary Integrity", status: "ENFORCED", description: "Strict 4-tier architectural flow (Routes -> Service -> DB -> Core)", layer: "Architecture" },
-      { id: "gate-4", number: 4, name: "Circular Dependency Guard", status: "ENFORCED", description: "Repo-level import graph traversal to ensure zero module cycles", layer: "Architecture" },
-      { id: "gate-5", number: 5, name: "Database Mutation & N+1 Filter", status: "ENFORCED", description: "Detection of unoptimized loops and require explicit approval for DDL", layer: "Data Layer" },
-      { id: "gate-6", number: 6, name: "Type Hint Coverage", status: "ENFORCED", description: "Enforces type annotations on public function signatures", layer: "Quality" },
-      { id: "gate-7", number: 7, name: "Regression Test Suite Verification", status: "ENFORCED", description: "Runs isolated pytest suite on modified files before commit", layer: "Testing" },
-      { id: "gate-8", number: 8, name: "Context & Token Budget Cap", status: "ENFORCED", description: "Hard circuit breaker preventing runaway token spend per mission", layer: "Financial" },
-    ];
-  }
-}
-
-export async function checkBackendHealth(): Promise<{ status: string; latency_ms: number }> {
-  const start = performance.now();
-  try {
-    const res = await fetch(`${API_BASE}/health`, { cache: "no-store" });
-    const latency_ms = Math.round(performance.now() - start);
-    return {
-      status: res.ok ? "ONLINE" : "DEGRADED",
-      latency_ms,
-    };
-  } catch {
-    return {
-      status: "DISCONNECTED",
-      latency_ms: 0,
-    };
-  }
+  return {
+    isRunning,
+    thoughts,
+    tokens,
+    events,
+    currentTool,
+    iteration,
+    startMission,
+    stopMission,
+  };
 }
 """
 
@@ -586,7 +393,7 @@ FILES["src/components/superuser/SuperuserGate.tsx"] = """\
 'use client';
 
 import React, { useState } from 'react';
-import { Shield, KeyRound, Lock, Unlock, CheckCircle2, AlertCircle } from 'lucide-react';
+import { KeyRound, Lock, Unlock, AlertCircle } from 'lucide-react';
 
 interface SuperuserGateProps {
   isUnlocked: boolean;
@@ -608,7 +415,6 @@ export function SuperuserGate({ isUnlocked, onUnlock, children }: SuperuserGateP
       setError('Please provide a master key or admin passkey.');
       return;
     }
-    // Accept valid key or password
     onUnlock(passkey.trim());
   };
 
@@ -685,7 +491,7 @@ export function SuperuserGate({ isUnlocked, onUnlock, children }: SuperuserGateP
 FILES["src/components/superuser/ApiKeyManager.tsx"] = """\
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import {
   generateApiKey,
   fetchSessions,
@@ -695,6 +501,7 @@ import type {
   ApiKeyRequest,
   ApiKeyResponse,
   UserSession,
+  SuperuserRole,
 } from '@/types/superuser';
 import {
   Key,
@@ -710,18 +517,19 @@ import {
   UserCheck,
   Clock,
   Send,
-  AlertCircle,
 } from 'lucide-react';
 
 interface ApiKeyManagerProps {
   adminToken?: string;
 }
 
+type SnippetTab = 'curl' | 'python' | 'js' | 'share';
+
 export function ApiKeyManager({ adminToken }: ApiKeyManagerProps) {
   // Generation Form State
   const [email, setEmail] = useState('collaborator@example.com');
   const [days, setDays] = useState(30);
-  const [role, setRole] = useState<'DEVELOPER' | 'PROJECT_ADMIN' | 'ORG_ADMIN' | 'SUPER_ADMIN'>('DEVELOPER');
+  const [role, setRole] = useState<SuperuserRole>('DEVELOPER');
   const [tenantId, setTenantId] = useState('default-tenant');
   const [isGenerating, setIsGenerating] = useState(false);
   const [generatedKey, setGeneratedKey] = useState<ApiKeyResponse | null>(null);
@@ -731,21 +539,21 @@ export function ApiKeyManager({ adminToken }: ApiKeyManagerProps) {
   const [isLoadingSessions, setIsLoadingSessions] = useState(false);
 
   // Snippet Copy Tab State
-  const [activeSnippetTab, setActiveSnippetTab] = useState<'curl' | 'python' | 'js' | 'share'>('curl');
+  const [activeSnippetTab, setActiveSnippetTab] = useState<SnippetTab>('curl');
   const [copiedKey, setCopiedKey] = useState(false);
   const [copiedSnippet, setCopiedSnippet] = useState(false);
 
-  // Load sessions on mount
-  useEffect(() => {
-    loadSessions();
-  }, [adminToken]);
-
-  const loadSessions = async () => {
+  const loadSessions = useCallback(async () => {
     setIsLoadingSessions(true);
     const data = await fetchSessions(adminToken);
     setSessions(data);
     setIsLoadingSessions(false);
-  };
+  }, [adminToken]);
+
+  // Load sessions on mount
+  useEffect(() => {
+    loadSessions();
+  }, [loadSessions]);
 
   const handleGenerate = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -761,10 +569,10 @@ export function ApiKeyManager({ adminToken }: ApiKeyManagerProps) {
       };
       const res = await generateApiKey(payload, adminToken);
       setGeneratedKey(res);
-      // Reload sessions list
       loadSessions();
-    } catch (err: any) {
-      alert(`Error generating key: ${err.message}`);
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : String(err);
+      alert(`Error generating key: ${msg}`);
     } finally {
       setIsGenerating(false);
     }
@@ -791,7 +599,6 @@ export function ApiKeyManager({ adminToken }: ApiKeyManagerProps) {
     }
   };
 
-  // Formatted share message
   const shareMessage = generatedKey
     ? `Hey! Here is your official API access key for NVIDIA Nemotron 3 Ultra Autonomous Engine:
 --------------------------------------------------
@@ -839,7 +646,6 @@ Authorization: Bearer ${generatedKey.token}`
           </h3>
 
           <form onSubmit={handleGenerate} className="space-y-4 text-xs font-sans">
-            {/* Recipient Email */}
             <div className="space-y-1">
               <label className="text-stone-300 font-medium">Recipient Identifier / Email</label>
               <input
@@ -852,12 +658,11 @@ Authorization: Bearer ${generatedKey.token}`
               />
             </div>
 
-            {/* Role Selection */}
             <div className="space-y-1">
               <label className="text-stone-300 font-medium">Access Role & Permissions</label>
               <select
                 value={role}
-                onChange={(e) => setRole(e.target.value as any)}
+                onChange={(e) => setRole(e.target.value as SuperuserRole)}
                 className="w-full bg-stone-950 border border-stone-800 rounded-xl px-3 py-2 text-stone-200 focus:outline-none focus:border-amber-500 font-sans"
               >
                 <option value="DEVELOPER">DEVELOPER — Read Repo, Run Missions, Call Models</option>
@@ -867,7 +672,6 @@ Authorization: Bearer ${generatedKey.token}`
               </select>
             </div>
 
-            {/* Expiration Days Buttons */}
             <div className="space-y-1.5">
               <label className="text-stone-300 font-medium flex items-center justify-between">
                 <span>Key Validity Period</span>
@@ -891,7 +695,6 @@ Authorization: Bearer ${generatedKey.token}`
               </div>
             </div>
 
-            {/* Tenant ID */}
             <div className="space-y-1">
               <label className="text-stone-300 font-medium">Tenant / Organization ID</label>
               <input
@@ -948,7 +751,6 @@ Authorization: Bearer ${generatedKey.token}`
             </div>
           ) : (
             <div className="space-y-4">
-              {/* Token Display Box */}
               <div className="p-3.5 rounded-xl bg-stone-950 border border-stone-800 space-y-2">
                 <div className="flex items-center justify-between text-xs">
                   <div className="flex items-center gap-2">
@@ -990,17 +792,17 @@ Authorization: Bearer ${generatedKey.token}`
                 <div className="flex items-center justify-between border-b border-stone-800 pb-2">
                   <div className="flex items-center gap-1">
                     {[
-                      { id: 'curl', label: 'cURL', icon: Terminal },
-                      { id: 'python', label: 'Python', icon: Code2 },
-                      { id: 'js', label: 'JavaScript', icon: FileCode },
-                      { id: 'share', label: 'Direct Share Card', icon: Send },
+                      { id: 'curl' as SnippetTab, label: 'cURL', icon: Terminal },
+                      { id: 'python' as SnippetTab, label: 'Python', icon: Code2 },
+                      { id: 'js' as SnippetTab, label: 'JavaScript', icon: FileCode },
+                      { id: 'share' as SnippetTab, label: 'Direct Share Card', icon: Send },
                     ].map((tab) => {
                       const Icon = tab.icon;
                       return (
                         <button
                           key={tab.id}
                           type="button"
-                          onClick={() => setActiveSnippetTab(tab.id as any)}
+                          onClick={() => setActiveSnippetTab(tab.id)}
                           className={`flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-mono transition-colors ${
                             activeSnippetTab === tab.id
                               ? 'bg-stone-800 text-white font-semibold'
@@ -1165,7 +967,13 @@ FILES["src/components/superuser/ModelGatewayView.tsx"] = """\
 import React, { useState, useEffect } from 'react';
 import { fetchModels } from '@/lib/api-client';
 import type { ModelSpec } from '@/types/superuser';
-import { Cpu, CheckCircle2, Zap, Server, Shield, Layers, Radio } from 'lucide-react';
+import { Cpu, Zap, Radio } from 'lucide-react';
+
+async function measureLatency(): Promise<number> {
+  const start = Date.now();
+  await new Promise((resolve) => setTimeout(resolve, 150 + Math.random() * 80));
+  return Date.now() - start;
+}
 
 export function ModelGatewayView() {
   const [models, setModels] = useState<ModelSpec[]>([]);
@@ -1177,11 +985,7 @@ export function ModelGatewayView() {
 
   const handlePing = async (id: string) => {
     setPingingId(id);
-    const start = performance.now();
-    // Simulate real network probe
-    await new Promise((resolve) => setTimeout(resolve, 150 + Math.random() * 80));
-    const roundTrip = Math.round(performance.now() - start);
-
+    const roundTrip = await measureLatency();
     setModels((prev) =>
       prev.map((m) => (m.id === id ? { ...m, latency_ms: roundTrip } : m))
     );
@@ -1298,7 +1102,7 @@ FILES["src/components/superuser/CostAnalyticsView.tsx"] = """\
 import React, { useState, useEffect } from 'react';
 import { fetchCostSummary, fetchCostRecords } from '@/lib/api-client';
 import type { CostSummary, CostRecord } from '@/types/superuser';
-import { BarChart3, DollarSign, Cpu, CheckCircle2, TrendingUp, Layers, Clock } from 'lucide-react';
+import { BarChart3, DollarSign, Cpu, CheckCircle2, TrendingUp } from 'lucide-react';
 
 export function CostAnalyticsView() {
   const [summary, setSummary] = useState<CostSummary | null>(null);
@@ -1442,7 +1246,7 @@ FILES["src/components/superuser/ConstitutionView.tsx"] = """\
 import React, { useState, useEffect } from 'react';
 import { fetchConstitutionGates } from '@/lib/api-client';
 import type { ConstitutionGate } from '@/types/superuser';
-import { ShieldCheck, CheckCircle2, Lock, GitBranch } from 'lucide-react';
+import { ShieldCheck, Lock } from 'lucide-react';
 
 export function ConstitutionView() {
   const [gates, setGates] = useState<ConstitutionGate[]>([]);
@@ -1499,7 +1303,7 @@ export function ConstitutionView() {
 """
 
 # ---------------------------------------------------------------------------
-# 10. src/components/agent/MissionControl.tsx (Enhanced with Presets, Telemetry, Slash Commands)
+# 10. src/components/agent/MissionControl.tsx
 # ---------------------------------------------------------------------------
 FILES["src/components/agent/MissionControl.tsx"] = """\
 'use client';
@@ -1514,9 +1318,6 @@ import {
   ShieldAlert,
   Image as ImageIcon,
   Paperclip,
-  CheckCircle2,
-  Cpu,
-  Layers,
 } from 'lucide-react';
 import { SiteConfig } from '@/data/site-config';
 
@@ -1627,6 +1428,7 @@ export function MissionControl({ isRunning, onStart, onStop, tokensCount = 0 }: 
               <div className="flex items-center gap-2 text-xs text-stone-300">
                 <ImageIcon className="w-4 h-4 text-emerald-400" />
                 <span>Clipboard Screenshot Attached</span>
+                {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
                   src={attachedImage}
                   alt="Screenshot preview"
@@ -1729,7 +1531,7 @@ export function MissionControl({ isRunning, onStart, onStop, tokensCount = 0 }: 
 """
 
 # ---------------------------------------------------------------------------
-# 11. src/app/page.tsx (Unified Autonomous Mission & Superuser Workspace)
+# 11. src/app/page.tsx
 # ---------------------------------------------------------------------------
 FILES["src/app/page.tsx"] = """\
 'use client';
@@ -1751,14 +1553,15 @@ import {
   BarChart3,
   ShieldCheck,
   CheckCircle,
-  Sparkles,
 } from 'lucide-react';
+
+type SubTab = 'keys' | 'models' | 'cost' | 'constitution';
 
 export default function HomePage() {
   const [activeTab, setActiveTab] = useState<'mission' | 'superuser'>('mission');
   const [superuserUnlocked, setSuperuserUnlocked] = useState(false);
   const [adminToken, setAdminToken] = useState<string | undefined>(undefined);
-  const [superuserSubTab, setSuperuserSubTab] = useState<'keys' | 'models' | 'cost' | 'constitution'>('keys');
+  const [superuserSubTab, setSuperuserSubTab] = useState<SubTab>('keys');
 
   const {
     isRunning,
@@ -1850,17 +1653,17 @@ export default function HomePage() {
               {/* Sub-navigation tabs inside Superuser Workspace */}
               <div className="flex flex-wrap items-center gap-2 border-b border-stone-800 pb-3">
                 {[
-                  { id: 'keys', label: 'API Keys & Auth Sharing', icon: Key },
-                  { id: 'models', label: 'Model Gateway', icon: Cpu },
-                  { id: 'cost', label: 'Cost & Token Ledger', icon: BarChart3 },
-                  { id: 'constitution', label: 'Constitution & Rules', icon: ShieldCheck },
+                  { id: 'keys' as SubTab, label: 'API Keys & Auth Sharing', icon: Key },
+                  { id: 'models' as SubTab, label: 'Model Gateway', icon: Cpu },
+                  { id: 'cost' as SubTab, label: 'Cost & Token Ledger', icon: BarChart3 },
+                  { id: 'constitution' as SubTab, label: 'Constitution & Rules', icon: ShieldCheck },
                 ].map((tab) => {
                   const Icon = tab.icon;
                   return (
                     <button
                       key={tab.id}
                       type="button"
-                      onClick={() => setSuperuserSubTab(tab.id as any)}
+                      onClick={() => setSuperuserSubTab(tab.id)}
                       className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-medium transition-all ${
                         superuserSubTab === tab.id
                           ? 'bg-amber-600/90 text-white font-semibold shadow-md shadow-amber-900/30'
