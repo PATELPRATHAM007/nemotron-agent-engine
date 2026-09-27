@@ -14,15 +14,18 @@ from app.modules.auth import messages
 from app.modules.auth.models import Agent, User, UserSession
 from app.modules.auth.schemas import (
     AgentRegisterRequest,
+    ApiKeyGenerateRequest,
     LoginRequest,
     RefreshRequest,
     RegisterRequest,
 )
 from app.modules.auth.service import auth_service
+from app.modules.auth.policy_engine import ROLE_PERMISSIONS
 from app.modules.auth.validation import AuthValidator
 from app.modules.auth.auditing import security_audit
 from app.modules.auth.context import AuthContext
 from app.modules.auth.dependencies import get_current_auth_context
+
 
 
 async def register(payload: RegisterRequest):
@@ -219,3 +222,57 @@ async def register_agent(
     )
 
     return {"success": True, "agent": agent.to_dict(), "message": messages.AGENT_REGISTER_SUCCESS}
+
+
+async def generate_api_key(payload: ApiKeyGenerateRequest):
+    """
+    Generate a signed, shareable JWT bearer API key with custom expiration and role permissions.
+    Enables administrators to grant model and agent access to collaborators or microservices.
+    """
+    role_upper = payload.role.upper()
+    if role_upper not in ROLE_PERMISSIONS:
+        role_upper = "DEVELOPER"
+
+    scopes = payload.scopes or list(ROLE_PERMISSIONS.get(role_upper, {"model.use", "repository.read"}))
+    lifetime_seconds = payload.days * 86400
+
+    token = auth_service.create_access_token(
+        user_id=payload.email,
+        session_id=f"apikey-{uuid.uuid4().hex[:12]}",
+        tenant_id=payload.tenant_id,
+        roles=[role_upper],
+        scopes=scopes,
+        lifetime_seconds=lifetime_seconds,
+    )
+
+    curl_cmd = f'curl -H "Authorization: Bearer {token}" http://localhost:8000/api/v1/auth/me'
+    python_snippet = (
+        f'import requests\n\n'
+        f'headers = {{"Authorization": "Bearer {token}"}}\n'
+        f'response = requests.get("http://localhost:8000/api/v1/models", headers=headers)\n'
+        f'print(response.json())'
+    )
+
+    security_audit.record_audit(
+        actor_type="system",
+        actor_id="superuser",
+        action="api_key.generated",
+        resource_type="api_key",
+        resource_id=payload.email,
+        organization_id=payload.tenant_id,
+        metadata={"role": role_upper, "days": payload.days},
+    )
+
+    return {
+        "success": True,
+        "token": token,
+        "email": payload.email,
+        "role": role_upper,
+        "days": payload.days,
+        "tenant_id": payload.tenant_id,
+        "scopes": scopes,
+        "curl_command": curl_cmd,
+        "python_snippet": python_snippet,
+        "message": f"API key generated for {payload.email} valid for {payload.days} days with {role_upper} permissions.",
+    }
+

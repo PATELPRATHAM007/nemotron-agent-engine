@@ -12,17 +12,19 @@ from fastapi.templating import Jinja2Templates
 
 from app.core.config import settings
 
-# Initialize centralized Jinja2 templates instance
-templates = Jinja2Templates(directory=str(settings.TEMPLATES_DIR))
+# Initialize centralized Jinja2 templates instance if directory exists
+if settings.TEMPLATES_DIR.exists():
+    templates = Jinja2Templates(directory=str(settings.TEMPLATES_DIR))
+    templates.env.globals.update(
+        {
+            "project_name": settings.PROJECT_NAME,
+            "version": settings.VERSION,
+            "model_name": settings.NEMOTRON_MODEL_NAME,
+            "api_base": settings.NEMOTRON_API_BASE,
+            "environment": settings.ENVIRONMENT,
+            "enable_ui": settings.ENABLE_UI,
+        }
+    )
+else:
+    templates = None
 
-# Register global context variables across all templates
-templates.env.globals.update(
-    {
-        "project_name": settings.PROJECT_NAME,
-        "version": settings.VERSION,
-        "model_name": settings.NEMOTRON_MODEL_NAME,
-        "api_base": settings.NEMOTRON_API_BASE,
-        "environment": settings.ENVIRONMENT,
-        "enable_ui": settings.ENABLE_UI,
-    }
-)

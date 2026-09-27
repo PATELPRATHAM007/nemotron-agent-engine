@@ -162,6 +162,37 @@ def test_session_listing_and_remote_revocation(client: TestClient):
     assert del_data["status"] == "REVOKED"
 
 
+def test_generate_api_key_endpoint(client: TestClient):
+    """Test superuser/admin API key generation with custom expiration and sharing snippets."""
+    resp = client.post(
+        "/api/v1/auth/keys/generate",
+        json={
+            "email": "external-partner@example.com",
+            "days": 60,
+            "role": "PROJECT_ADMIN",
+            "tenant_id": "partner-org",
+        },
+    )
+    assert resp.status_code == 200
+    data = resp.json().get("data", resp.json())
+    assert data["success"] is True
+    assert "token" in data
+    assert data["role"] == "PROJECT_ADMIN"
+    assert data["days"] == 60
+    assert "curl_command" in data
+    assert "python_snippet" in data
+
+    # Verify that the generated token is authentic and grants access to /api/v1/auth/me
+    token = data["token"]
+    auth_headers = {"Authorization": f"Bearer {token}"}
+    me_resp = client.get("/api/v1/auth/me", headers=auth_headers)
+    assert me_resp.status_code == 200
+    me_data = me_resp.json().get("data", me_resp.json())
+    assert me_data["user_id"] == "external-partner@example.com"
+    assert "PROJECT_ADMIN" in me_data["roles"]
+
+
+
 # =============================================================================
 # 5. Policy Engine Authorization (RBAC, ABAC, DENY > ASK > ALLOW, Tenant)
 # =============================================================================

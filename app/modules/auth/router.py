@@ -20,5 +20,9 @@ router.get("/me")(apis.me)
 router.get("/sessions")(apis.list_sessions)
 router.delete("/sessions/{session_id}")(apis.revoke_session)
 
+# API Key Generation & Sharing (Superuser / Admin)
+router.post("/keys/generate")(apis.generate_api_key)
+
 # Local Agent Identity Enrollment
 router.post("/agents/register")(apis.register_agent)
+

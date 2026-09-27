@@ -47,3 +47,12 @@ class TokenResponse(BaseModel):
     expires_in: int = 900
     session_id: str | None = None
     user: dict[str, Any] | None = None
+
+
+class ApiKeyGenerateRequest(BaseModel):
+    email: str = Field(..., description="Recipient email or service identifier")
+    days: int = Field(default=30, ge=1, le=3650, description="Validity in days")
+    role: str = Field(default="DEVELOPER", description="Role: DEVELOPER, PROJECT_ADMIN, ORG_ADMIN, SUPER_ADMIN")
+    tenant_id: str = Field(default="default-tenant", description="Tenant or organization identifier")
+    scopes: list[str] | None = None
+
