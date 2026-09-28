@@ -1,25 +1,35 @@
+# ==============================================================================
+# Production Docker Compose for NVIDIA Nemotron Agent Engine (Backend Services)
+# Services:
+#   - db:        PostgreSQL 16 Relational Storage (User Sessions, Keys, Audit Ledger)
+#   - redis:     Redis 7 In-Memory Cache, Rate Limiting & Message Broker
+#   - backend:   FastAPI Nemotron Intelligence Engine (Port 8000)
+# ==============================================================================
+
 services:
   db:
     image: postgres:16-alpine
-    container_name: doc_service_db
+    container_name: nemotron_db
     restart: unless-stopped
     environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgrespassword
-      POSTGRES_DB: doc_processing_db
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgrespassword}
+      POSTGRES_DB: ${POSTGRES_DB:-nemotron_agent_db}
     ports:
       - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres -d doc_processing_db"]
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-postgres} -d ${POSTGRES_DB:-nemotron_agent_db}"]
       interval: 5s
       timeout: 5s
       retries: 5
+    networks:
+      - nemotron_backend_network
 
   redis:
     image: redis:7-alpine
-    container_name: doc_service_redis
+    container_name: nemotron_redis
     restart: unless-stopped
     ports:
       - "6379:6379"
@@ -30,32 +40,51 @@ services:
       interval: 5s
       timeout: 5s
       retries: 5
+    networks:
+      - nemotron_backend_network
 
-  web:
+  backend:
     build:
       context: .
       dockerfile: Dockerfile
-    container_name: doc_service_web
-
+    container_name: nemotron_backend
     restart: unless-stopped
-    command: ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000", "--reload"]
     ports:
       - "8000:8000"
+    env_file:
+      - path: .env
+        required: false
     environment:
       POSTGRES_HOST: db
       POSTGRES_PORT: 5432
       REDIS_HOST: redis
       REDIS_PORT: 6379
-      DATABASE_URL: "postgresql+psycopg2://postgres:postgrespassword@db:5432/doc_processing_db"
+      DATABASE_URL: "postgresql+psycopg2://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD:-postgrespassword}@db:5432/${POSTGRES_DB:-nemotron_agent_db}"
       REDIS_URL: "redis://redis:6379/0"
-    volumes:
-      - .:/app
+      ENVIRONMENT: ${ENVIRONMENT:-development}
+      DEBUG: ${DEBUG:-True}
+      HOST: "0.0.0.0"
+      PORT: 8000
     depends_on:
       db:
         condition: service_healthy
       redis:
         condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+    networks:
+      - nemotron_backend_network
 
 volumes:
   postgres_data:
+    name: nemotron_postgres_data
   redis_data:
+    name: nemotron_redis_data
+
+networks:
+  nemotron_backend_network:
+    name: nemotron_backend_network
+    driver: bridge
