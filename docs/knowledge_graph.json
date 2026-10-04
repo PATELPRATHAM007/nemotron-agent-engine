@@ -1,0 +1,2252 @@
+{
+  "metadata": {
+    "graph_version": "2.0.0",
+    "schema_version": "2.1.0",
+    "exported_at": "2026-10-04T08:28:47.393606+00:00",
+    "workspace_root": "/Users/mac/Desktop/nemotron-agent-engine",
+    "total_nodes": 91,
+    "total_edges": 98
+  },
+  "nodes": [
+    {
+      "id": "project:nemotron_dual_engine",
+      "name": "NVIDIA Nemotron 3 Ultra Autonomous Agent System",
+      "kind": "PROJECT",
+      "file_path": null,
+      "line_start": null,
+      "line_end": null,
+      "docstring": "Enterprise autonomous software engineering platform with dual-engine routing and warm sand studio UI.",
+      "confidence": "HIGH",
+      "evidence": "README.md:1-50",
+      "last_verified": "2026-10-04",
+      "source_symbols": [],
+      "metadata": {
+        "architecture": "Multi-tier agentic orchestrator with verification gates and real-time streaming",
+        "backend_tech": "Python 3.12, FastAPI, SQLAlchemy, Alembic, PostgreSQL, Redis, vLLM",
+        "frontend_tech": "Next.js 16, React 19, Tailwind CSS v4, TypeScript 5, SSE"
+      }
+    },
+    {
+      "id": "repo:nemotron-agent-engine",
+      "name": "nemotron-agent-engine",
+      "kind": "REPOSITORY",
+      "file_path": "app/main.py",
+      "line_start": null,
+      "line_end": null,
+      "docstring": "FastAPI asynchronous agent backend, repository intelligence graph, and model gateway.",
+      "confidence": "HIGH",
+      "evidence": "pyproject.toml / requirements.txt / app/main.py",
+      "last_verified": "2026-10-04",
+      "source_symbols": [],
+      "metadata": {}
+    },
+    {
+      "id": "repo:nemotron-agent-frontend",
+      "name": "nemotron-agent-frontend",
+      "kind": "REPOSITORY",
+      "file_path": "../nemotron-agent-frontend/src/app/page.tsx",
+      "line_start": null,
+      "line_end": null,
+      "docstring": "Next.js 16 reactive frontend studio with Warm Sand light theme and mission control.",
+      "confidence": "HIGH",
+      "evidence": "../nemotron-agent-frontend/package.json:1-40",
+      "last_verified": "2026-10-04",
+      "source_symbols": [],
+      "metadata": {}
+    },
+    {
+      "id": "cap:autonomous_software_engineering",
+      "name": "Autonomous Software Engineering",
+      "kind": "BUSINESS_CAPABILITY",
+      "file_path": null,
+      "line_start": null,
+      "line_end": null,
+      "docstring": "End-to-end plan creation, tool-based file editing, test execution, bounded debugging, and git diff generation.",
+      "confidence": "HIGH",
+      "evidence": "app/modules/agent/unified_engine.py:45-120",
+      "last_verified": "2026-10-04",
+      "source_symbols": [],
+      "metadata": {}
+    },
+    {
+      "id": "cap:codebase_architectural_governance",
+      "name": "Codebase Architectural Governance",
+      "kind": "BUSINESS_CAPABILITY",
+      "file_path": null,
+      "line_start": null,
+      "line_end": null,
+      "docstring": "Repository AST parsing, import cycle detection, layer boundary integrity, and 8-gate fail-fast verification.",
+      "confidence": "HIGH",
+      "evidence": "app/modules/agent/verification/gates.py:30-90",
+      "last_verified": "2026-10-04",
+      "source_symbols": [],
+      "metadata": {}
+    },
+    {
+      "id": "cap:multi_model_inference_routing",
+      "name": "Multi-Model Inference Routing",
+      "kind": "BUSINESS_CAPABILITY",
+      "file_path": null,
+      "line_start": null,
+      "line_end": null,
+      "docstring": "Audited 18-step model gateway with automatic failover between Nemotron 3 Ultra, Groq, and Jio Gemini.",
+      "confidence": "HIGH",
+      "evidence": "app/modules/gateway/service.py:35-110",
+      "last_verified": "2026-10-04",
+      "source_symbols": [],
+      "metadata": {}
+    },
+    {
+      "id": "cap:financial_cost_observability",
+      "name": "Financial Cost Observability",
+      "kind": "BUSINESS_CAPABILITY",
+      "file_path": null,
+      "line_start": null,
+      "line_end": null,
+      "docstring": "Real-time token breakdown, amortized cloud compute tracking (GCP Spot / RunPod), and budget circuit breakers.",
+      "confidence": "HIGH",
+      "evidence": "app/modules/cost/tracker.py:25-80",
+      "last_verified": "2026-10-04",
+      "source_symbols": [],
+      "metadata": {}
+    },
+    {
+      "id": "cap:identity_and_secret_management",
+      "name": "Identity & Secret Management",
+      "kind": "BUSINESS_CAPABILITY",
+      "file_path": null,
+      "line_start": null,
+      "line_end": null,
+      "docstring": "Argon2id authentication, RFC 9700 refresh token rotation, superuser API key issuance, and SSRF filter.",
+      "confidence": "HIGH",
+      "evidence": "app/modules/auth/service.py:40-105",
+      "last_verified": "2026-10-04",
+      "source_symbols": [],
+      "metadata": {}
+    },
+    {
+      "id": "cap:realtime_developer_interaction",
+      "name": "Real-Time Developer Interaction",
+      "kind": "BUSINESS_CAPABILITY",
+      "file_path": null,
+      "line_start": null,
+      "line_end": null,
+      "docstring": "Server-Sent Events (SSE) streaming of agent thought chains, terminal outputs, and interactive permission gates.",
+      "confidence": "HIGH",
+      "evidence": "app/modules/missions/apis.py:85-115",
+      "last_verified": "2026-10-04",
+      "source_symbols": [],
+      "metadata": {}
+    },
+    {
+      "id": "feat.autonomous_missions",
+      "name": "Autonomous Mission Lifecycle",
+      "kind": "FEATURE",
+      "file_path": null,
+      "line_start": null,
+      "line_end": null,
+      "docstring": "Provides persistent mission state tracking, interactive plan approval, rollback checkpoints, and git diff review.",
+      "confidence": "HIGH",
+      "evidence": "app/modules/missions/service.py:1-40",
+      "last_verified": "2026-10-04",
+      "source_symbols": [],
+      "metadata": {
+        "primary_files": [
+          "app/modules/missions/models.py",
+          "app/modules/missions/apis.py",
+          "app/modules/missions/state_machine.py"
+        ]
+      }
+    },
+    {
+      "id": "feat.multi_role_orchestration",
+      "name": "Multi-Role Agent Orchestrator",
+      "kind": "FEATURE",
+      "file_path": null,
+      "line_start": null,
+      "line_end": null,
+      "docstring": "Coordinates specialized roles: Planner, Reviewer, Coder, Tester, and Debugger with scope containment.",
+      "confidence": "HIGH",
+      "evidence": "app/modules/agent/orchestrator.py:25-95",
+      "last_verified": "2026-10-04",
+      "source_symbols": [],
+      "metadata": {
+        "primary_files": [
+          "app/modules/agent/roles/planner.py",
+          "app/modules/agent/roles/coder.py",
+          "app/modules/agent/roles/tester.py"
+        ]
+      }
+    },
+    {
+      "id": "feat.verification_gates",
+      "name": "8-Gate Verification Pipeline",
+      "kind": "FEATURE",
+      "file_path": null,
+      "line_start": null,
+      "line_end": null,
+      "docstring": "Executes 8 fail-fast verification gates (AST syntax, imports, types, architecture, scope, tests) before commit.",
+      "confidence": "HIGH",
+      "evidence": "app/modules/agent/verification/gates.py:40-120",
+      "last_verified": "2026-10-04",
+      "source_symbols": [],
+      "metadata": {
+        "primary_files": [
+          "app/modules/agent/verification/gates.py",
+          "app/modules/agent/verification/auto_debugger.py"
+        ]
+      }
+    },
+    {
+      "id": "feat.model_gateway",
+      "name": "18-Step Audited Model Gateway",
+      "kind": "FEATURE",
+      "file_path": null,
+      "line_start": null,
+      "line_end": null,
+      "docstring": "Enforces 18-step verification on every LLM call: auth, quota, tenant isolation, credentials, and usage audit.",
+      "confidence": "HIGH",
+      "evidence": "app/modules/gateway/service.py:30-100",
+      "last_verified": "2026-10-04",
+      "source_symbols": [],
+      "metadata": {
+        "primary_files": [
+          "app/modules/gateway/service.py",
+          "app/core/llm_gateway.py",
+          "app/modules/gateway/adapters.py"
+        ]
+      }
+    },
+    {
+      "id": "feat.token_cost_analytics",
+      "name": "Cost & Token Analytics Engine",
+      "kind": "FEATURE",
+      "file_path": null,
+      "line_start": null,
+      "line_end": null,
+      "docstring": "Tracks prompt/completion/thinking tokens, computes GCP Spot / RunPod amortization, and enforces budget guards.",
+      "confidence": "HIGH",
+      "evidence": "app/modules/cost/tracker.py:20-75",
+      "last_verified": "2026-10-04",
+      "source_symbols": [],
+      "metadata": {
+        "primary_files": [
+          "app/modules/cost/tracker.py",
+          "app/modules/cost/pricing.py",
+          "app/modules/cost/budget_guard.py"
+        ]
+      }
+    },
+    {
+      "id": "feat.security_and_auth",
+      "name": "Identity, API Key & SSRF Security",
+      "kind": "FEATURE",
+      "file_path": null,
+      "line_start": null,
+      "line_end": null,
+      "docstring": "Manages users, organizations, API key issuance, refresh token families, and private subnet IP blocking.",
+      "confidence": "HIGH",
+      "evidence": "app/modules/auth/service.py:30-90",
+      "last_verified": "2026-10-04",
+      "source_symbols": [],
+      "metadata": {
+        "primary_files": [
+          "app/modules/auth/service.py",
+          "app/modules/auth/policy_engine.py",
+          "app/modules/auth/ssrf.py"
+        ]
+      }
+    },
+    {
+      "id": "feat.repo_intelligence",
+      "name": "AST Codebase & Impact Intelligence",
+      "kind": "FEATURE",
+      "file_path": null,
+      "line_start": null,
+      "line_end": null,
+      "docstring": "Extracts symbol call graphs, resolves imports, tracks file fingerprints, and computes blast radius.",
+      "confidence": "HIGH",
+      "evidence": "app/modules/intelligence/graph/repo_graph.py:20-90",
+      "last_verified": "2026-10-04",
+      "source_symbols": [],
+      "metadata": {
+        "primary_files": [
+          "app/modules/intelligence/indexing/ast_parser.py",
+          "app/modules/intelligence/impact/impact_analyzer.py"
+        ]
+      }
+    },
+    {
+      "id": "feat.agent_constitution",
+      "name": "Agent Constitutional Governance",
+      "kind": "FEATURE",
+      "file_path": null,
+      "line_start": null,
+      "line_end": null,
+      "docstring": "Enforces quality rules, bootstrapping of .agent/ structure, and Architecture Decision Records (ADRs).",
+      "confidence": "HIGH",
+      "evidence": "app/modules/constitution/service.py:20-80",
+      "last_verified": "2026-10-04",
+      "source_symbols": [],
+      "metadata": {
+        "primary_files": [
+          "app/modules/constitution/service.py",
+          "app/modules/constitution/scaffold.py"
+        ]
+      }
+    },
+    {
+      "id": "feat.realtime_studio",
+      "name": "Warm Sand Agent Frontend Studio",
+      "kind": "FEATURE",
+      "file_path": null,
+      "line_start": null,
+      "line_end": null,
+      "docstring": "Next.js 16 dashboard with Mission Control, Thought Stream, Terminal, and Superuser API Key Manager.",
+      "confidence": "HIGH",
+      "evidence": "../nemotron-agent-frontend/src/app/page.tsx:1-120",
+      "last_verified": "2026-10-04",
+      "source_symbols": [],
+      "metadata": {
+        "primary_files": [
+          "../nemotron-agent-frontend/src/components/agent/MissionControl.tsx",
+          "../nemotron-agent-frontend/src/components/superuser/ApiKeyManager.tsx"
+        ]
+      }
+    },
+    {
+      "id": "rule:BR-01",
+      "name": "Task Scope Lock & Confinement",
+      "kind": "BUSINESS_RULE",
+      "file_path": null,
+      "line_start": null,
+      "line_end": null,
+      "docstring": "File modifications are strictly prohibited outside the authorized TaskScope whitelist. Violations halt execution.",
+      "confidence": "HIGH",
+      "evidence": "app/modules/intelligence/impact/scope_lock.py:45-75",
+      "last_verified": "2026-10-04",
+      "source_symbols": [],
+      "metadata": {
+        "tested_by_evidence": "tests/test_impact_scope.py:15-40"
+      }
+    },
+    {
+      "id": "rule:BR-02",
+      "name": "Bounded Self-Correction (Max 3 Fixes)",
+      "kind": "BUSINESS_RULE",
+      "file_path": null,
+      "line_start": null,
+      "line_end": null,
+      "docstring": "Automated test-fix cycles are capped at 3 iterations. If errors persist, all changes must be rolled back.",
+      "confidence": "HIGH",
+      "evidence": "app/modules/agent/orchestrator.py:35-65",
+      "last_verified": "2026-10-04",
+      "source_symbols": [],
+      "metadata": {
+        "tested_by_evidence": "tests/test_e2e_agent_mission.py:30-65"
+      }
+    },
+    {
+      "id": "rule:BR-03",
+      "name": "Fail-Fast 8-Gate Pipeline Battery",
+      "kind": "BUSINESS_RULE",
+      "file_path": null,
+      "line_start": null,
+      "line_end": null,
+      "docstring": "Sequential evaluation of Syntax -> Imports -> Types -> Architecture -> Scope -> Tests -> Lint. Halts on first failure.",
+      "confidence": "HIGH",
+      "evidence": "app/modules/agent/verification/gates.py:30-70",
+      "last_verified": "2026-10-04",
+      "source_symbols": [],
+      "metadata": {
+        "tested_by_evidence": "tests/test_verification_gates.py:20-55"
+      }
+    },
+    {
+      "id": "rule:BR-04",
+      "name": "18-Step Audited Model Gateway Invariant",
+      "kind": "BUSINESS_RULE",
+      "file_path": null,
+      "line_start": null,
+      "line_end": null,
+      "docstring": "Every model request must pass 18 sequential verification checks before provider dispatch, with immutable audit logging.",
+      "confidence": "HIGH",
+      "evidence": "app/modules/gateway/service.py:40-95",
+      "last_verified": "2026-10-04",
+      "source_symbols": [],
+      "metadata": {
+        "tested_by_evidence": "tests/test_security_and_gateway.py:40-80"
+      }
+    },
+    {
+      "id": "rule:BR-05",
+      "name": "Quota & Token Rate Limiting",
+      "kind": "BUSINESS_RULE",
+      "file_path": null,
+      "line_start": null,
+      "line_end": null,
+      "docstring": "Tenant request and token quotas are verified in Redis prior to model execution. Rejections emit 429 Too Many Requests.",
+      "confidence": "HIGH",
+      "evidence": "app/modules/gateway/service.py:110-140",
+      "last_verified": "2026-10-04",
+      "source_symbols": [],
+      "metadata": {
+        "tested_by_evidence": "tests/test_security_and_gateway.py:90-120"
+      }
+    },
+    {
+      "id": "rule:BR-06",
+      "name": "SSRF IP Denylist Filtering",
+      "kind": "BUSINESS_RULE",
+      "file_path": null,
+      "line_start": null,
+      "line_end": null,
+      "docstring": "Outbound network calls to RFC 1918 private subnets (10.0.0.0/8, 192.168.0.0/16, 127.0.0.1, 169.254.169.254) are rejected.",
+      "confidence": "HIGH",
+      "evidence": "app/modules/auth/ssrf.py:25-70",
+      "last_verified": "2026-10-04",
+      "source_symbols": [],
+      "metadata": {
+        "tested_by_evidence": "tests/test_security_and_gateway.py:130-160"
+      }
+    },
+    {
+      "id": "rule:BR-07",
+      "name": "Human-in-the-Loop Permission Gating",
+      "kind": "BUSINESS_RULE",
+      "file_path": null,
+      "line_start": null,
+      "line_end": null,
+      "docstring": "High-risk terminal commands (rm -rf, DROP TABLE, pkill, git push -f) pause execution until explicit human authorization.",
+      "confidence": "HIGH",
+      "evidence": "app/modules/missions/permissions.py:35-85",
+      "last_verified": "2026-10-04",
+      "source_symbols": [],
+      "metadata": {
+        "tested_by_evidence": "tests/test_unified_mission.py:45-80"
+      }
+    },
+    {
+      "id": "rule:BR-08",
+      "name": "Daily Financial Budget Circuit Breaker",
+      "kind": "BUSINESS_RULE",
+      "file_path": null,
+      "line_start": null,
+      "line_end": null,
+      "docstring": "When token expenditures exceed the configured daily budget threshold, execution is halted with CRITICAL alert level.",
+      "confidence": "HIGH",
+      "evidence": "app/modules/cost/budget_guard.py:30-65",
+      "last_verified": "2026-10-04",
+      "source_symbols": [],
+      "metadata": {
+        "tested_by_evidence": "tests/test_cost_analytics.py:25-60"
+      }
+    },
+    {
+      "id": "rule:BR-09",
+      "name": "RFC 9700 Refresh Token Family Rotation",
+      "kind": "BUSINESS_RULE",
+      "file_path": null,
+      "line_start": null,
+      "line_end": null,
+      "docstring": "Refresh tokens are strictly single-use. Re-use of an already consumed token revokes the entire token family.",
+      "confidence": "HIGH",
+      "evidence": "app/modules/auth/service.py:120-155",
+      "last_verified": "2026-10-04",
+      "source_symbols": [],
+      "metadata": {
+        "tested_by_evidence": "tests/test_security_and_gateway.py:50-85"
+      }
+    },
+    {
+      "id": "rule:BR-10",
+      "name": "Discrete State Transition Conformance",
+      "kind": "BUSINESS_RULE",
+      "file_path": null,
+      "line_start": null,
+      "line_end": null,
+      "docstring": "Mission state changes must strictly follow the defined VALID_TRANSITIONS graph. Illegal jumps raise InvalidStateError.",
+      "confidence": "HIGH",
+      "evidence": "app/modules/missions/state_machine.py:30-70",
+      "last_verified": "2026-10-04",
+      "source_symbols": [],
+      "metadata": {
+        "tested_by_evidence": "tests/test_unified_mission.py:20-40"
+      }
+    },
+    {
+      "id": "flow:UF-01",
+      "name": "Autonomous Mission Execution Journey",
+      "kind": "USER_FLOW",
+      "file_path": null,
+      "line_start": null,
+      "line_end": null,
+      "docstring": "Developer submits goal in UI -> AST context gathered -> Multi-stage plan created -> Developer approves plan -> Agent executes tools -> 8-Gate verification runs -> Git diff presented.",
+      "confidence": "HIGH",
+      "evidence": "app/modules/agent/unified_engine.py:80-220",
+      "last_verified": "2026-10-04",
+      "source_symbols": [],
+      "metadata": {}
+    },
+    {
+      "id": "flow:UF-02",
+      "name": "Superuser API Key Provisioning",
+      "kind": "USER_FLOW",
+      "file_path": null,
+      "line_start": null,
+      "line_end": null,
+      "docstring": "Superuser logs into console -> Enters tenant details -> Backend generates Argon2id hashed key -> Returns key with role scopes.",
+      "confidence": "HIGH",
+      "evidence": "app/modules/auth/apis.py:227-250",
+      "last_verified": "2026-10-04",
+      "source_symbols": [],
+      "metadata": {}
+    },
+    {
+      "id": "flow:UF-03",
+      "name": "Multi-Model Fast Failover Stream",
+      "kind": "USER_FLOW",
+      "file_path": null,
+      "line_start": null,
+      "line_end": null,
+      "docstring": "Client connects to SSE -> Gateway attempts Nemotron 3 Ultra -> If offline, failover to Gemini 2.5 Flash -> Stream tokens to UI.",
+      "confidence": "HIGH",
+      "evidence": "app/core/llm_gateway.py:45-110",
+      "last_verified": "2026-10-04",
+      "source_symbols": [],
+      "metadata": {}
+    },
+    {
+      "id": "flow:UF-04",
+      "name": "Mission Cost Ledger & Financial Audit",
+      "kind": "USER_FLOW",
+      "file_path": null,
+      "line_start": null,
+      "line_end": null,
+      "docstring": "Mission finishes turn -> Prompt and completion tokens tallied -> Cost amortized against Spot rates -> Written to PostgreSQL.",
+      "confidence": "HIGH",
+      "evidence": "app/modules/cost/tracker.py:60-120",
+      "last_verified": "2026-10-04",
+      "source_symbols": [],
+      "metadata": {}
+    },
+    {
+      "id": "flow:UF-05",
+      "name": "Constitutional Repository Scaffolding",
+      "kind": "USER_FLOW",
+      "file_path": null,
+      "line_start": null,
+      "line_end": null,
+      "docstring": "Admin issues POST /constitution/scaffold -> Engine writes .agent/ coding standards, testing rules, and ADR templates.",
+      "confidence": "HIGH",
+      "evidence": "app/modules/constitution/service.py:40-85",
+      "last_verified": "2026-10-04",
+      "source_symbols": [],
+      "metadata": {}
+    },
+    {
+      "id": "api:POST_/api/v1/missions",
+      "name": "POST /api/v1/missions",
+      "kind": "API_ENDPOINT",
+      "file_path": null,
+      "line_start": null,
+      "line_end": null,
+      "docstring": "Create autonomous mission",
+      "confidence": "HIGH",
+      "evidence": "app/modules/missions/apis.py:32",
+      "last_verified": "2026-10-04",
+      "source_symbols": [],
+      "metadata": {}
+    },
+    {
+      "id": "api:GET_/api/v1/missions/{id}",
+      "name": "GET /api/v1/missions/{id}",
+      "kind": "API_ENDPOINT",
+      "file_path": null,
+      "line_start": null,
+      "line_end": null,
+      "docstring": "Retrieve mission state",
+      "confidence": "HIGH",
+      "evidence": "app/modules/missions/apis.py:66",
+      "last_verified": "2026-10-04",
+      "source_symbols": [],
+      "metadata": {}
+    },
+    {
+      "id": "api:GET_/api/v1/missions/{id}/stream",
+      "name": "GET /api/v1/missions/{id}/stream",
+      "kind": "API_ENDPOINT",
+      "file_path": null,
+      "line_start": null,
+      "line_end": null,
+      "docstring": "Real-time SSE event stream",
+      "confidence": "HIGH",
+      "evidence": "app/modules/missions/apis.py:85",
+      "last_verified": "2026-10-04",
+      "source_symbols": [],
+      "metadata": {}
+    },
+    {
+      "id": "api:POST_/api/v1/missions/{id}/plan/approve",
+      "name": "POST /api/v1/missions/{id}/plan/approve",
+      "kind": "API_ENDPOINT",
+      "file_path": null,
+      "line_start": null,
+      "line_end": null,
+      "docstring": "Approve execution plan",
+      "confidence": "HIGH",
+      "evidence": "app/modules/missions/apis.py:128",
+      "last_verified": "2026-10-04",
+      "source_symbols": [],
+      "metadata": {}
+    },
+    {
+      "id": "api:POST_/api/v1/missions/{id}/permissions",
+      "name": "POST /api/v1/missions/{id}/permissions",
+      "kind": "API_ENDPOINT",
+      "file_path": null,
+      "line_start": null,
+      "line_end": null,
+      "docstring": "Approve terminal action",
+      "confidence": "HIGH",
+      "evidence": "app/modules/missions/apis.py:160",
+      "last_verified": "2026-10-04",
+      "source_symbols": [],
+      "metadata": {}
+    },
+    {
+      "id": "api:GET_/api/v1/missions/{id}/diff",
+      "name": "GET /api/v1/missions/{id}/diff",
+      "kind": "API_ENDPOINT",
+      "file_path": null,
+      "line_start": null,
+      "line_end": null,
+      "docstring": "Inspect staged git diff",
+      "confidence": "HIGH",
+      "evidence": "app/modules/missions/apis.py:231",
+      "last_verified": "2026-10-04",
+      "source_symbols": [],
+      "metadata": {}
+    },
+    {
+      "id": "api:POST_/api/v1/missions/{id}/rollback",
+      "name": "POST /api/v1/missions/{id}/rollback",
+      "kind": "API_ENDPOINT",
+      "file_path": null,
+      "line_start": null,
+      "line_end": null,
+      "docstring": "Revert to checkpoint",
+      "confidence": "HIGH",
+      "evidence": "app/modules/missions/apis.py:199",
+      "last_verified": "2026-10-04",
+      "source_symbols": [],
+      "metadata": {}
+    },
+    {
+      "id": "api:POST_/api/v1/auth/register",
+      "name": "POST /api/v1/auth/register",
+      "kind": "API_ENDPOINT",
+      "file_path": null,
+      "line_start": null,
+      "line_end": null,
+      "docstring": "User registration",
+      "confidence": "HIGH",
+      "evidence": "app/modules/auth/apis.py:31",
+      "last_verified": "2026-10-04",
+      "source_symbols": [],
+      "metadata": {}
+    },
+    {
+      "id": "api:POST_/api/v1/auth/login",
+      "name": "POST /api/v1/auth/login",
+      "kind": "API_ENDPOINT",
+      "file_path": null,
+      "line_start": null,
+      "line_end": null,
+      "docstring": "User login & JWT issue",
+      "confidence": "HIGH",
+      "evidence": "app/modules/auth/apis.py:75",
+      "last_verified": "2026-10-04",
+      "source_symbols": [],
+      "metadata": {}
+    },
+    {
+      "id": "api:POST_/api/v1/auth/keys/generate",
+      "name": "POST /api/v1/auth/keys/generate",
+      "kind": "API_ENDPOINT",
+      "file_path": null,
+      "line_start": null,
+      "line_end": null,
+      "docstring": "Generate API Key",
+      "confidence": "HIGH",
+      "evidence": "app/modules/auth/apis.py:227",
+      "last_verified": "2026-10-04",
+      "source_symbols": [],
+      "metadata": {}
+    },
+    {
+      "id": "api:GET_/api/v1/auth/sessions",
+      "name": "GET /api/v1/auth/sessions",
+      "kind": "API_ENDPOINT",
+      "file_path": null,
+      "line_start": null,
+      "line_end": null,
+      "docstring": "List active sessions",
+      "confidence": "HIGH",
+      "evidence": "app/modules/auth/apis.py:173",
+      "last_verified": "2026-10-04",
+      "source_symbols": [],
+      "metadata": {}
+    },
+    {
+      "id": "api:DELETE_/api/v1/auth/sessions/{id}",
+      "name": "DELETE /api/v1/auth/sessions/{id}",
+      "kind": "API_ENDPOINT",
+      "file_path": null,
+      "line_start": null,
+      "line_end": null,
+      "docstring": "Revoke session",
+      "confidence": "HIGH",
+      "evidence": "app/modules/auth/apis.py:185",
+      "last_verified": "2026-10-04",
+      "source_symbols": [],
+      "metadata": {}
+    },
+    {
+      "id": "api:GET_/api/v1/models",
+      "name": "GET /api/v1/models",
+      "kind": "API_ENDPOINT",
+      "file_path": null,
+      "line_start": null,
+      "line_end": null,
+      "docstring": "List authorized models",
+      "confidence": "HIGH",
+      "evidence": "app/modules/gateway/apis.py:25",
+      "last_verified": "2026-10-04",
+      "source_symbols": [],
+      "metadata": {}
+    },
+    {
+      "id": "api:POST_/api/v1/models/generate",
+      "name": "POST /api/v1/models/generate",
+      "kind": "API_ENDPOINT",
+      "file_path": null,
+      "line_start": null,
+      "line_end": null,
+      "docstring": "Synchronous model call",
+      "confidence": "HIGH",
+      "evidence": "app/modules/gateway/apis.py:37",
+      "last_verified": "2026-10-04",
+      "source_symbols": [],
+      "metadata": {}
+    },
+    {
+      "id": "api:POST_/api/v1/models/stream",
+      "name": "POST /api/v1/models/stream",
+      "kind": "API_ENDPOINT",
+      "file_path": null,
+      "line_start": null,
+      "line_end": null,
+      "docstring": "Streamed model response",
+      "confidence": "HIGH",
+      "evidence": "app/modules/gateway/apis.py:49",
+      "last_verified": "2026-10-04",
+      "source_symbols": [],
+      "metadata": {}
+    },
+    {
+      "id": "api:POST_/api/v1/admin/models",
+      "name": "POST /api/v1/admin/models",
+      "kind": "API_ENDPOINT",
+      "file_path": null,
+      "line_start": null,
+      "line_end": null,
+      "docstring": "Register model",
+      "confidence": "HIGH",
+      "evidence": "app/modules/gateway/apis.py:82",
+      "last_verified": "2026-10-04",
+      "source_symbols": [],
+      "metadata": {}
+    },
+    {
+      "id": "api:GET_/api/v1/cost/summary",
+      "name": "GET /api/v1/cost/summary",
+      "kind": "API_ENDPOINT",
+      "file_path": null,
+      "line_start": null,
+      "line_end": null,
+      "docstring": "Aggregated financial spend",
+      "confidence": "HIGH",
+      "evidence": "app/modules/cost/apis.py:13",
+      "last_verified": "2026-10-04",
+      "source_symbols": [],
+      "metadata": {}
+    },
+    {
+      "id": "api:GET_/api/v1/cost/records",
+      "name": "GET /api/v1/cost/records",
+      "kind": "API_ENDPOINT",
+      "file_path": null,
+      "line_start": null,
+      "line_end": null,
+      "docstring": "List mission cost records",
+      "confidence": "HIGH",
+      "evidence": "app/modules/cost/apis.py:30",
+      "last_verified": "2026-10-04",
+      "source_symbols": [],
+      "metadata": {}
+    },
+    {
+      "id": "api:POST_/api/v1/cost/check-budget",
+      "name": "POST /api/v1/cost/check-budget",
+      "kind": "API_ENDPOINT",
+      "file_path": null,
+      "line_start": null,
+      "line_end": null,
+      "docstring": "Validate budget headroom",
+      "confidence": "HIGH",
+      "evidence": "app/modules/cost/apis.py:66",
+      "last_verified": "2026-10-04",
+      "source_symbols": [],
+      "metadata": {}
+    },
+    {
+      "id": "api:GET_/api/v1/intelligence/graph",
+      "name": "GET /api/v1/intelligence/graph",
+      "kind": "API_ENDPOINT",
+      "file_path": null,
+      "line_start": null,
+      "line_end": null,
+      "docstring": "Codebase dependency graph",
+      "confidence": "HIGH",
+      "evidence": "app/modules/intelligence/apis.py:24",
+      "last_verified": "2026-10-04",
+      "source_symbols": [],
+      "metadata": {}
+    },
+    {
+      "id": "api:POST_/api/v1/intelligence/impact",
+      "name": "POST /api/v1/intelligence/impact",
+      "kind": "API_ENDPOINT",
+      "file_path": null,
+      "line_start": null,
+      "line_end": null,
+      "docstring": "Calculate blast radius",
+      "confidence": "HIGH",
+      "evidence": "app/modules/intelligence/apis.py:35",
+      "last_verified": "2026-10-04",
+      "source_symbols": [],
+      "metadata": {}
+    },
+    {
+      "id": "api:GET_/api/v1/constitution/rules",
+      "name": "GET /api/v1/constitution/rules",
+      "kind": "API_ENDPOINT",
+      "file_path": null,
+      "line_start": null,
+      "line_end": null,
+      "docstring": "List constitutional rules",
+      "confidence": "HIGH",
+      "evidence": "app/modules/constitution/apis.py:25",
+      "last_verified": "2026-10-04",
+      "source_symbols": [],
+      "metadata": {}
+    },
+    {
+      "id": "api:POST_/api/v1/constitution/scaffold",
+      "name": "POST /api/v1/constitution/scaffold",
+      "kind": "API_ENDPOINT",
+      "file_path": null,
+      "line_start": null,
+      "line_end": null,
+      "docstring": "Scaffold .agent/ structure",
+      "confidence": "HIGH",
+      "evidence": "app/modules/constitution/apis.py:14",
+      "last_verified": "2026-10-04",
+      "source_symbols": [],
+      "metadata": {}
+    },
+    {
+      "id": "comp:Navbar",
+      "name": "Navbar.tsx",
+      "kind": "COMPONENT",
+      "file_path": "../nemotron-agent-frontend/src/components/navbar/Navbar.tsx",
+      "line_start": null,
+      "line_end": null,
+      "docstring": "Header navigation, Superuser gate toggle, backend status indicator",
+      "confidence": "HIGH",
+      "evidence": "../nemotron-agent-frontend/src/components/navbar/Navbar.tsx:1-90",
+      "last_verified": "2026-10-04",
+      "source_symbols": [],
+      "metadata": {}
+    },
+    {
+      "id": "comp:MissionControl",
+      "name": "MissionControl.tsx",
+      "kind": "COMPONENT",
+      "file_path": "../nemotron-agent-frontend/src/components/agent/MissionControl.tsx",
+      "line_start": null,
+      "line_end": null,
+      "docstring": "Interactive prompt input, phase badges, stop/rollback triggers",
+      "confidence": "HIGH",
+      "evidence": "../nemotron-agent-frontend/src/components/agent/MissionControl.tsx:1-120",
+      "last_verified": "2026-10-04",
+      "source_symbols": [],
+      "metadata": {}
+    },
+    {
+      "id": "comp:ThoughtStream",
+      "name": "ThoughtStream.tsx",
+      "kind": "COMPONENT",
+      "file_path": "../nemotron-agent-frontend/src/components/agent/ThoughtStream.tsx",
+      "line_start": null,
+      "line_end": null,
+      "docstring": "Real-time streaming display of reasoning thoughts and CoT",
+      "confidence": "HIGH",
+      "evidence": "../nemotron-agent-frontend/src/components/agent/ThoughtStream.tsx:1-110",
+      "last_verified": "2026-10-04",
+      "source_symbols": [],
+      "metadata": {}
+    },
+    {
+      "id": "comp:ExecutionTerminal",
+      "name": "ExecutionTerminal.tsx",
+      "kind": "COMPONENT",
+      "file_path": "../nemotron-agent-frontend/src/components/agent/ExecutionTerminal.tsx",
+      "line_start": null,
+      "line_end": null,
+      "docstring": "Virtual interactive terminal showing live tool execution and test logs",
+      "confidence": "HIGH",
+      "evidence": "../nemotron-agent-frontend/src/components/agent/ExecutionTerminal.tsx:1-95",
+      "last_verified": "2026-10-04",
+      "source_symbols": [],
+      "metadata": {}
+    },
+    {
+      "id": "comp:ApiKeyManager",
+      "name": "ApiKeyManager.tsx",
+      "kind": "COMPONENT",
+      "file_path": "../nemotron-agent-frontend/src/components/superuser/ApiKeyManager.tsx",
+      "line_start": null,
+      "line_end": null,
+      "docstring": "Superuser API key generation, token revocation, and session table",
+      "confidence": "HIGH",
+      "evidence": "../nemotron-agent-frontend/src/components/superuser/ApiKeyManager.tsx:1-140",
+      "last_verified": "2026-10-04",
+      "source_symbols": [],
+      "metadata": {}
+    },
+    {
+      "id": "comp:ModelGatewayView",
+      "name": "ModelGatewayView.tsx",
+      "kind": "COMPONENT",
+      "file_path": "../nemotron-agent-frontend/src/components/superuser/ModelGatewayView.tsx",
+      "line_start": null,
+      "line_end": null,
+      "docstring": "Model registry latency ping, status indicators, and quota cards",
+      "confidence": "HIGH",
+      "evidence": "../nemotron-agent-frontend/src/components/superuser/ModelGatewayView.tsx:1-115",
+      "last_verified": "2026-10-04",
+      "source_symbols": [],
+      "metadata": {}
+    },
+    {
+      "id": "comp:CostAnalyticsView",
+      "name": "CostAnalyticsView.tsx",
+      "kind": "COMPONENT",
+      "file_path": "../nemotron-agent-frontend/src/components/superuser/CostAnalyticsView.tsx",
+      "line_start": null,
+      "line_end": null,
+      "docstring": "Financial token breakdown charts and historical mission cost ledger",
+      "confidence": "HIGH",
+      "evidence": "../nemotron-agent-frontend/src/components/superuser/CostAnalyticsView.tsx:1-125",
+      "last_verified": "2026-10-04",
+      "source_symbols": [],
+      "metadata": {}
+    },
+    {
+      "id": "comp:ConstitutionView",
+      "name": "ConstitutionView.tsx",
+      "kind": "COMPONENT",
+      "file_path": "../nemotron-agent-frontend/src/components/superuser/ConstitutionView.tsx",
+      "line_start": null,
+      "line_end": null,
+      "docstring": "Display of 8-Gate verification battery and repository rules",
+      "confidence": "HIGH",
+      "evidence": "../nemotron-agent-frontend/src/components/superuser/ConstitutionView.tsx:1-110",
+      "last_verified": "2026-10-04",
+      "source_symbols": [],
+      "metadata": {}
+    },
+    {
+      "id": "comp:SuperuserGate",
+      "name": "SuperuserGate.tsx",
+      "kind": "COMPONENT",
+      "file_path": "../nemotron-agent-frontend/src/components/superuser/SuperuserGate.tsx",
+      "line_start": null,
+      "line_end": null,
+      "docstring": "PIN / Passcode security barrier protecting administration views",
+      "confidence": "HIGH",
+      "evidence": "../nemotron-agent-frontend/src/components/superuser/SuperuserGate.tsx:1-85",
+      "last_verified": "2026-10-04",
+      "source_symbols": [],
+      "metadata": {}
+    },
+    {
+      "id": "entity:missions",
+      "name": "missions",
+      "kind": "DATABASE_ENTITY",
+      "file_path": null,
+      "line_start": null,
+      "line_end": null,
+      "docstring": "Primary persistent mission record",
+      "confidence": "HIGH",
+      "evidence": "app/modules/missions/models.py:25-50",
+      "last_verified": "2026-10-04",
+      "source_symbols": [],
+      "metadata": {}
+    },
+    {
+      "id": "entity:mission_messages",
+      "name": "mission_messages",
+      "kind": "DATABASE_ENTITY",
+      "file_path": null,
+      "line_start": null,
+      "line_end": null,
+      "docstring": "User and agent dialogue history",
+      "confidence": "HIGH",
+      "evidence": "app/modules/missions/models.py:55-80",
+      "last_verified": "2026-10-04",
+      "source_symbols": [],
+      "metadata": {}
+    },
+    {
+      "id": "entity:mission_events",
+      "name": "mission_events",
+      "kind": "DATABASE_ENTITY",
+      "file_path": null,
+      "line_start": null,
+      "line_end": null,
+      "docstring": "Granular thought and execution events",
+      "confidence": "HIGH",
+      "evidence": "app/modules/missions/models.py:85-115",
+      "last_verified": "2026-10-04",
+      "source_symbols": [],
+      "metadata": {}
+    },
+    {
+      "id": "entity:mission_plans",
+      "name": "mission_plans",
+      "kind": "DATABASE_ENTITY",
+      "file_path": null,
+      "line_start": null,
+      "line_end": null,
+      "docstring": "Multi-stage hierarchical plans",
+      "confidence": "HIGH",
+      "evidence": "app/modules/missions/models.py:120-145",
+      "last_verified": "2026-10-04",
+      "source_symbols": [],
+      "metadata": {}
+    },
+    {
+      "id": "entity:mission_diffs",
+      "name": "mission_diffs",
+      "kind": "DATABASE_ENTITY",
+      "file_path": null,
+      "line_start": null,
+      "line_end": null,
+      "docstring": "Staged git diffs produced by agent",
+      "confidence": "HIGH",
+      "evidence": "app/modules/missions/models.py:150-175",
+      "last_verified": "2026-10-04",
+      "source_symbols": [],
+      "metadata": {}
+    },
+    {
+      "id": "entity:mission_checkpoints",
+      "name": "mission_checkpoints",
+      "kind": "DATABASE_ENTITY",
+      "file_path": null,
+      "line_start": null,
+      "line_end": null,
+      "docstring": "Rollback snapshots before edit",
+      "confidence": "HIGH",
+      "evidence": "app/modules/missions/models.py:180-205",
+      "last_verified": "2026-10-04",
+      "source_symbols": [],
+      "metadata": {}
+    },
+    {
+      "id": "entity:cost_records",
+      "name": "cost_records",
+      "kind": "DATABASE_ENTITY",
+      "file_path": null,
+      "line_start": null,
+      "line_end": null,
+      "docstring": "Financial spend and token audit entries",
+      "confidence": "HIGH",
+      "evidence": "app/modules/cost/models.py:15-45",
+      "last_verified": "2026-10-04",
+      "source_symbols": [],
+      "metadata": {}
+    },
+    {
+      "id": "entity:security_users",
+      "name": "security_users",
+      "kind": "DATABASE_ENTITY",
+      "file_path": null,
+      "line_start": null,
+      "line_end": null,
+      "docstring": "User credentials and RBAC roles",
+      "confidence": "HIGH",
+      "evidence": "app/modules/auth/models.py:25-50",
+      "last_verified": "2026-10-04",
+      "source_symbols": [],
+      "metadata": {}
+    },
+    {
+      "id": "entity:security_sessions",
+      "name": "security_sessions",
+      "kind": "DATABASE_ENTITY",
+      "file_path": null,
+      "line_start": null,
+      "line_end": null,
+      "docstring": "Active authentication sessions",
+      "confidence": "HIGH",
+      "evidence": "app/modules/auth/models.py:55-80",
+      "last_verified": "2026-10-04",
+      "source_symbols": [],
+      "metadata": {}
+    },
+    {
+      "id": "entity:refresh_tokens",
+      "name": "refresh_tokens",
+      "kind": "DATABASE_ENTITY",
+      "file_path": null,
+      "line_start": null,
+      "line_end": null,
+      "docstring": "Rotating single-use refresh token families",
+      "confidence": "HIGH",
+      "evidence": "app/modules/auth/models.py:85-115",
+      "last_verified": "2026-10-04",
+      "source_symbols": [],
+      "metadata": {}
+    },
+    {
+      "id": "entity:model_providers",
+      "name": "model_providers",
+      "kind": "DATABASE_ENTITY",
+      "file_path": null,
+      "line_start": null,
+      "line_end": null,
+      "docstring": "Model inference providers (vLLM, Groq)",
+      "confidence": "HIGH",
+      "evidence": "app/modules/gateway/models.py:15-40",
+      "last_verified": "2026-10-04",
+      "source_symbols": [],
+      "metadata": {}
+    },
+    {
+      "id": "entity:registered_models",
+      "name": "registered_models",
+      "kind": "DATABASE_ENTITY",
+      "file_path": null,
+      "line_start": null,
+      "line_end": null,
+      "docstring": "Model catalog with capability flags",
+      "confidence": "HIGH",
+      "evidence": "app/modules/gateway/models.py:45-75",
+      "last_verified": "2026-10-04",
+      "source_symbols": [],
+      "metadata": {}
+    },
+    {
+      "id": "test:test_ast_parser",
+      "name": "test_ast_parser.py",
+      "kind": "TEST",
+      "file_path": "tests/test_ast_parser.py",
+      "line_start": null,
+      "line_end": null,
+      "docstring": "AST parsing, functions, classes",
+      "confidence": "HIGH",
+      "evidence": "tests/test_ast_parser.py:1-40",
+      "last_verified": "2026-10-04",
+      "source_symbols": [],
+      "metadata": {}
+    },
+    {
+      "id": "test:test_repo_graph",
+      "name": "test_repo_graph.py",
+      "kind": "TEST",
+      "file_path": "tests/test_repo_graph.py",
+      "line_start": null,
+      "line_end": null,
+      "docstring": "RepoGraph traversal and subgraphs",
+      "confidence": "HIGH",
+      "evidence": "tests/test_repo_graph.py:1-45",
+      "last_verified": "2026-10-04",
+      "source_symbols": [],
+      "metadata": {}
+    },
+    {
+      "id": "test:test_impact_scope",
+      "name": "test_impact_scope.py",
+      "kind": "TEST",
+      "file_path": "tests/test_impact_scope.py",
+      "line_start": null,
+      "line_end": null,
+      "docstring": "TaskScope containment and blast radius",
+      "confidence": "HIGH",
+      "evidence": "tests/test_impact_scope.py:1-50",
+      "last_verified": "2026-10-04",
+      "source_symbols": [],
+      "metadata": {}
+    },
+    {
+      "id": "test:test_verification_gates",
+      "name": "test_verification_gates.py",
+      "kind": "TEST",
+      "file_path": "tests/test_verification_gates.py",
+      "line_start": null,
+      "line_end": null,
+      "docstring": "8-Gate verification battery",
+      "confidence": "HIGH",
+      "evidence": "tests/test_verification_gates.py:1-55",
+      "last_verified": "2026-10-04",
+      "source_symbols": [],
+      "metadata": {}
+    },
+    {
+      "id": "test:test_security_and_gateway",
+      "name": "test_security_and_gateway.py",
+      "kind": "TEST",
+      "file_path": "tests/test_security_and_gateway.py",
+      "line_start": null,
+      "line_end": null,
+      "docstring": "Argon2id, JWT, SSRF, Model Gateway",
+      "confidence": "HIGH",
+      "evidence": "tests/test_security_and_gateway.py:1-80",
+      "last_verified": "2026-10-04",
+      "source_symbols": [],
+      "metadata": {}
+    },
+    {
+      "id": "test:test_unified_mission",
+      "name": "test_unified_mission.py",
+      "kind": "TEST",
+      "file_path": "tests/test_unified_mission.py",
+      "line_start": null,
+      "line_end": null,
+      "docstring": "Mission state machine, slash commands",
+      "confidence": "HIGH",
+      "evidence": "tests/test_unified_mission.py:1-75",
+      "last_verified": "2026-10-04",
+      "source_symbols": [],
+      "metadata": {}
+    },
+    {
+      "id": "test:test_orchestrator_roles",
+      "name": "test_orchestrator_roles.py",
+      "kind": "TEST",
+      "file_path": "tests/test_orchestrator_roles.py",
+      "line_start": null,
+      "line_end": null,
+      "docstring": "Planner, Reviewer, Coder, Tester",
+      "confidence": "HIGH",
+      "evidence": "tests/test_orchestrator_roles.py:1-60",
+      "last_verified": "2026-10-04",
+      "source_symbols": [],
+      "metadata": {}
+    },
+    {
+      "id": "test:test_cost_analytics",
+      "name": "test_cost_analytics.py",
+      "kind": "TEST",
+      "file_path": "tests/test_cost_analytics.py",
+      "line_start": null,
+      "line_end": null,
+      "docstring": "Token accounting and budget guard",
+      "confidence": "HIGH",
+      "evidence": "tests/test_cost_analytics.py:1-55",
+      "last_verified": "2026-10-04",
+      "source_symbols": [],
+      "metadata": {}
+    },
+    {
+      "id": "test:test_cost_db",
+      "name": "test_cost_db.py",
+      "kind": "TEST",
+      "file_path": "tests/test_cost_db.py",
+      "line_start": null,
+      "line_end": null,
+      "docstring": "PostgreSQL CostRecord persistence",
+      "confidence": "HIGH",
+      "evidence": "tests/test_cost_db.py:1-45",
+      "last_verified": "2026-10-04",
+      "source_symbols": [],
+      "metadata": {}
+    },
+    {
+      "id": "test:test_permissions_and_gates",
+      "name": "test_permissions_and_gates.py",
+      "kind": "TEST",
+      "file_path": "tests/test_permissions_and_gates.py",
+      "line_start": null,
+      "line_end": null,
+      "docstring": "PermissionLevels 0-4 and approvals",
+      "confidence": "HIGH",
+      "evidence": "tests/test_permissions_and_gates.py:1-50",
+      "last_verified": "2026-10-04",
+      "source_symbols": [],
+      "metadata": {}
+    },
+    {
+      "id": "issue:ISSUE-01",
+      "name": "Parallel Agent Endpoint Surface Duplication",
+      "kind": "ISSUE",
+      "file_path": null,
+      "line_start": null,
+      "line_end": null,
+      "docstring": "The backend exposes both legacy `/api/v1/agent/*` and primary `/api/v1/missions/*`. While preserving backwards compatibility, maintenance of two parallel routing pipelines risks drift.",
+      "confidence": "HIGH",
+      "evidence": "app/modules/agent/apis.py vs app/modules/missions/apis.py",
+      "last_verified": "2026-10-04",
+      "source_symbols": [],
+      "metadata": {
+        "severity": "High"
+      }
+    },
+    {
+      "id": "issue:ISSUE-02",
+      "name": "Frontend SSE Hook Targets Legacy Route",
+      "kind": "ISSUE",
+      "file_path": null,
+      "line_start": null,
+      "line_end": null,
+      "docstring": "`useAgentStream.ts` in the frontend connects to `/api/v1/agent/stream/{id}` instead of `/api/v1/missions/{id}/stream`. Both stream events, but `/missions` supports full persistence and interactive plan approval.",
+      "confidence": "HIGH",
+      "evidence": "../nemotron-agent-frontend/src/hooks/useAgentStream.ts:38",
+      "last_verified": "2026-10-04",
+      "source_symbols": [],
+      "metadata": {
+        "severity": "Medium"
+      }
+    },
+    {
+      "id": "issue:ISSUE-03",
+      "name": "Alembic Base Partial ORM Model Registration",
+      "kind": "ISSUE",
+      "file_path": null,
+      "line_start": null,
+      "line_end": null,
+      "docstring": "`app/db/base.py` currently imports only `CostRecord` instead of all SQLAlchemy models (`Mission`, `User`, `RegisteredModel`), which could cause autogenerate migrations to omit mission tables.",
+      "confidence": "HIGH",
+      "evidence": "app/db/base.py:3-6",
+      "last_verified": "2026-10-04",
+      "source_symbols": [],
+      "metadata": {
+        "severity": "Medium"
+      }
+    },
+    {
+      "id": "issue:ISSUE-04",
+      "name": "Cross-Project TaskScope Confinement Boundary",
+      "kind": "ISSUE",
+      "file_path": null,
+      "line_start": null,
+      "line_end": null,
+      "docstring": "The backend and frontend live in adjacent directories (`/nemotron-agent-engine` and `/nemotron-agent-frontend`). Backend `TaskScope` by default locks to engine root, requiring explicit cross-workspace paths for full-stack edits.",
+      "confidence": "HIGH",
+      "evidence": "app/modules/intelligence/impact/scope_lock.py:20-55",
+      "last_verified": "2026-10-04",
+      "source_symbols": [],
+      "metadata": {
+        "severity": "Low"
+      }
+    }
+  ],
+  "edges": [
+    {
+      "source_id": "project:nemotron_dual_engine",
+      "target_id": "repo:nemotron-agent-engine",
+      "kind": "OWNS",
+      "weight": 1.0,
+      "evidence": null,
+      "confidence": "HIGH",
+      "metadata": {}
+    },
+    {
+      "source_id": "project:nemotron_dual_engine",
+      "target_id": "repo:nemotron-agent-frontend",
+      "kind": "OWNS",
+      "weight": 1.0,
+      "evidence": null,
+      "confidence": "HIGH",
+      "metadata": {}
+    },
+    {
+      "source_id": "project:nemotron_dual_engine",
+      "target_id": "cap:autonomous_software_engineering",
+      "kind": "CONTAINS",
+      "weight": 1.0,
+      "evidence": null,
+      "confidence": "HIGH",
+      "metadata": {}
+    },
+    {
+      "source_id": "project:nemotron_dual_engine",
+      "target_id": "cap:codebase_architectural_governance",
+      "kind": "CONTAINS",
+      "weight": 1.0,
+      "evidence": null,
+      "confidence": "HIGH",
+      "metadata": {}
+    },
+    {
+      "source_id": "project:nemotron_dual_engine",
+      "target_id": "cap:multi_model_inference_routing",
+      "kind": "CONTAINS",
+      "weight": 1.0,
+      "evidence": null,
+      "confidence": "HIGH",
+      "metadata": {}
+    },
+    {
+      "source_id": "project:nemotron_dual_engine",
+      "target_id": "cap:financial_cost_observability",
+      "kind": "CONTAINS",
+      "weight": 1.0,
+      "evidence": null,
+      "confidence": "HIGH",
+      "metadata": {}
+    },
+    {
+      "source_id": "project:nemotron_dual_engine",
+      "target_id": "cap:identity_and_secret_management",
+      "kind": "CONTAINS",
+      "weight": 1.0,
+      "evidence": null,
+      "confidence": "HIGH",
+      "metadata": {}
+    },
+    {
+      "source_id": "project:nemotron_dual_engine",
+      "target_id": "cap:realtime_developer_interaction",
+      "kind": "CONTAINS",
+      "weight": 1.0,
+      "evidence": null,
+      "confidence": "HIGH",
+      "metadata": {}
+    },
+    {
+      "source_id": "feat.autonomous_missions",
+      "target_id": "cap:autonomous_software_engineering",
+      "kind": "REALIZES",
+      "weight": 1.0,
+      "evidence": null,
+      "confidence": "HIGH",
+      "metadata": {}
+    },
+    {
+      "source_id": "feat.multi_role_orchestration",
+      "target_id": "cap:autonomous_software_engineering",
+      "kind": "REALIZES",
+      "weight": 1.0,
+      "evidence": null,
+      "confidence": "HIGH",
+      "metadata": {}
+    },
+    {
+      "source_id": "feat.verification_gates",
+      "target_id": "cap:codebase_architectural_governance",
+      "kind": "REALIZES",
+      "weight": 1.0,
+      "evidence": null,
+      "confidence": "HIGH",
+      "metadata": {}
+    },
+    {
+      "source_id": "feat.model_gateway",
+      "target_id": "cap:multi_model_inference_routing",
+      "kind": "REALIZES",
+      "weight": 1.0,
+      "evidence": null,
+      "confidence": "HIGH",
+      "metadata": {}
+    },
+    {
+      "source_id": "feat.token_cost_analytics",
+      "target_id": "cap:financial_cost_observability",
+      "kind": "REALIZES",
+      "weight": 1.0,
+      "evidence": null,
+      "confidence": "HIGH",
+      "metadata": {}
+    },
+    {
+      "source_id": "feat.security_and_auth",
+      "target_id": "cap:identity_and_secret_management",
+      "kind": "REALIZES",
+      "weight": 1.0,
+      "evidence": null,
+      "confidence": "HIGH",
+      "metadata": {}
+    },
+    {
+      "source_id": "feat.repo_intelligence",
+      "target_id": "cap:codebase_architectural_governance",
+      "kind": "REALIZES",
+      "weight": 1.0,
+      "evidence": null,
+      "confidence": "HIGH",
+      "metadata": {}
+    },
+    {
+      "source_id": "feat.agent_constitution",
+      "target_id": "cap:codebase_architectural_governance",
+      "kind": "REALIZES",
+      "weight": 1.0,
+      "evidence": null,
+      "confidence": "HIGH",
+      "metadata": {}
+    },
+    {
+      "source_id": "feat.realtime_studio",
+      "target_id": "cap:realtime_developer_interaction",
+      "kind": "REALIZES",
+      "weight": 1.0,
+      "evidence": null,
+      "confidence": "HIGH",
+      "metadata": {}
+    },
+    {
+      "source_id": "feat.multi_role_orchestration",
+      "target_id": "rule:BR-01",
+      "kind": "CONSTRAINED_BY",
+      "weight": 1.0,
+      "evidence": null,
+      "confidence": "HIGH",
+      "metadata": {}
+    },
+    {
+      "source_id": "feat.multi_role_orchestration",
+      "target_id": "rule:BR-02",
+      "kind": "CONSTRAINED_BY",
+      "weight": 1.0,
+      "evidence": null,
+      "confidence": "HIGH",
+      "metadata": {}
+    },
+    {
+      "source_id": "feat.verification_gates",
+      "target_id": "rule:BR-03",
+      "kind": "CONSTRAINED_BY",
+      "weight": 1.0,
+      "evidence": null,
+      "confidence": "HIGH",
+      "metadata": {}
+    },
+    {
+      "source_id": "feat.model_gateway",
+      "target_id": "rule:BR-04",
+      "kind": "CONSTRAINED_BY",
+      "weight": 1.0,
+      "evidence": null,
+      "confidence": "HIGH",
+      "metadata": {}
+    },
+    {
+      "source_id": "feat.model_gateway",
+      "target_id": "rule:BR-05",
+      "kind": "CONSTRAINED_BY",
+      "weight": 1.0,
+      "evidence": null,
+      "confidence": "HIGH",
+      "metadata": {}
+    },
+    {
+      "source_id": "feat.security_and_auth",
+      "target_id": "rule:BR-06",
+      "kind": "CONSTRAINED_BY",
+      "weight": 1.0,
+      "evidence": null,
+      "confidence": "HIGH",
+      "metadata": {}
+    },
+    {
+      "source_id": "feat.autonomous_missions",
+      "target_id": "rule:BR-07",
+      "kind": "CONSTRAINED_BY",
+      "weight": 1.0,
+      "evidence": null,
+      "confidence": "HIGH",
+      "metadata": {}
+    },
+    {
+      "source_id": "feat.token_cost_analytics",
+      "target_id": "rule:BR-08",
+      "kind": "CONSTRAINED_BY",
+      "weight": 1.0,
+      "evidence": null,
+      "confidence": "HIGH",
+      "metadata": {}
+    },
+    {
+      "source_id": "feat.security_and_auth",
+      "target_id": "rule:BR-09",
+      "kind": "CONSTRAINED_BY",
+      "weight": 1.0,
+      "evidence": null,
+      "confidence": "HIGH",
+      "metadata": {}
+    },
+    {
+      "source_id": "feat.autonomous_missions",
+      "target_id": "rule:BR-10",
+      "kind": "CONSTRAINED_BY",
+      "weight": 1.0,
+      "evidence": null,
+      "confidence": "HIGH",
+      "metadata": {}
+    },
+    {
+      "source_id": "feat.autonomous_missions",
+      "target_id": "flow:UF-01",
+      "kind": "CONTAINS",
+      "weight": 1.0,
+      "evidence": null,
+      "confidence": "HIGH",
+      "metadata": {}
+    },
+    {
+      "source_id": "feat.security_and_auth",
+      "target_id": "flow:UF-02",
+      "kind": "CONTAINS",
+      "weight": 1.0,
+      "evidence": null,
+      "confidence": "HIGH",
+      "metadata": {}
+    },
+    {
+      "source_id": "feat.model_gateway",
+      "target_id": "flow:UF-03",
+      "kind": "CONTAINS",
+      "weight": 1.0,
+      "evidence": null,
+      "confidence": "HIGH",
+      "metadata": {}
+    },
+    {
+      "source_id": "feat.token_cost_analytics",
+      "target_id": "flow:UF-04",
+      "kind": "CONTAINS",
+      "weight": 1.0,
+      "evidence": null,
+      "confidence": "HIGH",
+      "metadata": {}
+    },
+    {
+      "source_id": "feat.agent_constitution",
+      "target_id": "flow:UF-05",
+      "kind": "CONTAINS",
+      "weight": 1.0,
+      "evidence": null,
+      "confidence": "HIGH",
+      "metadata": {}
+    },
+    {
+      "source_id": "feat.autonomous_missions",
+      "target_id": "api:POST_/api/v1/missions",
+      "kind": "EXPOSES",
+      "weight": 1.0,
+      "evidence": null,
+      "confidence": "HIGH",
+      "metadata": {}
+    },
+    {
+      "source_id": "feat.autonomous_missions",
+      "target_id": "api:GET_/api/v1/missions/{id}",
+      "kind": "EXPOSES",
+      "weight": 1.0,
+      "evidence": null,
+      "confidence": "HIGH",
+      "metadata": {}
+    },
+    {
+      "source_id": "feat.autonomous_missions",
+      "target_id": "api:GET_/api/v1/missions/{id}/stream",
+      "kind": "EXPOSES",
+      "weight": 1.0,
+      "evidence": null,
+      "confidence": "HIGH",
+      "metadata": {}
+    },
+    {
+      "source_id": "feat.autonomous_missions",
+      "target_id": "api:POST_/api/v1/missions/{id}/plan/approve",
+      "kind": "EXPOSES",
+      "weight": 1.0,
+      "evidence": null,
+      "confidence": "HIGH",
+      "metadata": {}
+    },
+    {
+      "source_id": "feat.autonomous_missions",
+      "target_id": "api:POST_/api/v1/missions/{id}/permissions",
+      "kind": "EXPOSES",
+      "weight": 1.0,
+      "evidence": null,
+      "confidence": "HIGH",
+      "metadata": {}
+    },
+    {
+      "source_id": "feat.autonomous_missions",
+      "target_id": "api:GET_/api/v1/missions/{id}/diff",
+      "kind": "EXPOSES",
+      "weight": 1.0,
+      "evidence": null,
+      "confidence": "HIGH",
+      "metadata": {}
+    },
+    {
+      "source_id": "feat.autonomous_missions",
+      "target_id": "api:POST_/api/v1/missions/{id}/rollback",
+      "kind": "EXPOSES",
+      "weight": 1.0,
+      "evidence": null,
+      "confidence": "HIGH",
+      "metadata": {}
+    },
+    {
+      "source_id": "feat.security_and_auth",
+      "target_id": "api:POST_/api/v1/auth/register",
+      "kind": "EXPOSES",
+      "weight": 1.0,
+      "evidence": null,
+      "confidence": "HIGH",
+      "metadata": {}
+    },
+    {
+      "source_id": "feat.security_and_auth",
+      "target_id": "api:POST_/api/v1/auth/login",
+      "kind": "EXPOSES",
+      "weight": 1.0,
+      "evidence": null,
+      "confidence": "HIGH",
+      "metadata": {}
+    },
+    {
+      "source_id": "feat.security_and_auth",
+      "target_id": "api:POST_/api/v1/auth/keys/generate",
+      "kind": "EXPOSES",
+      "weight": 1.0,
+      "evidence": null,
+      "confidence": "HIGH",
+      "metadata": {}
+    },
+    {
+      "source_id": "feat.security_and_auth",
+      "target_id": "api:GET_/api/v1/auth/sessions",
+      "kind": "EXPOSES",
+      "weight": 1.0,
+      "evidence": null,
+      "confidence": "HIGH",
+      "metadata": {}
+    },
+    {
+      "source_id": "feat.security_and_auth",
+      "target_id": "api:DELETE_/api/v1/auth/sessions/{id}",
+      "kind": "EXPOSES",
+      "weight": 1.0,
+      "evidence": null,
+      "confidence": "HIGH",
+      "metadata": {}
+    },
+    {
+      "source_id": "feat.model_gateway",
+      "target_id": "api:GET_/api/v1/models",
+      "kind": "EXPOSES",
+      "weight": 1.0,
+      "evidence": null,
+      "confidence": "HIGH",
+      "metadata": {}
+    },
+    {
+      "source_id": "feat.model_gateway",
+      "target_id": "api:POST_/api/v1/models/generate",
+      "kind": "EXPOSES",
+      "weight": 1.0,
+      "evidence": null,
+      "confidence": "HIGH",
+      "metadata": {}
+    },
+    {
+      "source_id": "feat.model_gateway",
+      "target_id": "api:POST_/api/v1/models/stream",
+      "kind": "EXPOSES",
+      "weight": 1.0,
+      "evidence": null,
+      "confidence": "HIGH",
+      "metadata": {}
+    },
+    {
+      "source_id": "feat.model_gateway",
+      "target_id": "api:POST_/api/v1/admin/models",
+      "kind": "EXPOSES",
+      "weight": 1.0,
+      "evidence": null,
+      "confidence": "HIGH",
+      "metadata": {}
+    },
+    {
+      "source_id": "feat.token_cost_analytics",
+      "target_id": "api:GET_/api/v1/cost/summary",
+      "kind": "EXPOSES",
+      "weight": 1.0,
+      "evidence": null,
+      "confidence": "HIGH",
+      "metadata": {}
+    },
+    {
+      "source_id": "feat.token_cost_analytics",
+      "target_id": "api:GET_/api/v1/cost/records",
+      "kind": "EXPOSES",
+      "weight": 1.0,
+      "evidence": null,
+      "confidence": "HIGH",
+      "metadata": {}
+    },
+    {
+      "source_id": "feat.token_cost_analytics",
+      "target_id": "api:POST_/api/v1/cost/check-budget",
+      "kind": "EXPOSES",
+      "weight": 1.0,
+      "evidence": null,
+      "confidence": "HIGH",
+      "metadata": {}
+    },
+    {
+      "source_id": "feat.repo_intelligence",
+      "target_id": "api:GET_/api/v1/intelligence/graph",
+      "kind": "EXPOSES",
+      "weight": 1.0,
+      "evidence": null,
+      "confidence": "HIGH",
+      "metadata": {}
+    },
+    {
+      "source_id": "feat.repo_intelligence",
+      "target_id": "api:POST_/api/v1/intelligence/impact",
+      "kind": "EXPOSES",
+      "weight": 1.0,
+      "evidence": null,
+      "confidence": "HIGH",
+      "metadata": {}
+    },
+    {
+      "source_id": "feat.agent_constitution",
+      "target_id": "api:GET_/api/v1/constitution/rules",
+      "kind": "EXPOSES",
+      "weight": 1.0,
+      "evidence": null,
+      "confidence": "HIGH",
+      "metadata": {}
+    },
+    {
+      "source_id": "feat.agent_constitution",
+      "target_id": "api:POST_/api/v1/constitution/scaffold",
+      "kind": "EXPOSES",
+      "weight": 1.0,
+      "evidence": null,
+      "confidence": "HIGH",
+      "metadata": {}
+    },
+    {
+      "source_id": "feat.realtime_studio",
+      "target_id": "comp:Navbar",
+      "kind": "RENDERED_BY",
+      "weight": 1.0,
+      "evidence": null,
+      "confidence": "HIGH",
+      "metadata": {}
+    },
+    {
+      "source_id": "feat.realtime_studio",
+      "target_id": "comp:MissionControl",
+      "kind": "RENDERED_BY",
+      "weight": 1.0,
+      "evidence": null,
+      "confidence": "HIGH",
+      "metadata": {}
+    },
+    {
+      "source_id": "feat.realtime_studio",
+      "target_id": "comp:ThoughtStream",
+      "kind": "RENDERED_BY",
+      "weight": 1.0,
+      "evidence": null,
+      "confidence": "HIGH",
+      "metadata": {}
+    },
+    {
+      "source_id": "feat.realtime_studio",
+      "target_id": "comp:ExecutionTerminal",
+      "kind": "RENDERED_BY",
+      "weight": 1.0,
+      "evidence": null,
+      "confidence": "HIGH",
+      "metadata": {}
+    },
+    {
+      "source_id": "feat.security_and_auth",
+      "target_id": "comp:ApiKeyManager",
+      "kind": "RENDERED_BY",
+      "weight": 1.0,
+      "evidence": null,
+      "confidence": "HIGH",
+      "metadata": {}
+    },
+    {
+      "source_id": "feat.model_gateway",
+      "target_id": "comp:ModelGatewayView",
+      "kind": "RENDERED_BY",
+      "weight": 1.0,
+      "evidence": null,
+      "confidence": "HIGH",
+      "metadata": {}
+    },
+    {
+      "source_id": "feat.token_cost_analytics",
+      "target_id": "comp:CostAnalyticsView",
+      "kind": "RENDERED_BY",
+      "weight": 1.0,
+      "evidence": null,
+      "confidence": "HIGH",
+      "metadata": {}
+    },
+    {
+      "source_id": "feat.agent_constitution",
+      "target_id": "comp:ConstitutionView",
+      "kind": "RENDERED_BY",
+      "weight": 1.0,
+      "evidence": null,
+      "confidence": "HIGH",
+      "metadata": {}
+    },
+    {
+      "source_id": "feat.security_and_auth",
+      "target_id": "comp:SuperuserGate",
+      "kind": "RENDERED_BY",
+      "weight": 1.0,
+      "evidence": null,
+      "confidence": "HIGH",
+      "metadata": {}
+    },
+    {
+      "source_id": "comp:ApiKeyManager",
+      "target_id": "api:GET_/api/v1/auth/sessions",
+      "kind": "CONSUMES",
+      "weight": 1.0,
+      "evidence": null,
+      "confidence": "HIGH",
+      "metadata": {}
+    },
+    {
+      "source_id": "comp:ApiKeyManager",
+      "target_id": "api:POST_/api/v1/auth/keys/generate",
+      "kind": "CONSUMES",
+      "weight": 1.0,
+      "evidence": null,
+      "confidence": "HIGH",
+      "metadata": {}
+    },
+    {
+      "source_id": "comp:ModelGatewayView",
+      "target_id": "api:GET_/api/v1/models",
+      "kind": "CONSUMES",
+      "weight": 1.0,
+      "evidence": null,
+      "confidence": "HIGH",
+      "metadata": {}
+    },
+    {
+      "source_id": "comp:CostAnalyticsView",
+      "target_id": "api:GET_/api/v1/cost/summary",
+      "kind": "CONSUMES",
+      "weight": 1.0,
+      "evidence": null,
+      "confidence": "HIGH",
+      "metadata": {}
+    },
+    {
+      "source_id": "comp:CostAnalyticsView",
+      "target_id": "api:GET_/api/v1/cost/records",
+      "kind": "CONSUMES",
+      "weight": 1.0,
+      "evidence": null,
+      "confidence": "HIGH",
+      "metadata": {}
+    },
+    {
+      "source_id": "comp:ConstitutionView",
+      "target_id": "api:GET_/api/v1/constitution/rules",
+      "kind": "CONSUMES",
+      "weight": 1.0,
+      "evidence": null,
+      "confidence": "HIGH",
+      "metadata": {}
+    },
+    {
+      "source_id": "comp:MissionControl",
+      "target_id": "api:POST_/api/v1/missions",
+      "kind": "CONSUMES",
+      "weight": 1.0,
+      "evidence": null,
+      "confidence": "HIGH",
+      "metadata": {}
+    },
+    {
+      "source_id": "comp:ThoughtStream",
+      "target_id": "api:GET_/api/v1/missions/{id}/stream",
+      "kind": "CONSUMES",
+      "weight": 1.0,
+      "evidence": null,
+      "confidence": "HIGH",
+      "metadata": {}
+    },
+    {
+      "source_id": "feat.autonomous_missions",
+      "target_id": "entity:missions",
+      "kind": "PERSISTS_TO",
+      "weight": 1.0,
+      "evidence": null,
+      "confidence": "HIGH",
+      "metadata": {}
+    },
+    {
+      "source_id": "feat.autonomous_missions",
+      "target_id": "entity:mission_messages",
+      "kind": "PERSISTS_TO",
+      "weight": 1.0,
+      "evidence": null,
+      "confidence": "HIGH",
+      "metadata": {}
+    },
+    {
+      "source_id": "feat.autonomous_missions",
+      "target_id": "entity:mission_events",
+      "kind": "PERSISTS_TO",
+      "weight": 1.0,
+      "evidence": null,
+      "confidence": "HIGH",
+      "metadata": {}
+    },
+    {
+      "source_id": "feat.autonomous_missions",
+      "target_id": "entity:mission_plans",
+      "kind": "PERSISTS_TO",
+      "weight": 1.0,
+      "evidence": null,
+      "confidence": "HIGH",
+      "metadata": {}
+    },
+    {
+      "source_id": "feat.autonomous_missions",
+      "target_id": "entity:mission_diffs",
+      "kind": "PERSISTS_TO",
+      "weight": 1.0,
+      "evidence": null,
+      "confidence": "HIGH",
+      "metadata": {}
+    },
+    {
+      "source_id": "feat.autonomous_missions",
+      "target_id": "entity:mission_checkpoints",
+      "kind": "PERSISTS_TO",
+      "weight": 1.0,
+      "evidence": null,
+      "confidence": "HIGH",
+      "metadata": {}
+    },
+    {
+      "source_id": "feat.token_cost_analytics",
+      "target_id": "entity:cost_records",
+      "kind": "PERSISTS_TO",
+      "weight": 1.0,
+      "evidence": null,
+      "confidence": "HIGH",
+      "metadata": {}
+    },
+    {
+      "source_id": "feat.security_and_auth",
+      "target_id": "entity:security_users",
+      "kind": "PERSISTS_TO",
+      "weight": 1.0,
+      "evidence": null,
+      "confidence": "HIGH",
+      "metadata": {}
+    },
+    {
+      "source_id": "feat.security_and_auth",
+      "target_id": "entity:security_sessions",
+      "kind": "PERSISTS_TO",
+      "weight": 1.0,
+      "evidence": null,
+      "confidence": "HIGH",
+      "metadata": {}
+    },
+    {
+      "source_id": "feat.security_and_auth",
+      "target_id": "entity:refresh_tokens",
+      "kind": "PERSISTS_TO",
+      "weight": 1.0,
+      "evidence": null,
+      "confidence": "HIGH",
+      "metadata": {}
+    },
+    {
+      "source_id": "feat.model_gateway",
+      "target_id": "entity:model_providers",
+      "kind": "PERSISTS_TO",
+      "weight": 1.0,
+      "evidence": null,
+      "confidence": "HIGH",
+      "metadata": {}
+    },
+    {
+      "source_id": "feat.model_gateway",
+      "target_id": "entity:registered_models",
+      "kind": "PERSISTS_TO",
+      "weight": 1.0,
+      "evidence": null,
+      "confidence": "HIGH",
+      "metadata": {}
+    },
+    {
+      "source_id": "test:test_ast_parser",
+      "target_id": "feat.repo_intelligence",
+      "kind": "TESTS",
+      "weight": 1.0,
+      "evidence": null,
+      "confidence": "HIGH",
+      "metadata": {}
+    },
+    {
+      "source_id": "test:test_repo_graph",
+      "target_id": "feat.repo_intelligence",
+      "kind": "TESTS",
+      "weight": 1.0,
+      "evidence": null,
+      "confidence": "HIGH",
+      "metadata": {}
+    },
+    {
+      "source_id": "test:test_impact_scope",
+      "target_id": "feat.repo_intelligence",
+      "kind": "TESTS",
+      "weight": 1.0,
+      "evidence": null,
+      "confidence": "HIGH",
+      "metadata": {}
+    },
+    {
+      "source_id": "test:test_verification_gates",
+      "target_id": "feat.verification_gates",
+      "kind": "TESTS",
+      "weight": 1.0,
+      "evidence": null,
+      "confidence": "HIGH",
+      "metadata": {}
+    },
+    {
+      "source_id": "test:test_security_and_gateway",
+      "target_id": "feat.security_and_auth",
+      "kind": "TESTS",
+      "weight": 1.0,
+      "evidence": null,
+      "confidence": "HIGH",
+      "metadata": {}
+    },
+    {
+      "source_id": "test:test_unified_mission",
+      "target_id": "feat.autonomous_missions",
+      "kind": "TESTS",
+      "weight": 1.0,
+      "evidence": null,
+      "confidence": "HIGH",
+      "metadata": {}
+    },
+    {
+      "source_id": "test:test_orchestrator_roles",
+      "target_id": "feat.multi_role_orchestration",
+      "kind": "TESTS",
+      "weight": 1.0,
+      "evidence": null,
+      "confidence": "HIGH",
+      "metadata": {}
+    },
+    {
+      "source_id": "test:test_cost_analytics",
+      "target_id": "feat.token_cost_analytics",
+      "kind": "TESTS",
+      "weight": 1.0,
+      "evidence": null,
+      "confidence": "HIGH",
+      "metadata": {}
+    },
+    {
+      "source_id": "test:test_cost_db",
+      "target_id": "feat.token_cost_analytics",
+      "kind": "TESTS",
+      "weight": 1.0,
+      "evidence": null,
+      "confidence": "HIGH",
+      "metadata": {}
+    },
+    {
+      "source_id": "test:test_permissions_and_gates",
+      "target_id": "feat.autonomous_missions",
+      "kind": "TESTS",
+      "weight": 1.0,
+      "evidence": null,
+      "confidence": "HIGH",
+      "metadata": {}
+    },
+    {
+      "source_id": "project:nemotron_dual_engine",
+      "target_id": "issue:ISSUE-01",
+      "kind": "HAS_BUG",
+      "weight": 1.0,
+      "evidence": null,
+      "confidence": "HIGH",
+      "metadata": {}
+    },
+    {
+      "source_id": "project:nemotron_dual_engine",
+      "target_id": "issue:ISSUE-02",
+      "kind": "HAS_BUG",
+      "weight": 1.0,
+      "evidence": null,
+      "confidence": "HIGH",
+      "metadata": {}
+    },
+    {
+      "source_id": "project:nemotron_dual_engine",
+      "target_id": "issue:ISSUE-03",
+      "kind": "HAS_BUG",
+      "weight": 1.0,
+      "evidence": null,
+      "confidence": "HIGH",
+      "metadata": {}
+    },
+    {
+      "source_id": "project:nemotron_dual_engine",
+      "target_id": "issue:ISSUE-04",
+      "kind": "HAS_BUG",
+      "weight": 1.0,
+      "evidence": null,
+      "confidence": "HIGH",
+      "metadata": {}
+    }
+  ]
+}
