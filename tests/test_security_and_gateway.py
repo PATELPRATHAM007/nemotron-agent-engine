@@ -464,7 +464,6 @@ def test_cost_tracker_and_ledger_get_mission_cost():
         usage=TokenUsageBreakdown(prompt_tokens=10, completion_tokens=5, thinking_tokens=0, total_tokens=15),
         total_cost_usd=0.0001,
         estimated_savings_usd=0.0,
-        model_name="nemotron-dev",
     )
     ledger._records.append(report)
     found = ledger.get_mission_cost("mission-persisted-99")
