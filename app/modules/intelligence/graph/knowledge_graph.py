@@ -179,17 +179,38 @@ class ProjectKnowledgeGraph:
         Governed Business Rules -> Impacted Frontend Components -> Required Tests to Run.
         """
         # Resolve target node
-        target_node = self.get_node(target_identifier)
+        clean_target = target_identifier.strip().strip("'\"")
+        target_node = self.get_node(clean_target)
         if not target_node:
-            # Check by file path
+            # Check exact or substring in file_path
             for node in self.nodes.values():
-                if node.file_path and (target_identifier in node.file_path or target_identifier == node.file_path):
+                if node.file_path and (clean_target in node.file_path or node.file_path in clean_target):
                     target_node = node
                     break
         if not target_node:
-            # Check by symbol name
+            # Check evidence lines (e.g. app/modules/agent/orchestrator.py:25-95)
             for node in self.nodes.values():
-                if node.name == target_identifier:
+                if node.evidence and clean_target in node.evidence:
+                    target_node = node
+                    break
+        if not target_node:
+            # Check metadata primary_files
+            for node in self.nodes.values():
+                p_files = node.metadata.get("primary_files", [])
+                if any(clean_target in f or f in clean_target for f in p_files):
+                    target_node = node
+                    break
+        if not target_node:
+            # Check by symbol or feature name (case-insensitive)
+            for node in self.nodes.values():
+                if node.name.lower() == clean_target.lower():
+                    target_node = node
+                    break
+        if not target_node:
+            # Heuristic match on basename (e.g. orchestrator.py -> feat.multi_role_orchestration)
+            base = os.path.basename(clean_target).replace(".py", "").replace(".tsx", "").replace(".ts", "").lower()
+            for node in self.nodes.values():
+                if base in node.id.lower() or base in node.name.lower():
                     target_node = node
                     break
 
@@ -276,30 +297,44 @@ class ProjectKnowledgeGraph:
     def query(self, search_text: str, limit: int = 10) -> list[dict[str, Any]]:
         """Query knowledge graph by natural language intent or symbol keyword."""
         q = search_text.lower().strip()
+        words = [w for w in re.findall(r"\w+", q) if len(w) > 2]
         matches: list[tuple[float, GraphNode]] = []
 
         for node in self.nodes.values():
             score = 0.0
-            # Direct ID match
-            if q == node.id.lower():
+            node_id_lower = node.id.lower()
+            name_lower = node.name.lower()
+            doc_lower = (node.docstring or "").lower()
+            evidence_lower = (node.evidence or "").lower()
+
+            # Exact full phrase matches
+            if q == node_id_lower:
+                score += 15.0
+            elif q in node_id_lower:
+                score += 8.0
+
+            if q in name_lower:
                 score += 10.0
-            elif q in node.id.lower():
-                score += 5.0
-
-            # Name match
-            if q in node.name.lower():
+            if q in doc_lower:
                 score += 6.0
+            if q in evidence_lower:
+                score += 4.0
 
-            # Docstring match
-            if node.docstring and q in node.docstring.lower():
-                score += 3.0
-
-            # Metadata match
-            for v in node.metadata.values():
-                if isinstance(v, str) and q in v.lower():
-                    score += 2.0
-                elif isinstance(v, list) and any(q in str(x).lower() for x in v):
-                    score += 2.0
+            # Individual word matching for natural language queries
+            for w in words:
+                if w in node_id_lower:
+                    score += 3.0
+                if w in name_lower:
+                    score += 4.0
+                if w in doc_lower:
+                    score += 2.5
+                if w in evidence_lower:
+                    score += 1.5
+                for meta_val in node.metadata.values():
+                    if isinstance(meta_val, str) and w in meta_val.lower():
+                        score += 2.0
+                    elif isinstance(meta_val, list) and any(w in str(x).lower() for x in meta_val):
+                        score += 2.0
 
             if score > 0:
                 matches.append((score, node))
@@ -311,7 +346,7 @@ class ProjectKnowledgeGraph:
             out_neighbors = [e.target_id for e in self.get_out_edges(node.id)[:5]]
             in_neighbors = [e.source_id for e in self.get_in_edges(node.id)[:5]]
             results.append({
-                "score": score,
+                "score": round(score, 1),
                 "node": node.model_dump(),
                 "connected_to": out_neighbors,
                 "depended_on_by": in_neighbors,
