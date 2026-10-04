@@ -110,7 +110,7 @@ class ThreeTierMemoryStore:
     Manages Tier 1 (Session), Tier 2 (Project), and Tier 3 (User) memory stores.
     """
 
-    def __init__(self, workspace_root: str, user_storage_path: str | None = None):
+    def __init__(self, workspace_root: str = ".", user_storage_path: str | None = None):
         self.workspace_root = os.path.abspath(workspace_root)
         self.agent_dir = os.path.join(self.workspace_root, ".agent")
         self.memory_dir = os.path.join(self.agent_dir, "memory")
@@ -359,3 +359,8 @@ class ThreeTierMemoryStore:
             return "No persistent memory records available for this task."
 
         return "\n\n".join(sections)
+
+
+# Global singleton instance
+three_tier_memory_store = ThreeTierMemoryStore()
+

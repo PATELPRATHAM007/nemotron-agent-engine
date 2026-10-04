@@ -12,6 +12,7 @@ import re
 import shutil
 import subprocess
 from dataclasses import dataclass, field
+from typing import Any
 
 from app.core.logging_config import get_logger
 from app.modules.agent.tools.workspace import WorkspaceSandbox, workspace_sandbox
@@ -229,5 +230,23 @@ class RipgrepSearchEngine:
             truncated=truncated,
         )
 
+    def search_text(
+        self,
+        query: str,
+        workspace_root: str | None = None,
+        max_results: int = 50,
+    ) -> list[dict[str, Any]]:
+        """Convenience method returning a list of match dictionaries."""
+        res = self.search(query=query, max_results=max_results)
+        return [
+            {
+                "filepath": m.filepath,
+                "line_number": m.line_number,
+                "line_text": m.line_content,
+            }
+            for m in res.matches
+        ]
+
 
 ripgrep_search = RipgrepSearchEngine()
+

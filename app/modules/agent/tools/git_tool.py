@@ -180,14 +180,19 @@ class GitTool:
             "sha": stash_sha,
         }
 
-    def rollback(self, name: str) -> dict[str, Any]:
+    def rollback(self, name: str = "default", files: list[str] | None = None) -> dict[str, Any]:
         """
         Revert uncommitted modifications in the working tree back to clean state.
         Discards uncommitted changes using checkout and clean.
         """
         logger.warning(f"Rolling back workspace to checkpoint [{name}]")
-        code1, _, err1 = self._run_git(["checkout", "--", "."])
-        code2, _, err2 = self._run_git(["clean", "-fd"])
+        if files:
+            cmd = ["checkout", "--"] + [self.sandbox.get_relative_path(f) for f in files]
+            code1, _, err1 = self._run_git(cmd)
+            code2, err2 = 0, ""
+        else:
+            code1, _, err1 = self._run_git(["checkout", "--", "."])
+            code2, _, err2 = self._run_git(["clean", "-fd"])
 
         success = (code1 == 0 and code2 == 0)
         return {
@@ -197,5 +202,24 @@ class GitTool:
             "message": "Workspace cleanly rolled back to pre-edit state." if success else "Rollback failed.",
         }
 
+    async def status(self) -> dict[str, Any]:
+        """Async helper returning working tree status dictionary."""
+        s = self.get_status()
+        return {
+            "success": s.is_repo,
+            "branch": s.branch,
+            "clean": s.is_clean,
+            "modified": s.modified_files,
+            "staged": s.staged_files,
+            "untracked": s.untracked_files,
+            "summary": s.summary,
+        }
+
+    async def diff(self, filepath: str | None = None, staged: bool = False) -> dict[str, Any]:
+        """Async helper returning unified diff dictionary."""
+        d = self.get_diff(filepath=filepath, staged=staged)
+        return {"success": True, "diff": d}
+
 
 git_tool = GitTool()
+

@@ -64,3 +64,19 @@ router.add_api_route(
     methods=["GET"],
     summary="Return cost records for a specific mission",
 )
+
+# First-class Agent Commands Discovery & Autocomplete
+router.add_api_route(
+    "/commands",
+    apis.list_agent_commands,
+    methods=["GET"],
+    summary="List available first-class agent commands",
+)
+
+router.add_api_route(
+    "/commands/parse",
+    apis.parse_agent_command,
+    methods=["POST"],
+    summary="Parse raw user input into structured command directive",
+)
+

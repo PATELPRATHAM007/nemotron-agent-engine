@@ -30,12 +30,13 @@
 8. [Environment Variables Reference](#-environment-variables-reference)
 9. [Local Development Guide](#-local-development-guide)
 10. [Comprehensive Testing Strategy & Results](#-comprehensive-testing-strategy--results)
-11. [Agent Modes & Supported Workflows](#-agent-modes--supported-workflows)
-12. [Tool Registry & MCP Integration](#-tool-registry--mcp-integration)
-13. [Permissions, Safety Guardrails & Human Approval Gates](#-permissions-safety-guardrails--human-approval-gates)
-14. [Security & Isolation Guarantees](#-security--isolation-guarantees)
-15. [Troubleshooting & FAQ](#-troubleshooting--faq)
-16. [Limitations & Known Constraints](#-limitations--known-constraints)
+11. [First-Class Agent Command System](#-first-class-agent-command-system)
+12. [Agent Modes & Supported Workflows](#-agent-modes--supported-workflows)
+13. [Tool Registry & MCP Integration](#-tool-registry--mcp-integration)
+14. [Permissions, Safety Guardrails & Human Approval Gates](#-permissions-safety-guardrails--human-approval-gates)
+15. [Security & Isolation Guarantees](#-security--isolation-guarantees)
+16. [Troubleshooting & FAQ](#-troubleshooting--faq)
+17. [Limitations & Known Constraints](#-limitations--known-constraints)
 
 ---
 
@@ -339,9 +340,9 @@ EXTREMELY GOOD (Flawless Verification, Zero Regressions, Verified Artifacts)
 
 ```text
 Backend Test Results:
-  Total Test Suites: 32
-  Total Tests Passed: 177 / 177
-  Time to Run: ~12.4 seconds
+  Total Test Suites: 33
+  Total Tests Passed: 202 / 202
+  Time to Run: ~14.2 seconds
   Test Command: .venv/bin/pytest
 
 Frontend Test Results:
@@ -354,10 +355,13 @@ Frontend Test Results:
 ### Running Test Batteries
 
 ```bash
-# Run complete backend test suite
+# Run complete backend test suite (all 202 tests)
 .venv/bin/pytest
 
-# Run master edge-case and hardening tests
+# Run first-class agent command system battery (25 tests)
+.venv/bin/pytest tests/test_command_system.py
+
+# Run master edge-case and hardening tests (16 tests)
 .venv/bin/pytest tests/test_master_edge_cases_and_hardening.py
 
 # Run Phase 1 tools and sandbox tests
@@ -377,6 +381,121 @@ Frontend Test Results:
 ```
 
 ---
+
+## ⌨️ First-Class Agent Command System
+
+Nemotron Agent Engine implements a first-class, Claude Code/Codex-style command architecture integrated directly into the core agent pipeline. Commands are **never simple string aliases**; they trigger structured lifecycle parsing, permission and risk evaluations, repository intelligence, and verification gates.
+
+```text
+                    USER (Chat / Terminal / Web UI)
+                                 │
+                                 ▼
+                     ┌───────────────────────┐
+                     │ Command Parser        │
+                     │ (POSIX, Quotes, Flags)│
+                     └───────────┬───────────┘
+                                 │
+                                 ▼
+                     ┌───────────────────────┐
+                     │ Command Registry      │
+                     │ (16 Core Declarations)│
+                     └───────────┬───────────┘
+                                 │
+                                 ▼
+                     ┌───────────────────────┐
+                     │ Permission Gate & Risk│
+                     │ (Level 0–5 Evaluation)│
+                     └───────────┬───────────┘
+                                 │
+                                 ▼
+                     ┌───────────────────────┐
+                     │ ReAct Orchestrator    │
+                     └───────────┬───────────┘
+                                 │
+        ┌────────────────────────┼────────────────────────┐
+        ▼                        ▼                        ▼
+  Context Engine            Tool Sandbox            Verification
+ (L0-L10 Budget)          (Git, Ripgrep, Ast)      (Tests & Diffs)
+        │                        │                        │
+        └────────────────────────┼────────────────────────┘
+                                 │
+                                 ▼
+                     ┌───────────────────────┐
+                     │ Structured Event /    │
+                     │ Realtime SSE Stream   │
+                     └───────────────────────┘
+```
+
+### Core Commands Reference
+
+| Command | Purpose | Syntax | Arguments & Flags | Example | Risk Level | Approval Required |
+|:---|:---|:---|:---|:---|:---|:---|
+| **`/init`** | Initialize or refresh repository intelligence, AST outline, and `PROJECT.md` | `/init [--full] [--refresh]` | `--full` (forces re-index), `--refresh` (incremental) | `/init --full` | `SPECIAL` | No |
+| **`/plan`** | Formulate multi-stage implementation plan without modifying files | `/plan <goal>` | Task or feature description | `/plan "implement JWT auth"` | `MEDIUM` | Yes |
+| **`/review`** | Review working tree modifications for security, bugs, and performance | `/review [path]` | Optional target file or directory | `/review app/core/` | `MEDIUM` | No |
+| **`/test`** | Run tests across detected project frameworks with failure diagnostics | `/test [subsystem]` | Target subsystem (`backend`, `frontend`, or filter) | `/test backend` | `MEDIUM` | No |
+| **`/debug`** | Diagnose failures, inspect logs, identify root cause, and propose fix | `/debug <error>` | Stack trace or failure description | `/debug "API returns 500"` | `MEDIUM` | No |
+| **`/fix`** | Execute end-to-end fix: inspect, formulate patch, request approval, test | `/fix <issue>` | Issue description to repair | `/fix null pointer in profile` | `HIGH` | Yes |
+| **`/explain`** | Explain code structure, AST symbols, or architecture data flows | `/explain <target>` | Target file path, symbol, or concept | `/explain app/main.py` | `LOW` | No |
+| **`/search`** | Search repository with hybrid ripgrep exact matching and symbols | `/search <query>` | Text or regex query | `/search "JWT_SECRET"` | `LOW` | No |
+| **`/inspect`** | Deeply inspect file/directory stats, AST symbols, and manifests | `/inspect [path]` | Target path (defaults to workspace root) | `/inspect app/modules/` | `LOW` | No |
+| **`/status`** | Display current agent, mission, Git branch, and index state safely | `/status` | None | `/status` | `LOW` | No |
+| **`/diff`** | Show structured Git diff with additions, deletions, and risk analysis | `/diff [path]` | Optional target file path | `/diff` | `LOW` | No |
+| **`/commit`** | Run pre-commit tests, draft commit message, and stage with approval | `/commit [message]` | Optional custom commit message | `/commit "feat: add auth"` | `HIGH` | Yes |
+| **`/undo`** | Safely rollback agent-created uncommitted modifications | `/undo` | None | `/undo` | `HIGH` | Yes |
+| **`/reset`** | Hard reset working tree to clean HEAD state | `/reset [--confirm]` | `--confirm` (required to confirm discard) | `/reset --confirm` | `HIGH` | Yes |
+| **`/clear`** | Reset session timeline while preserving durable project knowledge | `/clear` | None | `/clear` | `LOW` | No |
+| **`/help`** | Display available commands, usage syntax, and risk levels | `/help [command]` | Optional specific command name | `/help plan` | `LOW` | No |
+
+### Command Subsystems Detail
+
+#### `/init` — Repository Discovery & Intelligence Synthesis
+- **Identity Detection**: Scans workspace name, root path, Git branch, and working tree cleanliness.
+- **Tech Stack & Frameworks**: Identifies primary languages (Python, TypeScript, JavaScript, Rust, Go), framework dependencies (FastAPI, Next.js, React, SQLAlchemy, etc.), and active package managers (poetry, pip, npm, pnpm, cargo).
+- **Architecture & Entry Points**: Discovers frontend, backend, test suites, API routers, scripts, and documentation boundaries.
+- **Secret Sanitization**: Scans environment configurations (`.env.example`, `docker-compose.yml`, `pyproject.toml`) while ensuring credentials in `.env` are never leaked.
+- **Idempotency**: Supports `--refresh` for incremental re-indexing and `--full` for complete rebuilds. Generates or updates persistent `PROJECT.md` and durable project memory.
+
+#### `/plan` — Non-Destructive Planning
+- Analyzes goals and performs repository exploration.
+- Produces structured phases, affected files, architectural impacts, risk assessments, and testing strategies.
+- **Critical Invariant**: `/plan` **never modifies files on disk**.
+
+#### `/review` — Automated Security & Quality Review
+- Inspects working tree diffs without touching source files.
+- Evaluates code quality, architectural consistency, potential performance bottlenecks (e.g. unbounded SQL queries), and security warnings (hardcoded secrets, privilege escalations).
+
+#### `/test` — Framework-Agnostic Test Runner
+- Automatically detects test runners: `pytest` (with virtual environment resolution), `vitest` / `jest` (`npm test -- --run`), `cargo test`, or `go test`.
+- Emits structured execution metrics and, upon test failure, suggests exact debugging next steps (`/debug <failure>`).
+
+#### `/commit`, `/undo`, `/reset` — Git Guardrails
+- **Pre-Commit Verification**: `/commit` inspects diffs, runs test suites, drafts clear commit messages, and mandates interactive human approval before writing to Git history. Remote pushing (`git push`) is strictly disallowed by default.
+- **Atomic Undo**: `/undo` inspects uncommitted modifications and cleanly reverts working tree state via Git checkpoints.
+- **Destructive Reset Guard**: `/reset` requires explicit confirmation (`/reset --confirm`), preventing accidental loss of unstaged user changes.
+
+### Realtime Structured Event Stream
+
+During command execution, the engine emits real-time events through Server-Sent Events (SSE):
+
+- `command.started`: Emitted upon command dispatch with timestamp and arguments.
+- `command.progress`: Emitted at every logical step with step IDs and status messages.
+- `command.tool_started` & `command.tool_completed`: Emitted when external tools (process runners, Git, ripgrep) execute.
+- `command.approval_required`: Emitted when High-Risk commands require explicit human authorization.
+- `command.completed`: Emitted upon successful execution with elapsed execution duration.
+- `command.failed`: Emitted upon errors with structured reasons, details, and remediation guidance.
+
+### Frontend Autocomplete & Discovery
+
+The web interface (`MissionControl.tsx`) features an interactive command autocomplete popover:
+- Triggered automatically when typing `/`.
+- Filters available commands progressively (e.g. `/pl` ➔ `/plan`, `/te` ➔ `/test`).
+- Keyboard accessible via `ArrowUp`, `ArrowDown`, `Tab` / `Enter` selection, and `Escape` dismissal.
+- Displays risk badges (`LOW`, `MEDIUM`, `HIGH`, `SPECIAL`) and concise descriptions.
+- Quick-action buttons for common operations (`/init`, `/plan`, `/test`, `/review`, `/diff`, `/status`, `/help`).
+
+---
+
 
 ## 🧭 Agent Modes & Supported Workflows
 

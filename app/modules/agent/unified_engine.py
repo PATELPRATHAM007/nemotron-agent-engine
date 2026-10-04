@@ -18,6 +18,8 @@ from collections.abc import AsyncGenerator
 from typing import Any
 
 from app.core.logging_config import get_logger
+from app.modules.agent.commands.parser import CommandParser
+from app.modules.agent.commands.registry import command_registry
 from app.modules.agent.tools.filesystem import filesystem_tool
 from app.modules.agent.tools.registry import TOOLS_SCHEMA
 from app.modules.agent.tools.terminal import terminal_tool
@@ -179,6 +181,7 @@ class UnifiedMissionEngine:
         """Handle slash commands (/status, /diff, /plan, /permissions, !command)."""
         cmd = directive.get("command")
         args = directive.get("args", "")
+        parsed = directive.get("parsed") or CommandParser.parse(f"{cmd} {args}".strip())
 
         if cmd == "!":
             # Terminal shortcut with permission inspection
@@ -238,22 +241,16 @@ class UnifiedMissionEngine:
             yield state_machine.transition(MissionState.COMPLETED, "Terminal command finished")
             return
 
-        elif cmd == "/status":
-            m = mission_repository.get_mission(mission_id)
-            status_text = f"**Mission Status**: `{m.get('status', 'IDLE')}` | Phase: `{m.get('current_phase', 'INIT')}`\n- Total Tokens: `{m.get('total_tokens', 0):,}`\n- Cost: `${m.get('total_cost_usd', 0.0):.6f}`"
-            yield {"type": "token", "content": status_text}
-            yield state_machine.transition(MissionState.COMPLETED, "Status reported")
+        elif cmd == "/stop":
+            yield state_machine.transition(MissionState.CANCELLED, "Mission halted by user command")
+            mission_repository.update_mission_status(mission_id, MissionState.CANCELLED.value)
+            yield {"type": "token", "content": "🛑 **Mission execution stopped by user.**"}
             return
 
-        elif cmd == "/diff":
-            git_diff_res = await terminal_tool.execute("git diff", cwd=self.workspace_root)
-            diff_text = git_diff_res["stdout"] or "No uncommitted modifications in repository."
-            yield {
-                "type": "diff_generated",
-                "diff": diff_text,
-                "file_path": "repository_working_tree",
-            }
-            yield state_machine.transition(MissionState.COMPLETED, "Diff displayed")
+        elif cmd == "/pause":
+            yield state_machine.transition(MissionState.PAUSED, "Mission paused by user command")
+            mission_repository.update_mission_status(mission_id, MissionState.PAUSED.value)
+            yield {"type": "token", "content": "⏸️ **Mission execution paused.**"}
             return
 
         elif cmd == "/permissions":
@@ -262,17 +259,19 @@ class UnifiedMissionEngine:
             yield state_machine.transition(MissionState.COMPLETED, "Permissions displayed")
             return
 
-        elif cmd == "/stop":
-            yield state_machine.transition(MissionState.CANCELLED, "Mission halted by user command")
-            mission_repository.update_mission_status(mission_id, MissionState.CANCELLED.value)
-            yield {"type": "token", "content": "🛑 **Mission execution stopped by user.**"}
-            return
-
         elif cmd == "/rollback":
             yield state_machine.transition(MissionState.EXECUTING, "Rolling back uncommitted changes")
             await terminal_tool.execute("git checkout .", cwd=self.workspace_root)
             yield {"type": "token", "content": "↺ **Repository rolled back to clean Git working tree state.**"}
             yield state_machine.transition(MissionState.COMPLETED, "Rollback completed")
+            return
+
+        elif command_registry.get(cmd):
+            # First-class Agent Command Execution
+            yield state_machine.transition(MissionState.EXECUTING, f"Executing command: {cmd}")
+            async for ev in command_registry.dispatch(parsed, self.workspace_root, mission_id):
+                yield ev
+            yield state_machine.transition(MissionState.COMPLETED, f"Command {cmd} finished")
             return
 
         else:

@@ -45,15 +45,19 @@ class RepoMapGenerator:
         include_tests: bool = False,
         target_dir: str | None = None,
         force_refresh: bool = False,
+        workspace_root: str | None = None,
     ) -> str:
         """
         Generate a token-bounded repository map showing key files, classes,
         functions, and routes.
         """
-        if self._cached_map and not force_refresh and max_tokens == 2000 and not target_dir:
+        if self._cached_map and not force_refresh and max_tokens == 2000 and not target_dir and not workspace_root:
             return self._cached_map
 
-        root_path = self.sandbox.resolve_path(target_dir or ".")
+        if workspace_root:
+            root_path = os.path.abspath(workspace_root)
+        else:
+            root_path = self.sandbox.resolve_path(target_dir or ".")
         file_entries: list[tuple[str, list[str]]] = []  # (rel_path, list of symbols)
 
         # 1. Walk repository and extract signatures

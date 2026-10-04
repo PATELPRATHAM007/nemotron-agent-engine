@@ -195,6 +195,29 @@ class MissionRepository:
 
         return self._load_fallback_list(mission_id, "messages.json")
 
+    def clear_mission_messages(self, mission_id: str) -> int:
+        """Clear ephemeral message timeline for a mission, returning number of messages cleared."""
+        count = 0
+        try:
+            with DatabaseService.get_session() as session:
+                stmt = select(MissionMessage).where(MissionMessage.mission_id == mission_id)
+                msgs = session.scalars(stmt).all()
+                count = len(msgs)
+                for m in msgs:
+                    session.delete(m)
+                session.commit()
+        except Exception as e:
+            logger.warning(f"DB clear messages failed: {e}")
+
+        fallback_path = os.path.join(self.missions_dir, mission_id, "messages.json")
+        if os.path.exists(fallback_path):
+            try:
+                os.remove(fallback_path)
+            except Exception:
+                pass
+        return count
+
+
     def append_event(
         self,
         mission_id: str,

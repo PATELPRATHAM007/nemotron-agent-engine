@@ -110,3 +110,18 @@ async def get_mission_cost(mission_id: str):
     """Return cost records for a specific mission."""
     from app.modules.cost.apis import get_mission_cost as modular_mission_cost
     return await modular_mission_cost(mission_id)
+
+
+async def list_agent_commands(query: str = Query("", description="Optional search query to filter commands")):
+    """Return registered first-class agent commands for discovery and autocomplete."""
+    from app.modules.agent.commands.registry import command_registry
+    if query:
+        return [c.model_dump() for c in command_registry.search(query)]
+    return [c.model_dump() for c in command_registry.list_commands()]
+
+
+async def parse_agent_command(raw_text: str = Query(..., description="Raw user input string to parse")):
+    """Parse a user input string into structured command directives."""
+    from app.modules.agent.commands.parser import CommandParser
+    return CommandParser.parse(raw_text).model_dump()
+
