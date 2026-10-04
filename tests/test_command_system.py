@@ -301,3 +301,89 @@ class TestCommandHandlersExecution:
         fail_ev = next((ev for ev in events if ev.get("type") == "command.failed"), None)
         assert fail_ev is not None
         assert "Unknown command" in fail_ev["payload"]["reason"]
+
+    async def test_undo_command_execution(self, monkeypatch):
+        from unittest.mock import AsyncMock
+        from app.modules.agent.tools.git_tool import git_tool
+
+        monkeypatch.setattr(git_tool, "status", AsyncMock(return_value={
+            "success": True, "branch": "main", "clean": False, "modified": ["dummy.py"], "staged": [], "untracked": []
+        }))
+        monkeypatch.setattr(git_tool, "rollback", lambda files=None: {"success": True, "checkpoint_name": "undo"})
+
+        p_undo = CommandParser.parse("/undo")
+        events = []
+        async for ev in command_registry.dispatch(p_undo, workspace_root="."):
+            events.append(ev)
+
+        event_types = [ev.get("type") for ev in events]
+        assert "command.started" in event_types
+        assert "command.completed" in event_types
+        tokens = "".join([ev.get("content", "") for ev in events if ev.get("type") == "token"])
+        assert "Reverted uncommitted changes" in tokens
+
+    async def test_reset_confirmed_execution_with_mocked_runner(self, monkeypatch):
+        from unittest.mock import AsyncMock
+        from app.modules.agent.tools.process_runner import ExecutionResult, ProcessRunner
+
+        mock_run = AsyncMock(return_value=ExecutionResult(
+            success=True,
+            exit_code=0,
+            stdout="HEAD is now at 1234567",
+            stderr="",
+            duration_ms=10,
+            command="git reset --hard HEAD",
+        ))
+        monkeypatch.setattr(ProcessRunner, "run", mock_run)
+
+        p_reset_confirmed = CommandParser.parse("/reset --confirm")
+        events = []
+        async for ev in command_registry.dispatch(p_reset_confirmed, workspace_root="."):
+            events.append(ev)
+
+        event_types = [ev.get("type") for ev in events]
+        assert "command.completed" in event_types
+        tokens = "".join([ev.get("content", "") for ev in events if ev.get("type") == "token"])
+        assert "hard reset to clean HEAD state" in tokens
+
+    async def test_process_runner_working_directory_and_run_command(self):
+        from app.modules.agent.tools.process_runner import ProcessRunner
+        runner = ProcessRunner(working_directory=".")
+        res = await runner.run_command("echo 'test runner compatibility'")
+        assert res.success is True
+        assert "test runner compatibility" in res.stdout
+
+    async def test_init_handler_validation_report_formatting(self):
+        from app.modules.agent.commands.handlers.init_handler import InitCommandHandler
+
+        identity = {"name": "test-repo", "root": "/test", "git_branch": "main", "is_git_clean": True}
+        tech_stack = {"languages": ["Python"], "frameworks": ["FastAPI"], "package_managers": ["pip"]}
+        entry_points = {"main": "main.py"}
+
+        # Case 1: 0 broken imports / 0 invalid exports
+        audit_clean = {
+            "source_files_count": 10,
+            "test_files_count": 2,
+            "broken_imports_count": 0,
+            "export_errors_count": 0,
+            "circular_dependencies_count": 0,
+        }
+        report_clean = InitCommandHandler._render_validation_report(
+            identity, tech_stack, audit_clean, entry_points, 12, "full"
+        )
+        assert "✓ Healthy (0 broken imports)" in report_clean
+        assert "✓ Healthy (0 invalid exports)" in report_clean
+
+        # Case 2: >0 broken imports / >0 invalid exports
+        audit_issues = {
+            "source_files_count": 10,
+            "test_files_count": 2,
+            "broken_imports_count": 3,
+            "export_errors_count": 2,
+            "circular_dependencies_count": 1,
+        }
+        report_issues = InitCommandHandler._render_validation_report(
+            identity, tech_stack, audit_issues, entry_points, 12, "full"
+        )
+        assert "⚠️ 3 broken imports" in report_issues
+        assert "⚠️ 2 invalid exports" in report_issues

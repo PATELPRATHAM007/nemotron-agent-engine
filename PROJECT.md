@@ -26,7 +26,7 @@
 - **Source Files**: 220
 - **Test Files**: 34
 - **Import Health**: Healthy (0 broken imports)
-- **Export Health**: Healthy (0 invalid exports)
+- **Export Health**: 1 invalid exports
 - **Circular Dependencies**: 0 detected
 
 ## Configuration Manifests

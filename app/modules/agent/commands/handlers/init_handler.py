@@ -407,10 +407,10 @@ class InitCommandHandler:
 {', '.join(tech_stack['frameworks']) or 'None detected'}
 
 **Source Files**:
-{audit['source_files_count']:,}
+{audit.get('source_files_count', 0):,}
 
 **Tests**:
-{audit['test_files_count']:,}
+{audit.get('test_files_count', 0):,}
 
 **Entry Points**:
 {entry_md}
@@ -422,15 +422,15 @@ class InitCommandHandler:
 {export_health}
 
 **Circular Dependencies**:
-{audit['circular_dependencies_count']}
+{audit.get('circular_dependencies_count', 0)}
 
 **Unused Imports**:
-{audit['unused_imports_count']} found
-{audit['unused_imports_count']} removed or verified safe
+{audit.get('unused_imports_count', 0)} found
+{audit.get('unused_imports_count', 0)} removed or verified safe
 
 **Unused Exports**:
-{audit['unused_exports_count']} found
-{audit['unused_exports_count']} reviewed
+{audit.get('unused_exports_count', 0)} found
+{audit.get('unused_exports_count', 0)} reviewed
 
 **Initialization**:
 ✓ Valid (all `__init__.py` modules are idempotent and free of import-time side effects)
@@ -442,7 +442,7 @@ class InitCommandHandler:
 ✓ Complete ({file_count:,} files, AST symbol map indexed via {indexing_mode})
 
 **Dependency Graph**:
-✓ Generated ({audit['dependency_graph_modules']} modules analyzed, 0 cycles)
+✓ Generated ({audit.get('dependency_graph_modules', 0)} modules analyzed, 0 cycles)
 
 **Warnings**:
 {warnings_md}

@@ -22,9 +22,37 @@ def test_agent_roles_prompts_and_context():
     assert "Add OAuth" in p_msgs[1]["content"]
 
     reviewer = ReviewerRole()
-    r_msgs = reviewer.build_context_prompt("Add OAuth", {"plan": None})
-    assert len(r_msgs) == 2
+    # 1. With None
+    r_msgs_none = reviewer.build_context_prompt("Add OAuth", {"plan": None})
+    assert len(r_msgs_none) == 2
     assert "Reviewer" in reviewer.name
+    assert "No plan provided." in r_msgs_none[1]["content"]
+
+    # 2. With PlanOutput model
+    from app.modules.agent.roles.base import PlanOutput
+    model_plan = PlanOutput(
+        summary="OAuth implementation plan",
+        target_feature="auth",
+        primary_files=["auth.py"],
+        test_files=["test_auth.py"],
+    )
+    r_msgs_model = reviewer.build_context_prompt("Add OAuth", {"plan": model_plan})
+    assert "OAuth implementation plan" in r_msgs_model[1]["content"]
+    assert "auth.py" in r_msgs_model[1]["content"]
+
+    # 3. With dict plan
+    dict_plan = {
+        "summary": "Dict-based OAuth plan",
+        "primary_files": ["app/auth.py"],
+        "test_files": ["tests/test_auth.py"],
+    }
+    r_msgs_dict = reviewer.build_context_prompt("Add OAuth", {"plan": dict_plan})
+    assert "Dict-based OAuth plan" in r_msgs_dict[1]["content"]
+    assert "app/auth.py" in r_msgs_dict[1]["content"]
+
+    # 4. With string plan
+    r_msgs_str = reviewer.build_context_prompt("Add OAuth", {"plan": "Simple text plan"})
+    assert "Summary: Simple text plan" in r_msgs_str[1]["content"]
 
     coder = CoderRole()
     c_msgs = coder.build_context_prompt("Fix token", {"target_files": ["auth.py"]})
