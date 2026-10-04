@@ -384,3 +384,90 @@ def test_file_upload_security():
             mime_type="image/png",
         )
     assert "Invalid image file header" in str(exc.value)
+
+
+@pytest.mark.asyncio
+async def test_model_gateway_generate_history_and_quota():
+    from app.modules.auth.context import AuthContext
+    from app.modules.gateway.service import model_gateway
+
+    auth = AuthContext(
+        user_id="user-qa-1",
+        organization_id="org-test-enterprise",
+        roles=("ENGINEER",),
+        permissions=("model.use",),
+    )
+
+    # 1. Test execute_generate
+    gen_result = await model_gateway.execute_generate(
+        auth_context=auth,
+        model_name="nemotron-dev",
+        messages=[{"role": "user", "content": "Ping"}],
+        mission_id="mission-gen-101",
+    )
+    assert gen_result["model"] == "nemotron-dev"
+    assert "content" in gen_result
+    assert gen_result["usage"]["total_tokens"] > 0
+
+    # 2. Test get_usage_history
+    history = model_gateway.get_usage_history("org-test-enterprise", limit=10)
+    assert len(history) > 0
+    assert history[0]["mission_id"] == "mission-gen-101"
+
+    # 3. Test get_tenant_quota
+    quota = model_gateway.get_tenant_quota("org-test-enterprise")
+    assert quota["organization_id"] == "org-test-enterprise"
+    assert quota["monthly_spend_limit"] == 500.0
+    assert quota["remaining_budget"] > 0
+    assert quota["quota_status"] == "HEALTHY"
+
+
+def test_import_resolver_resolve_relative_import():
+    from app.modules.intelligence.indexing.import_resolver import ImportResolver
+
+    resolver = ImportResolver(".")
+    # Relative from child module
+    res1 = resolver.resolve_relative_import(
+        from_file="app/modules/gateway/service.py",
+        level=1,
+        module="adapters",
+    )
+    assert res1 == "app.modules.gateway.adapters"
+
+    # Parent relative from grandchild module
+    res2 = resolver.resolve_relative_import(
+        from_file="app/modules/agent/verification/gates.py",
+        level=2,
+        module="tools",
+    )
+    assert res2 == "app.modules.agent.tools"
+
+
+def test_cost_tracker_and_ledger_get_mission_cost():
+    from app.modules.cost.ledger import CostLedger
+    from app.modules.cost.schemas import MissionCostReport, TokenUsageBreakdown
+    from app.modules.cost.tracker import CostTracker
+
+    # Tracker in-flight cost
+    tracker = CostTracker()
+    tracker.record_prompt("Hello world", role="Planner")
+    cost_info = tracker.get_mission_cost("mission-active-01")
+    assert cost_info["mission_id"] == "mission-active-01"
+    assert cost_info["tokens"] > 0
+
+    # Ledger persistent cost query
+    ledger = CostLedger(workspace_root=".")
+    report = MissionCostReport(
+        mission_id="mission-persisted-99",
+        target_feature="auth",
+        duration_seconds=1.5,
+        usage=TokenUsageBreakdown(prompt_tokens=10, completion_tokens=5, thinking_tokens=0, total_tokens=15),
+        total_cost_usd=0.0001,
+        estimated_savings_usd=0.0,
+        model_name="nemotron-dev",
+    )
+    ledger._records.append(report)
+    found = ledger.get_mission_cost("mission-persisted-99")
+    assert len(found) == 1
+    assert found[0].mission_id == "mission-persisted-99"
+

@@ -130,6 +130,7 @@ class ModelGateway:
 
     _rate_limits: dict[str, list[float]] = {}
     _tenant_spend: dict[str, float] = {}
+    _usage_history: dict[str, list[dict[str, Any]]] = {}
 
     async def execute_stream(
         self,
@@ -214,13 +215,22 @@ class ModelGateway:
             })
 
         # Step 9: Resolve Provider & Secret Reference
-        provider_type = "GOOGLE"
-        secret_ref = "vault://models/google/default-key"
-        if "nemotron" in model.name.lower():
+        base_url = ""
+        if hasattr(model, "provider") and model.provider:
+            provider_type = model.provider.provider_type
+            base_url = model.provider.base_url
+            secret_ref = f"vault://models/{model.provider.name.lower()}/default-key"
+        elif "mock" in (model.provider_id or "").lower() or "mock" in (model.model_identifier or "").lower():
+            provider_type = "MOCK"
+            secret_ref = "vault://models/mock/default-key"
+        elif "nemotron" in model.name.lower():
             provider_type = "VLLM"
             secret_ref = "vault://models/nemotron/default-key"
+        else:
+            provider_type = "GOOGLE"
+            secret_ref = "vault://models/google/default-key"
 
-        adapter = get_provider_adapter(provider_type)
+        adapter = get_provider_adapter(provider_type, base_url=base_url)
 
         # Step 10: Call Provider Adapter & Stream Response
         token_count = 0
@@ -265,6 +275,87 @@ class ModelGateway:
                     "latency_ms": round(latency_ms, 1),
                 },
             )
+
+            # Record in-memory usage telemetry history
+            audit_entry = {
+                "request_id": request_id,
+                "timestamp": time.time(),
+                "model": model.name,
+                "tokens": token_count,
+                "cost_usd": round(estimated_cost, 6),
+                "latency_ms": round(latency_ms, 1),
+                "mission_id": mission_id,
+                "project_id": project_id,
+            }
+            self._usage_history.setdefault(auth_context.organization_id, []).append(audit_entry)
+
+    async def execute_generate(
+        self,
+        auth_context: AuthContext,
+        model_name: str | None,
+        messages: list[dict[str, Any]],
+        mission_id: str | None = None,
+        project_id: str | None = None,
+        required_capabilities: list[str] | None = None,
+        temperature: float = 0.7,
+        max_tokens: int = 4096,
+        tools: list[dict[str, Any]] | None = None,
+    ) -> dict[str, Any]:
+        """Execute complete non-streaming model generation through gateway pipeline."""
+        content_parts: list[str] = []
+        thought_parts: list[str] = []
+
+        async for chunk in self.execute_stream(
+            auth_context=auth_context,
+            model_name=model_name,
+            messages=messages,
+            mission_id=mission_id,
+            project_id=project_id,
+            required_capabilities=required_capabilities,
+            temperature=temperature,
+            max_tokens=max_tokens,
+            tools=tools,
+        ):
+            c_type = chunk.get("type")
+            if c_type == "token":
+                content_parts.append(chunk.get("content", ""))
+            elif c_type == "thought":
+                thought_parts.append(chunk.get("content", ""))
+
+        full_content = "".join(content_parts)
+        full_thought = "".join(thought_parts)
+        prompt_tokens = sum(len(m.get("content", "")) // 4 for m in messages)
+        completion_tokens = max(1, len(full_content) // 4)
+
+        return {
+            "model": model_name or "default",
+            "content": full_content,
+            "thought": full_thought if full_thought else None,
+            "usage": {
+                "prompt_tokens": prompt_tokens,
+                "completion_tokens": completion_tokens,
+                "total_tokens": prompt_tokens + completion_tokens,
+            },
+        }
+
+    def get_usage_history(self, organization_id: str, limit: int = 50) -> list[dict[str, Any]]:
+        """Retrieve recent model generation audit events for tenant."""
+        history = self._usage_history.get(organization_id, [])
+        return sorted(history, key=lambda x: x.get("timestamp", 0), reverse=True)[:limit]
+
+    def get_tenant_quota(self, organization_id: str) -> dict[str, Any]:
+        """Retrieve spending limits, current spend, and rate limits for tenant."""
+        current_spend = self._tenant_spend.get(organization_id, 0.0)
+        monthly_limit = 500.0
+        return {
+            "organization_id": organization_id,
+            "currency": "USD",
+            "monthly_spend_limit": monthly_limit,
+            "current_monthly_spend": round(current_spend, 4),
+            "remaining_budget": max(0.0, round(monthly_limit - current_spend, 4)),
+            "rate_limit_rpm": 120,
+            "quota_status": "EXCEEDED" if current_spend >= monthly_limit else "HEALTHY",
+        }
 
 
 model_gateway = ModelGateway()

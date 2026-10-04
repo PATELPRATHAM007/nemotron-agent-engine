@@ -123,6 +123,10 @@ class CostLedger:
         """Return the most recent mission reports ordered by timestamp descending."""
         return sorted(self._records, key=lambda x: x.timestamp, reverse=True)[:limit]
 
+    def get_mission_cost(self, mission_id: str) -> list[MissionCostReport]:
+        """Find cost reports for a specific mission by mission_id."""
+        return [r for r in self._records if r.mission_id == mission_id]
+
     def get_summary(self) -> LedgerSummary:
         """Compute aggregated audit metrics.
 

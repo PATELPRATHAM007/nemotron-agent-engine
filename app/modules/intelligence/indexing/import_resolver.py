@@ -81,6 +81,25 @@ class ImportResolver:
                         for i in range(1, len(parts)):
                             self.internal_modules.add(".".join(parts[:i]))
 
+    def resolve_relative_import(
+        self, from_file: str, level: int, module: str | None = None
+    ) -> str:
+        """Resolve a relative import (from .foo or from ..bar) against a file path."""
+        rel_clean = from_file.replace(os.path.sep, "/").removesuffix(".py")
+        if rel_clean.endswith("/__init__"):
+            rel_clean = rel_clean.removesuffix("/__init__")
+            current_mod = rel_clean.replace("/", ".")
+            effective_level = max(0, level - 1)
+        else:
+            current_mod = rel_clean.replace("/", ".")
+            effective_level = level
+
+        return resolve_relative_module(
+            current_module_path=current_mod,
+            import_module=module or "",
+            level=effective_level,
+        )
+
     def resolve(self, current_module: str, imp: ImportDefinition) -> ResolvedImport:
         """Resolve an import definition against the workspace."""
         if imp.level > 0:

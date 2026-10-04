@@ -119,3 +119,12 @@ class CostTracker:
             offloaded_tokens=self.offloaded_tokens,
             mode=mode,
         )
+
+    def get_mission_cost(self, mission_id: str) -> dict[str, Any]:
+        """Return the current in-flight mission token expenditure and cost estimate."""
+        return {
+            "mission_id": mission_id,
+            "tokens": self.total_tokens,
+            "cost_usd": self.current_cost(),
+            "breakdown": self.get_breakdown().model_dump(),
+        }

@@ -122,7 +122,7 @@ class VerificationPipeline:
             gate_id = failed.gate_id if failed else 0
             gate_name = failed.gate_name if failed else "Unknown Gate"
             msg = failed.message if failed else "Verification pipeline failed."
-            trace = failed.error_details if failed else ""
+            trace = (failed.error_details or "") if failed else ""
             raise VerificationGateFailedError(
                 message=f"Verification failed at Gate {gate_id} ({gate_name}): {msg}",
                 gate_id=gate_id,

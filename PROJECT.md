@@ -3,7 +3,7 @@
 ## Project Overview
 - **Name**: `nemotron-agent-engine`
 - **Root**: `.`
-- **Files Indexed**: 505
+- **Files Indexed**: 510
 - **Git Branch**: `main` (Clean: `False`)
 
 ## Technology Stack

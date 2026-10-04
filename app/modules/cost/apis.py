@@ -49,12 +49,22 @@ async def get_mission_cost(mission_id: str):
         session = DatabaseService.get_session()
         try:
             repo = CostRepository(session)
-            return repo.get_records_by_mission(mission_id)
+            records = repo.get_records_by_mission(mission_id)
+            if records:
+                return records
         finally:
             session.close()
     except Exception:
-        cost_info = cost_tracker.get_mission_cost(mission_id)
-        return cost_info
+        pass
+
+    # Fallback 1: persistent ledger
+    ledger_records = cost_ledger.get_mission_cost(mission_id)
+    if ledger_records:
+        return [r.model_dump() if hasattr(r, "model_dump") else r for r in ledger_records]
+
+    # Fallback 2: in-memory live tracker
+    cost_info = cost_tracker.get_mission_cost(mission_id)
+    return cost_info
 
 
 async def check_budget(payload: BudgetCheckPayload):

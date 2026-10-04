@@ -58,6 +58,7 @@ class RedisService:
         client = None
         try:
             client = cls.get_client()
+            # pyrefly: ignore [unnecessary-type-conversion]
             return bool(client.ping())
         except Exception as exc:  # noqa: BLE001
             redis_logger.warning("Redis health ping failed (offline or unreachable): %s", exc)

@@ -32,7 +32,7 @@ class ModelProviderAdapter(ABC):
         """Generate complete model response."""
 
     @abstractmethod
-    async def stream(
+    def stream(
         self,
         model_identifier: str,
         messages: list[dict[str, Any]],
@@ -42,6 +42,7 @@ class ModelProviderAdapter(ABC):
         tools: list[dict[str, Any]] | None = None,
     ) -> AsyncGenerator[dict[str, Any], None]:
         """Stream real-time tokens, thoughts, and tool calls."""
+        ...
 
     @abstractmethod
     async def health(self, secret_reference: str) -> bool:
@@ -95,12 +96,18 @@ class GoogleProviderAdapter(ModelProviderAdapter):
         tools: list[dict[str, Any]] | None = None,
     ) -> AsyncGenerator[dict[str, Any], None]:
         # Resolves credential in-memory strictly within execution scope
-        api_key = secret_manager.resolve_credential(secret_reference)
-        async for chunk in llm_gateway.stream_nemotron_reasoning(
+        try:
+            api_key = secret_manager.resolve_credential(secret_reference)
+        except Exception:
+            api_key = None
+
+        if api_key and not llm_gateway.gemini_api_key:
+            llm_gateway.gemini_api_key = api_key
+
+        async for chunk in llm_gateway.stream_gemini_reasoning(
             messages=messages,
             temperature=temperature,
             max_tokens=max_tokens,
-            tools=tools,
         ):
             yield chunk
 
@@ -157,6 +164,16 @@ class OpenAICompatibleAdapter(ModelProviderAdapter):
         max_tokens: int = 4096,
         tools: list[dict[str, Any]] | None = None,
     ) -> AsyncGenerator[dict[str, Any], None]:
+        try:
+            api_key = secret_manager.resolve_credential(secret_reference)
+        except Exception:
+            api_key = None
+
+        if api_key and not llm_gateway.nemotron_api_key:
+            llm_gateway.nemotron_api_key = api_key
+        if self.base_url and self.base_url != llm_gateway.nemotron_base_url:
+            llm_gateway.nemotron_base_url = self.base_url
+
         async for chunk in llm_gateway.stream_nemotron_reasoning(
             messages=messages,
             temperature=temperature,
