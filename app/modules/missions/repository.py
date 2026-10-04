@@ -42,6 +42,8 @@ class MissionRepository:
         self._init_db_tables()
 
     def _init_db_tables(self) -> None:
+        if os.environ.get("ALEMBIC_RUNNING"):
+            return
         try:
             from app.db.session import Base, engine
             Base.metadata.create_all(bind=engine, checkfirst=True)

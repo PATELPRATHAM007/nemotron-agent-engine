@@ -21,6 +21,10 @@ class Settings(BaseSettings):
     PORT: int = 8000
     ENABLE_UI: bool = True
 
+    # Security & Encryption Keys
+    SECRET_KEY: str = "nemotron-production-master-kms-seed-32bytes"
+    JWT_SECRET_KEY: str = "nemotron-production-grade-secret-key-32b-min"
+
     # Template and Static Asset Directories
     BASE_DIR: Path = Path(__file__).resolve().parent.parent
     ROOT_DIR: Path = Path(__file__).resolve().parent.parent.parent
