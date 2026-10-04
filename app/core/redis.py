@@ -36,7 +36,11 @@ class RedisService:
                 "Initializing shared Redis connection pool (url=%s)",
                 _redact_url(settings.REDIS_URL),
             )
-            pool_kwargs: dict[str, Any] = {"decode_responses": True}
+            pool_kwargs: dict[str, Any] = {
+                "decode_responses": True,
+                "socket_timeout": 2.0,
+                "socket_connect_timeout": 2.0,
+            }
             if _maint_config is not None:
                 pool_kwargs["maint_notifications_config"] = _maint_config
 
@@ -50,13 +54,20 @@ class RedisService:
 
     @classmethod
     def check_health(cls) -> bool:
-        """Verify Redis connectivity."""
+        """Verify Redis connectivity with a bounded socket timeout."""
+        client = None
         try:
             client = cls.get_client()
             return bool(client.ping())
         except Exception as exc:  # noqa: BLE001
-            redis_logger.error("Redis health ping failed: %s", exc)
+            redis_logger.warning("Redis health ping failed (offline or unreachable): %s", exc)
             return False
+        finally:
+            if client is not None:
+                try:
+                    client.close()
+                except Exception:
+                    pass
 
     @classmethod
     def close(cls) -> None:
