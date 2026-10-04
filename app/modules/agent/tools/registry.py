@@ -14,6 +14,9 @@ from app.modules.agent.tools.git_tool import git_tool
 from app.modules.agent.tools.patcher import DiffPatcher, diff_patcher
 from app.modules.agent.tools.process_runner import ProcessRunner, process_runner
 from app.modules.agent.tools.workspace import workspace_sandbox
+from app.modules.intelligence.indexing.git_history import git_history_retriever
+from app.modules.intelligence.indexing.repo_map import repo_map_generator
+from app.modules.intelligence.indexing.ripgrep import ripgrep_search
 from app.modules.missions.permissions import (
     PermissionDecision,
     mission_permissions,
@@ -188,6 +191,80 @@ TOOLS_SCHEMA: list[dict[str, Any]] = [
             },
         },
     },
+    {
+        "type": "function",
+        "function": {
+            "name": "ripgrep_search",
+            "description": "High-speed exact text or regex search across workspace source files.",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "query": {
+                        "type": "string",
+                        "description": "Text query or regex pattern to search.",
+                    },
+                    "file_types": {
+                        "type": "array",
+                        "items": {"type": "string"},
+                        "description": "Optional file extensions to restrict search (e.g. ['py', 'ts']).",
+                    },
+                    "path_filter": {
+                        "type": "string",
+                        "description": "Subdirectory to restrict search (e.g. 'app/modules/agent').",
+                    },
+                    "is_regex": {
+                        "type": "boolean",
+                        "description": "Whether query is a regex pattern.",
+                        "default": False,
+                    },
+                },
+                "required": ["query"],
+            },
+        },
+    },
+    {
+        "type": "function",
+        "function": {
+            "name": "get_repo_map",
+            "description": "Generate an ultra-compact architectural outline of the repository showing key classes, functions, and routes.",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "max_tokens": {
+                        "type": "integer",
+                        "description": "Maximum token budget for the map (default: 2000).",
+                        "default": 2000,
+                    },
+                    "target_dir": {
+                        "type": "string",
+                        "description": "Optional subdirectory to focus the map on.",
+                    },
+                },
+            },
+        },
+    },
+    {
+        "type": "function",
+        "function": {
+            "name": "get_git_history",
+            "description": "Retrieve recent commit messages and historical edits touching a specific file.",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "filepath": {
+                        "type": "string",
+                        "description": "Path to file to inspect commit history for.",
+                    },
+                    "limit": {
+                        "type": "integer",
+                        "description": "Maximum number of recent commits (default: 5).",
+                        "default": 5,
+                    },
+                },
+                "required": ["filepath"],
+            },
+        },
+    },
 ]
 
 
@@ -346,6 +423,63 @@ async def dispatch_tool(
         name = arguments.get("name", "checkpoint")
         rb = git_tool.rollback(name)
         return rb
+
+    # 7. Multi-Mode Repository Intelligence (Phase 2)
+    elif tool_name == "ripgrep_search":
+        query = arguments.get("query", "")
+        res = ripgrep_search.search(
+            query=query,
+            path_filter=arguments.get("path_filter"),
+            file_types=arguments.get("file_types"),
+            is_regex=arguments.get("is_regex", False),
+        )
+        return {
+            "success": res.success,
+            "query": res.query,
+            "total_matches": res.total_matches,
+            "matches": [
+                {
+                    "filepath": m.filepath,
+                    "line": m.line_number,
+                    "snippet": m.match_snippet,
+                }
+                for m in res.matches
+            ],
+            "truncated": res.truncated,
+            "error": res.error,
+        }
+
+    elif tool_name == "get_repo_map":
+        max_tokens = arguments.get("max_tokens", 2000)
+        target_dir = arguments.get("target_dir")
+        map_text = repo_map_generator.generate_map(
+            max_tokens=max_tokens, target_dir=target_dir
+        )
+        return {
+            "success": True,
+            "repo_map": map_text,
+            "estimated_tokens": len(map_text) // 4,
+        }
+
+    elif tool_name == "get_git_history":
+        filepath = arguments.get("filepath", "")
+        limit = arguments.get("limit", 5)
+        history = git_history_retriever.get_recent_file_history(
+            filepath=filepath, limit=limit
+        )
+        return {
+            "success": True,
+            "filepath": filepath,
+            "commits": [
+                {
+                    "hash": c.commit_hash[:8],
+                    "author": c.author,
+                    "date": c.relative_date,
+                    "message": c.message,
+                }
+                for c in history
+            ],
+        }
 
     else:
         return {"success": False, "error": f"Unknown tool: '{tool_name}'"}
