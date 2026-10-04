@@ -99,6 +99,8 @@ class ExplainPlanEngine:
         return {
             "has_bottlenecks": len(seq_scans) > 0,
             "sequential_scans_on_large_tables": seq_scans,
+            "seq_scans": seq_scans,
             "high_cost_nodes": high_cost_nodes,
             "recommendations": recommendations,
         }
+

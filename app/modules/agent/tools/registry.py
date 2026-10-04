@@ -10,6 +10,7 @@ and dispatches execution to sandboxed, concurrency-safe implementations:
 
 from typing import Any
 
+from app.modules.agent.tools.browser_tool import browser_tool
 from app.modules.agent.tools.git_tool import git_tool
 from app.modules.agent.tools.patcher import DiffPatcher, diff_patcher
 from app.modules.agent.tools.process_runner import ProcessRunner, process_runner
@@ -21,6 +22,7 @@ from app.modules.missions.permissions import (
     PermissionDecision,
     mission_permissions,
 )
+
 
 TOOLS_SCHEMA: list[dict[str, Any]] = [
     {
@@ -265,7 +267,58 @@ TOOLS_SCHEMA: list[dict[str, Any]] = [
             },
         },
     },
+    {
+        "type": "function",
+        "function": {
+            "name": "browser_open",
+            "description": "Navigate the headless browser to a specific URL for visual verification.",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "url": {
+                        "type": "string",
+                        "description": "URL to navigate to (e.g. 'http://localhost:3000').",
+                    },
+                },
+                "required": ["url"],
+            },
+        },
+    },
+    {
+        "type": "function",
+        "function": {
+            "name": "browser_screenshot",
+            "description": "Capture a screenshot PNG of the current browser page for visual review.",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "filename": {
+                        "type": "string",
+                        "description": "Optional filename for the screenshot.",
+                    },
+                },
+            },
+        },
+    },
+    {
+        "type": "function",
+        "function": {
+            "name": "browser_click",
+            "description": "Click an interactive element on the page using a CSS selector.",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "selector": {
+                        "type": "string",
+                        "description": "CSS selector to click.",
+                    },
+                },
+                "required": ["selector"],
+            },
+        },
+    },
 ]
+
 
 
 async def dispatch_tool(
@@ -481,5 +534,18 @@ async def dispatch_tool(
             ],
         }
 
+    elif tool_name == "browser_open":
+        url = arguments.get("url", "")
+        return await browser_tool.open(url)
+
+    elif tool_name == "browser_screenshot":
+        filename = arguments.get("filename")
+        return await browser_tool.screenshot(filename)
+
+    elif tool_name == "browser_click":
+        selector = arguments.get("selector", "")
+        return await browser_tool.click(selector)
+
     else:
         return {"success": False, "error": f"Unknown tool: '{tool_name}'"}
+
