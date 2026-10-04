@@ -9,15 +9,34 @@ from app.modules.intelligence.memory.memory_store import InstitutionalMemoryStor
 from app.modules.intelligence.memory.schema import (
     ADRRecord,
     ADRStatus,
+    CompactionSnapshot,
     HistoricalLesson,
     LessonCategory,
+    MemoryCandidate,
+    MemoryTier,
+    ProjectMemoryItem,
+    SessionMemory,
+    UserPreference,
+)
+from app.modules.intelligence.memory.three_tier_store import (
+    MemoryDurabilityGate,
+    ThreeTierMemoryStore,
 )
 
 __all__ = [
     "ADRManager",
     "ADRRecord",
     "ADRStatus",
+    "CompactionSnapshot",
     "HistoricalLesson",
     "InstitutionalMemoryStore",
     "LessonCategory",
+    "MemoryCandidate",
+    "MemoryDurabilityGate",
+    "MemoryTier",
+    "ProjectMemoryItem",
+    "SessionMemory",
+    "ThreeTierMemoryStore",
+    "UserPreference",
 ]
+
