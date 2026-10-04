@@ -8,6 +8,7 @@ and dispatches execution to sandboxed, concurrency-safe implementations:
   - Native Git (git_status, git_diff, git_log, git_blame, git_checkpoint, git_rollback)
 """
 
+import os
 from typing import Any
 
 from app.modules.agent.tools.browser_tool import browser_tool

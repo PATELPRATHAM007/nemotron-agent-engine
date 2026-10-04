@@ -229,3 +229,38 @@ async def test_dispatch_tool_blocks_dangerous_commands():
     res = await dispatch_tool("execute_bash", {"command": "rm -rf /"})
     assert res["success"] is False
     assert "blocked" in res["stderr"].lower() or "prohibited" in res["stderr"].lower()
+
+
+@pytest.mark.asyncio
+async def test_dispatch_tool_list_directory(tmp_path, monkeypatch):
+    from app.modules.agent.tools.workspace import WorkspaceSandbox
+    import app.modules.agent.tools.registry as reg
+
+    # Create test sandbox
+    sandbox = WorkspaceSandbox(str(tmp_path))
+    monkeypatch.setattr(reg, "workspace_sandbox", sandbox)
+
+    # Create dummy files and subdirs
+    (tmp_path / "sub_folder").mkdir()
+    (tmp_path / "test_file.txt").write_text("hello world")
+
+    # Test list_dir
+    res = await dispatch_tool("list_dir", {"directory": "."})
+    assert res["success"] is True
+    assert res["directory"] == "."
+    names = [it["name"] for it in res["items"]]
+    assert "sub_folder" in names
+    assert "test_file.txt" in names
+
+    sub_item = next(it for it in res["items"] if it["name"] == "sub_folder")
+    assert sub_item["is_dir"] is True
+
+    file_item = next(it for it in res["items"] if it["name"] == "test_file.txt")
+    assert file_item["is_dir"] is False
+    assert file_item["size"] == len("hello world")
+
+    # Test alias list_directory
+    res2 = await dispatch_tool("list_directory", {"directory": "."})
+    assert res2["success"] is True
+    assert len(res2["items"]) == 2
+
