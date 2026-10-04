@@ -4,7 +4,6 @@ Cost Module Validation
 Validates token count ranges, positive costs, and budget bounds.
 """
 
-from app.modules.cost import messages
 
 
 class CostValidator:

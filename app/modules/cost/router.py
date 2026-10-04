@@ -5,6 +5,7 @@ Mounts cost and token analytics endpoints to apis.py handlers.
 """
 
 from fastapi import APIRouter
+
 from app.modules.cost import apis
 
 router = APIRouter(prefix="/cost", tags=["Cost & Token Analytics"])

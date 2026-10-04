@@ -13,30 +13,23 @@ autonomous repository engineering:
   - Persistent Checkpoint State & Memory Integration
 """
 
-import asyncio
-from collections.abc import AsyncGenerator
-import json
 import os
+from collections.abc import AsyncGenerator
 from typing import Any
-import uuid
 
 from app.core.logging_config import get_logger
+from app.modules.agent.tools.filesystem import filesystem_tool
+from app.modules.agent.tools.registry import TOOLS_SCHEMA
+from app.modules.agent.tools.terminal import terminal_tool
+from app.modules.auth.context import AuthContext
 from app.modules.gateway.service import model_gateway
-from app.modules.missions.models import MissionPlan
-from app.modules.missions.multimodal import multimodal_storage
 from app.modules.missions.permissions import (
     PermissionDecision,
-    PermissionScope,
-    RiskLevel,
     mission_permissions,
 )
 from app.modules.missions.repository import mission_repository
 from app.modules.missions.slash_commands import SlashCommandParser
 from app.modules.missions.state_machine import MissionState, MissionStateMachine
-from app.modules.agent.tools.filesystem import filesystem_tool
-from app.modules.agent.tools.registry import TOOLS_SCHEMA, dispatch_tool
-from app.modules.agent.tools.terminal import terminal_tool
-from app.modules.auth.context import AuthContext
 
 logger = get_logger(__name__)
 

@@ -4,7 +4,9 @@ Intelligence Module Validation
 """
 
 import os
+
 from fastapi import HTTPException, status
+
 from app.modules.intelligence import messages
 
 

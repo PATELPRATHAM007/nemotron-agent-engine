@@ -8,11 +8,10 @@ Generates and manages structured, reviewable artifacts stored in PostgreSQL / lo
   - Visual Screenshot Artifact: UI visual verification captures.
 """
 
-from enum import Enum
 import json
 import time
+from enum import Enum
 from typing import Any
-from pydantic import BaseModel, Field
 
 from app.core.logging_config import get_logger
 from app.modules.missions.repository import mission_repository

@@ -14,7 +14,6 @@ from collections.abc import AsyncGenerator
 from typing import Any
 
 from app.core.logging_config import get_logger
-from app.modules.intelligence.impact.scope_lock import TaskScope
 from app.modules.agent.roles.base import (
     AgentState,
     DebugHypothesisOutput,
@@ -28,6 +27,7 @@ from app.modules.agent.roles.debugger import DebuggerRole
 from app.modules.agent.roles.planner import PlannerRole
 from app.modules.agent.roles.reviewer import ReviewerRole
 from app.modules.agent.roles.tester import TesterRole
+from app.modules.intelligence.impact.scope_lock import TaskScope
 
 logger = get_logger(__name__)
 
@@ -58,8 +58,8 @@ class MissionOrchestrator:
             PermissionLevel,
             PermissionManager,
         )
-        from app.modules.intelligence.database.safety_guard import DatabaseSafetyGuard
         from app.modules.agent.planning.multi_stage import MultiStagePlanner
+        from app.modules.intelligence.database.safety_guard import DatabaseSafetyGuard
 
         self.permission_manager = PermissionManager(
             PermissionLevel.LEVEL_2_MODIFY_SOURCE

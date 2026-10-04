@@ -12,8 +12,8 @@ from typing import Any
 
 from app.modules.agent.tools.browser_tool import browser_tool
 from app.modules.agent.tools.git_tool import git_tool
-from app.modules.agent.tools.patcher import DiffPatcher, diff_patcher
-from app.modules.agent.tools.process_runner import ProcessRunner, process_runner
+from app.modules.agent.tools.patcher import DiffPatcher
+from app.modules.agent.tools.process_runner import ProcessRunner
 from app.modules.agent.tools.workspace import workspace_sandbox
 from app.modules.intelligence.indexing.git_history import git_history_retriever
 from app.modules.intelligence.indexing.repo_map import repo_map_generator
@@ -22,7 +22,6 @@ from app.modules.missions.permissions import (
     PermissionDecision,
     mission_permissions,
 )
-
 
 TOOLS_SCHEMA: list[dict[str, Any]] = [
     {

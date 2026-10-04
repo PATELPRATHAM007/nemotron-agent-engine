@@ -10,14 +10,13 @@ import hashlib
 import os
 from typing import Any
 
-from app.core.exceptions import ScopeViolationError
+from app.core.exceptions import (
+    ConcurrencyConflictError,
+    PathTraversalError,
+)
 from app.core.logging_config import get_logger
 
 logger = get_logger(__name__)
-
-
-class ConcurrencyConflictError(RuntimeError):
-    """Raised when a file on disk has changed since the agent retrieved its context."""
 
 
 class WorkspaceSandbox:
@@ -31,25 +30,33 @@ class WorkspaceSandbox:
     def resolve_path(self, filepath: str) -> str:
         """
         Normalize and validate that target path stays strictly inside workspace boundaries.
-        Raises PermissionError if path attempts directory traversal outside workspace.
+        Raises PathTraversalError if path attempts directory traversal outside workspace.
         """
-        clean_path = filepath.strip().strip("'\"")
-        if os.path.isabs(clean_path):
-            abs_path = os.path.abspath(clean_path)
+        import urllib.parse
+
+        # Unquote URL-encoded path characters (e.g., %2e%2e%2f or ..%2F)
+        decoded_path = urllib.parse.unquote(filepath.strip().strip("'\""))
+        if decoded_path.startswith("~"):
+            abs_path = os.path.abspath(os.path.expanduser(decoded_path))
+        elif os.path.isabs(decoded_path):
+            abs_path = os.path.abspath(decoded_path)
         else:
-            abs_path = os.path.abspath(os.path.join(self.workspace_root, clean_path))
+            abs_path = os.path.abspath(os.path.join(self.workspace_root, decoded_path))
+
+
 
         # Boundary check
         try:
             common = os.path.commonpath([self.workspace_root, abs_path])
         except ValueError as e:
             # Different drives on Windows or invalid paths
-            raise PermissionError(f"Access denied: path '{filepath}' is outside workspace '{self.workspace_root}'") from e
+            raise PathTraversalError(f"Access denied: path '{filepath}' is outside workspace '{self.workspace_root}'") from e
 
         if common != self.workspace_root:
-            raise PermissionError(f"Access denied: path '{filepath}' escapes workspace '{self.workspace_root}'")
+            raise PathTraversalError(f"Access denied: path '{filepath}' escapes workspace '{self.workspace_root}'")
 
         return abs_path
+
 
     def get_relative_path(self, filepath: str) -> str:
         """Return path relative to workspace root."""

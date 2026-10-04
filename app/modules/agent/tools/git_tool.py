@@ -6,9 +6,8 @@ Provides status inspections, unified diffs, blame lookups, commit logs,
 and automated pre-edit checkpoints with atomic rollback.
 """
 
-from dataclasses import dataclass, field
-import os
 import subprocess
+from dataclasses import dataclass, field
 from typing import Any
 
 from app.core.logging_config import get_logger

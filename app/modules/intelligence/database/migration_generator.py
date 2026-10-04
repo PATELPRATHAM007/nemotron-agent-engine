@@ -9,9 +9,9 @@ Generates reversible Alembic migration scripts from proposed schema changes:
     an explicit human approval token (`MUTATION_APPROVAL_REQUIRED`).
 """
 
-import re
 import time
 from typing import Any
+
 from pydantic import BaseModel, Field
 
 from app.core.logging_config import get_logger

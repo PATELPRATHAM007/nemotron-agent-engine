@@ -9,7 +9,6 @@ from app.modules.gateway.adapters import (
     OpenAICompatibleAdapter,
     get_provider_adapter,
 )
-from app.modules.gateway.service import ModelGateway, model_gateway
 from app.modules.gateway.models import (
     ModelCredential,
     ModelProvider,
@@ -17,6 +16,7 @@ from app.modules.gateway.models import (
     ModelUsage,
     RegisteredModel,
 )
+from app.modules.gateway.service import ModelGateway, model_gateway
 
 
 def __getattr__(name: str):
@@ -29,17 +29,17 @@ def __getattr__(name: str):
 
 
 __all__ = [
-    "ModelProvider",
-    "RegisteredModel",
-    "ModelCredential",
-    "ModelUsage",
-    "ModelQuota",
-    "ModelProviderAdapter",
     "GoogleProviderAdapter",
-    "OpenAICompatibleAdapter",
-    "get_provider_adapter",
+    "ModelCredential",
     "ModelGateway",
+    "ModelProvider",
+    "ModelProviderAdapter",
+    "ModelQuota",
+    "ModelUsage",
+    "OpenAICompatibleAdapter",
+    "RegisteredModel",
+    "admin_router",
+    "get_provider_adapter",
     "model_gateway",
     "router",
-    "admin_router",
 ]

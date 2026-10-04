@@ -10,7 +10,10 @@ import os
 from typing import Any
 
 from app.core.logging_config import get_logger
-from app.modules.intelligence.indexing.fingerprint import CodeFingerprint, fingerprint_file
+from app.modules.intelligence.indexing.fingerprint import (
+    CodeFingerprint,
+    fingerprint_file,
+)
 from app.modules.intelligence.indexing.symbol_extractor import SymbolIndex
 
 logger = get_logger(__name__)

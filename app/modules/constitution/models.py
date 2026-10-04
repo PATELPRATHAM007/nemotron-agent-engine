@@ -3,8 +3,7 @@ Constitution Module Data Models
 ===============================
 """
 
-from typing import Any
-from pydantic import BaseModel, Field
+from pydantic import BaseModel
 
 
 class ConstitutionRule(BaseModel):

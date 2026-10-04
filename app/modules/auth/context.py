@@ -6,9 +6,9 @@ server-side sessions, and tenant ownership records.
 NEVER trusts arbitrary claims or IDs sent in request body from the client.
 """
 
+import uuid
 from dataclasses import dataclass, field
 from typing import Any
-import uuid
 
 
 @dataclass(frozen=True)

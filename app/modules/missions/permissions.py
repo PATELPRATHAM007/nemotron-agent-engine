@@ -9,8 +9,8 @@ Implements:
   - Never hide commands before execution
 """
 
-from enum import Enum
 import re
+from enum import Enum
 from typing import Any
 
 
@@ -37,7 +37,8 @@ class PermissionScope(str, Enum):
 
 # Commands that are strictly prohibited (CRITICAL risk)
 CRITICAL_PATTERNS = [
-    r"\brm\s+-(?:[a-zA-Z]*[rf][a-zA-Z]*)\s+(?:/|~|\.\.)(?:\s|$)",
+    r"\brm\s+-(?:[a-zA-Z]*[rf][a-zA-Z]*)\s+(?:/|~|\.\.|\/\*)(?:\s|$)",
+    r"\bchmod\s+(?:-[a-zA-Z]*\s+)?777\s+/",
     r"\bmkfs\b",
     r"\bdd\s+if=",
     r"\bformat\s+[a-z]:",
@@ -46,6 +47,7 @@ CRITICAL_PATTERNS = [
     r"\bshutdown\b",
     r"\breboot\b",
 ]
+
 
 # Commands with HIGH risk (require explicit approval unless pre-granted)
 HIGH_RISK_PATTERNS = [
@@ -162,7 +164,7 @@ class MissionPermissionEngine:
                 "action": "command",
                 "target": command,
                 "action_repr": action_repr,
-                "reason": f"Dangerous command blocked: violates safety policy.",
+                "reason": "Dangerous command blocked: violates safety policy.",
                 "directory": directory,
             }
 
@@ -176,7 +178,7 @@ class MissionPermissionEngine:
                 "action": "command",
                 "target": command,
                 "action_repr": action_repr,
-                "reason": f"Allowed by pre-existing scope grant.",
+                "reason": "Allowed by pre-existing scope grant.",
                 "directory": directory,
             }
 

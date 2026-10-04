@@ -13,7 +13,9 @@ from app.modules.intelligence.database.migration_generator import (
     SafeMigrationProposal,
     safe_migration_generator,
 )
-from app.modules.intelligence.database.performance_baseline import DatabasePerformanceBaseline
+from app.modules.intelligence.database.performance_baseline import (
+    DatabasePerformanceBaseline,
+)
 from app.modules.intelligence.database.query_analyzer import QueryAnalyzer
 from app.modules.intelligence.database.safety_guard import (
     DatabaseSafetyGuard,
@@ -30,7 +32,9 @@ from app.modules.intelligence.database.schema import (
     TableMetadata,
     VectorCollectionMetadata,
 )
-from app.modules.intelligence.database.schema_introspect import DatabaseIntrospectionEngine
+from app.modules.intelligence.database.schema_introspect import (
+    DatabaseIntrospectionEngine,
+)
 
 __all__ = [
     "ColumnMetadata",

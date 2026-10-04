@@ -2,25 +2,25 @@
 Auth service compatibility re-export.
 """
 from app.modules.auth.service import (
+    ACCESS_TOKEN_LIFETIME_SECONDS,
+    JWT_AUDIENCE,
+    JWT_ISSUER,
+    JWT_SECRET_KEY,
+    REFRESH_TOKEN_LIFETIME_DAYS,
     AuthenticationService,
     auth_service,
     password_hasher,
     utc_now,
-    ACCESS_TOKEN_LIFETIME_SECONDS,
-    REFRESH_TOKEN_LIFETIME_DAYS,
-    JWT_ISSUER,
-    JWT_AUDIENCE,
-    JWT_SECRET_KEY,
 )
 
 __all__ = [
+    "ACCESS_TOKEN_LIFETIME_SECONDS",
+    "JWT_AUDIENCE",
+    "JWT_ISSUER",
+    "JWT_SECRET_KEY",
+    "REFRESH_TOKEN_LIFETIME_DAYS",
     "AuthenticationService",
     "auth_service",
     "password_hasher",
     "utc_now",
-    "ACCESS_TOKEN_LIFETIME_SECONDS",
-    "REFRESH_TOKEN_LIFETIME_DAYS",
-    "JWT_ISSUER",
-    "JWT_AUDIENCE",
-    "JWT_SECRET_KEY",
 ]

@@ -4,7 +4,9 @@ Constitution Module API Controllers
 """
 
 import os
+
 from fastapi import HTTPException, status
+
 from app.modules.constitution import messages
 from app.modules.constitution.schemas import RuleDetailResponse, ScaffoldResponse
 from app.modules.constitution.service import ConstitutionScaffolder

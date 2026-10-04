@@ -3,10 +3,8 @@ Intelligence Module Controllers (API Endpoints)
 ===============================================
 """
 
-from fastapi import Query
 from app.modules.intelligence import messages
 from app.modules.intelligence.schemas import (
-    ASTSymbolQueryPayload,
     ImpactAnalysisPayload,
     ImpactAnalysisResponse,
     QueryAnalysisPayload,
@@ -16,7 +14,6 @@ from app.modules.intelligence.service import (
     ImpactAnalyzer,
     QueryAnalyzer,
     RepoGraph,
-    parse_python_file,
 )
 from app.modules.intelligence.validation import IntelligenceValidator
 

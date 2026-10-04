@@ -10,15 +10,15 @@ powered by NVIDIA Nemotron 3 Ultra, bounded by strict safety invariants and circ
   - Explicit tool permission & risk verification
 """
 
-import asyncio
-from collections.abc import AsyncGenerator
 import json
 import time
+from collections.abc import AsyncGenerator
 from typing import Any
+
 from pydantic import BaseModel, Field
 
 from app.core.logging_config import get_logger
-from app.modules.agent.tools.registry import TOOLS_SCHEMA, dispatch_tool
+from app.modules.agent.tools.registry import dispatch_tool
 from app.modules.auth.context import AuthContext
 from app.modules.intelligence.context.budget_allocator import (
     ContextBudgetAllocator,
@@ -27,7 +27,6 @@ from app.modules.intelligence.context.budget_allocator import (
 )
 from app.modules.intelligence.context.compactor import ContextCompactor
 from app.modules.intelligence.memory.three_tier_store import ThreeTierMemoryStore
-from app.modules.missions.permissions import mission_permissions
 
 logger = get_logger(__name__)
 

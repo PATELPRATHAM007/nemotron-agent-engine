@@ -4,7 +4,9 @@ Constitution Module Validation
 """
 
 import re
+
 from fastapi import HTTPException, status
+
 from app.modules.constitution import messages
 
 

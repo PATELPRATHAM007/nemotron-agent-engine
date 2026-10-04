@@ -6,12 +6,17 @@ and invokes the auth service. Uses static message constants.
 """
 
 import uuid
-from fastapi import Depends, HTTPException, Response, status
+
+from fastapi import Depends, HTTPException, Response
 from sqlalchemy import select
 
 from app.db.session import DatabaseService
 from app.modules.auth import messages
+from app.modules.auth.auditing import security_audit
+from app.modules.auth.context import AuthContext
+from app.modules.auth.dependencies import get_current_auth_context
 from app.modules.auth.models import Agent, User, UserSession
+from app.modules.auth.policy_engine import ROLE_PERMISSIONS
 from app.modules.auth.schemas import (
     AgentRegisterRequest,
     ApiKeyGenerateRequest,
@@ -20,12 +25,7 @@ from app.modules.auth.schemas import (
     RegisterRequest,
 )
 from app.modules.auth.service import auth_service
-from app.modules.auth.policy_engine import ROLE_PERMISSIONS
 from app.modules.auth.validation import AuthValidator
-from app.modules.auth.auditing import security_audit
-from app.modules.auth.context import AuthContext
-from app.modules.auth.dependencies import get_current_auth_context
-
 
 
 async def register(payload: RegisterRequest):

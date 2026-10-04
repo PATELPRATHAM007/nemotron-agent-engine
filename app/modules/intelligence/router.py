@@ -4,6 +4,7 @@ Intelligence Module APIRouter
 """
 
 from fastapi import APIRouter
+
 from app.modules.intelligence import apis
 from app.modules.intelligence.schemas import ImpactAnalysisResponse
 

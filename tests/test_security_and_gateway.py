@@ -16,19 +16,17 @@ Tests:
 
 import base64
 import uuid
+
 import pytest
 from fastapi.testclient import TestClient
 
 from app.main import app
-from app.db.session import DatabaseService
-from app.modules.auth.service import auth_service
-from app.modules.auth.context import AuthContext, ModelAccessContext
+from app.modules.auth.context import AuthContext
 from app.modules.auth.policy_engine import policy_engine
 from app.modules.auth.secrets import secret_manager, secret_redactor
+from app.modules.auth.service import auth_service
 from app.modules.auth.ssrf import ssrf_filter
-from app.modules.auth.auditing import security_audit
 from app.modules.gateway.service import model_gateway
-from app.modules.gateway.models import ModelProvider, RegisteredModel, ModelCredential
 from app.modules.missions.multimodal import multimodal_storage
 
 

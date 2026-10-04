@@ -6,10 +6,9 @@ Preserves existing formatting, comments, and unrelated functions.
 Generates unified git-style diffs and detects conflict mismatches.
 """
 
-from dataclasses import dataclass, field
 import difflib
 import os
-from typing import Any
+from dataclasses import dataclass
 
 from app.modules.agent.tools.workspace import (
     ConcurrencyConflictError,

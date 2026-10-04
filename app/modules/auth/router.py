@@ -5,6 +5,7 @@ Maps URL endpoints to controller handlers in apis.py.
 """
 
 from fastapi import APIRouter, status
+
 from app.modules.auth import apis
 
 router = APIRouter(prefix="/auth", tags=["Identity & Authentication"])

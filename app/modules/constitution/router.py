@@ -4,6 +4,7 @@ Constitution Module APIRouter
 """
 
 from fastapi import APIRouter
+
 from app.modules.constitution import apis
 from app.modules.constitution.schemas import RuleDetailResponse, ScaffoldResponse
 

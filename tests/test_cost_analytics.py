@@ -2,6 +2,7 @@ import pytest
 from fastapi.testclient import TestClient
 
 from app.core.exceptions import CostBudgetExceededError
+from app.main import app
 from app.modules.cost import (
     BudgetGuard,
     CostAlertLevel,
@@ -14,7 +15,6 @@ from app.modules.cost import (
     PricingModel,
     TokenUsageBreakdown,
 )
-from app.main import app
 
 
 def test_cost_calculator_formulas():

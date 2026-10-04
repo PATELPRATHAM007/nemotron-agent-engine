@@ -8,11 +8,11 @@ from app.modules.agent.tools.workspace import workspace_sandbox
 
 __all__ = [
     "TOOLS_SCHEMA",
+    "diff_patcher",
     "dispatch_tool",
     "filesystem_tool",
+    "git_tool",
+    "process_runner",
     "terminal_tool",
     "workspace_sandbox",
-    "diff_patcher",
-    "process_runner",
-    "git_tool",
 ]

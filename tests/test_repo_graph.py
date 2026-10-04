@@ -3,7 +3,12 @@ Tests for Multi-Layer Repository Knowledge Graph & Feature Mapping (Phase 2)
 """
 
 from app.modules.intelligence.graph.repo_graph import RepoGraph
-from app.modules.intelligence.graph.schema import EdgeKind, GraphEdge, GraphNode, NodeKind
+from app.modules.intelligence.graph.schema import (
+    EdgeKind,
+    GraphEdge,
+    GraphNode,
+    NodeKind,
+)
 
 
 def test_repo_graph_add_and_query():

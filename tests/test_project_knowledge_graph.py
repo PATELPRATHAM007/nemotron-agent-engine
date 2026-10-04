@@ -12,15 +12,12 @@ Verifies:
   8. Architectural issue tracking
 """
 
-import pytest
 
 from app.modules.intelligence.graph.knowledge_graph import (
-    ProjectKnowledgeGraph,
     build_complete_project_knowledge_graph,
 )
 from app.modules.intelligence.graph.schema import (
     ConfidenceLevel,
-    EdgeKind,
     NodeKind,
 )
 

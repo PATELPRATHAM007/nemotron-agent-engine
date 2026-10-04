@@ -8,9 +8,9 @@ Trigger: Context pressure exceeds threshold (default 75% of window).
 Guarantees: Zero loss of active tasks, pending actions, modified files, or active errors.
 """
 
-from enum import Enum
 import re
 import time
+from enum import Enum
 from typing import Any
 
 from app.core.logging_config import get_logger
@@ -162,10 +162,11 @@ class ContextCompactor:
             # Decision detection
             if "decision:" in content.lower() or "decided to" in content.lower():
                 for line in content.splitlines():
-                    if "decid" in line.lower() and len(line.strip()) < 200:
+                    if any(k in line.lower() for k in ["decid", "decision"]) and len(line.strip()) < 200:
                         clean_decision = line.strip().lstrip("-*# ")
                         if clean_decision and clean_decision not in key_decisions:
                             key_decisions.append(clean_decision)
+
 
             # Error detection in assistant or user turns
             if "error:" in content.lower() or "traceback" in content.lower():

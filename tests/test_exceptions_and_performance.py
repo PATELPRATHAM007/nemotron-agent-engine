@@ -17,16 +17,19 @@ from app.core.exceptions import (
     ToolExecutionError,
     VerificationGateFailedError,
 )
-from app.modules.intelligence.context.budget_manager import ContextBudget, ContextBudgetManager
-from app.modules.intelligence.indexing.ast_parser import (
-    clear_ast_cache,
-    parse_python_file,
-)
 from app.modules.agent.verification.gates import VerificationPipeline
 from app.modules.agent.verification.schema import (
     GateResult,
     GateStatus,
     ValidationPipelineReport,
+)
+from app.modules.intelligence.context.budget_manager import (
+    ContextBudget,
+    ContextBudgetManager,
+)
+from app.modules.intelligence.indexing.ast_parser import (
+    clear_ast_cache,
+    parse_python_file,
 )
 
 

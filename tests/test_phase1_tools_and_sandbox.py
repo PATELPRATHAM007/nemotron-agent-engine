@@ -10,20 +10,18 @@ Verifies:
   6. Standardized MCP Tool Registry & Permission Interception
 """
 
-import asyncio
 import os
+
 import pytest
 
-from app.modules.agent.tools.git_tool import GitTool, git_tool
-from app.modules.agent.tools.patcher import DiffPatcher, diff_patcher
-from app.modules.agent.tools.process_runner import ProcessRunner, process_runner
+from app.modules.agent.tools.git_tool import git_tool
+from app.modules.agent.tools.patcher import DiffPatcher
+from app.modules.agent.tools.process_runner import ProcessRunner
 from app.modules.agent.tools.registry import TOOLS_SCHEMA, dispatch_tool
 from app.modules.agent.tools.workspace import (
     ConcurrencyConflictError,
     WorkspaceSandbox,
-    workspace_sandbox,
 )
-
 
 # ------------------------------------------------------------------------------
 # 1. Workspace Sandbox & Path Bounds Tests

@@ -7,6 +7,7 @@ Modeled after ad-automation-be app/routes/pages.py.
 """
 
 from typing import Any
+
 from fastapi import APIRouter, Request, Response
 from fastapi.responses import HTMLResponse
 

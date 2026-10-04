@@ -6,7 +6,7 @@ so that Alembic migrations and database initialization see the full schema.
 """
 
 from app.db.session import Base
-from app.modules.auth.models import (  # noqa: F401
+from app.modules.auth.models import (
     Agent,
     AuditEvent,
     Organization,
@@ -16,15 +16,15 @@ from app.modules.auth.models import (  # noqa: F401
     User,
     UserSession,
 )
-from app.modules.cost.models import CostRecord  # noqa: F401
-from app.modules.gateway.models import (  # noqa: F401
+from app.modules.cost.models import CostRecord
+from app.modules.gateway.models import (
     ModelCredential,
     ModelProvider,
     ModelQuota,
     ModelUsage,
     RegisteredModel,
 )
-from app.modules.missions.models import (  # noqa: F401
+from app.modules.missions.models import (
     Mission,
     MissionArtifact,
     MissionAttachment,
@@ -38,29 +38,29 @@ from app.modules.missions.models import (  # noqa: F401
 )
 
 __all__ = [
+    "Agent",
+    "AuditEvent",
     "Base",
     "CostRecord",
     "Mission",
-    "MissionMessage",
+    "MissionArtifact",
     "MissionAttachment",
+    "MissionCheckpoint",
+    "MissionDiff",
     "MissionEvent",
+    "MissionMessage",
+    "MissionPermissionRequest",
     "MissionPlan",
     "MissionSelection",
-    "MissionPermissionRequest",
-    "MissionDiff",
-    "MissionCheckpoint",
-    "MissionArtifact",
-    "User",
+    "ModelCredential",
+    "ModelProvider",
+    "ModelQuota",
+    "ModelUsage",
     "Organization",
     "Project",
-    "UserSession",
     "RefreshToken",
-    "Agent",
-    "AuditEvent",
-    "SecurityEvent",
-    "ModelProvider",
     "RegisteredModel",
-    "ModelCredential",
-    "ModelUsage",
-    "ModelQuota",
+    "SecurityEvent",
+    "User",
+    "UserSession",
 ]

@@ -5,6 +5,7 @@ Mounts gateway and admin controllers from apis.py.
 """
 
 from fastapi import APIRouter
+
 from app.modules.gateway import apis
 
 router = APIRouter(prefix="/models", tags=["Model Gateway"])

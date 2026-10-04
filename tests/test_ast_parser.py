@@ -2,7 +2,10 @@
 Tests for Deterministic AST Parsing and Symbol Extraction (Phase 1)
 """
 
-from app.modules.intelligence.indexing.ast_parser import derive_module_path, parse_python_file
+from app.modules.intelligence.indexing.ast_parser import (
+    derive_module_path,
+    parse_python_file,
+)
 
 SAMPLE_FASTAPI_CODE = '''"""Sample Auth Module Docstring."""
 

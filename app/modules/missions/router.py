@@ -5,6 +5,7 @@ Mounts endpoint routes to apis.py handlers.
 """
 
 from fastapi import APIRouter
+
 from app.modules.missions import apis
 
 router = APIRouter(prefix="/missions", tags=["Autonomous Missions"])

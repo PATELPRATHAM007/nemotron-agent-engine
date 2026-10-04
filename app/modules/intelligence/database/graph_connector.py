@@ -9,7 +9,12 @@ Connects Features and APIs to their corresponding database tables and queries.
 from app.core.logging_config import get_logger
 from app.modules.intelligence.database.schema import DatabaseSchemaSnapshot
 from app.modules.intelligence.graph.repo_graph import RepoGraph
-from app.modules.intelligence.graph.schema import EdgeKind, GraphEdge, GraphNode, NodeKind
+from app.modules.intelligence.graph.schema import (
+    EdgeKind,
+    GraphEdge,
+    GraphNode,
+    NodeKind,
+)
 
 logger = get_logger(__name__)
 

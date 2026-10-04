@@ -9,21 +9,19 @@ Tests:
 """
 
 import os
+
 import pytest
 
-from app.modules.agent.tools.browser_tool import BrowserTool, browser_tool
+from app.modules.agent.tools.browser_tool import BrowserTool
 from app.modules.agent.tools.registry import dispatch_tool
 from app.modules.intelligence.database.explain_engine import ExplainPlanEngine
 from app.modules.intelligence.database.migration_generator import (
     SafeMigrationGenerator,
-    safe_migration_generator,
 )
 from app.modules.missions.artifacts import (
     ArtifactManager,
     ArtifactType,
-    artifact_manager,
 )
-
 
 # ==============================================================================
 # 1. Browser Visual UI Verification Tests

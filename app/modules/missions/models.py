@@ -5,11 +5,11 @@ Stores missions, messages, events, plans, selections, permissions,
 checkpoints, diffs, artifacts, and multimodal attachments.
 """
 
+import uuid
 from datetime import datetime, timezone
 from typing import Any
-import uuid
 
-from sqlalchemy import DateTime, Float, ForeignKey, Integer, String, Text, JSON
+from sqlalchemy import JSON, DateTime, Float, ForeignKey, Integer, String, Text
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.db.session import Base

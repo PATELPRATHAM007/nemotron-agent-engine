@@ -9,7 +9,6 @@ from abc import ABC, abstractmethod
 from collections.abc import AsyncGenerator
 from typing import Any
 
-from app.core.config import settings
 from app.core.llm_gateway import llm_gateway
 from app.core.logging_config import get_logger
 from app.modules.auth.secrets import secret_manager
@@ -31,7 +30,6 @@ class ModelProviderAdapter(ABC):
         tools: list[dict[str, Any]] | None = None,
     ) -> dict[str, Any]:
         """Generate complete model response."""
-        pass
 
     @abstractmethod
     async def stream(
@@ -44,12 +42,10 @@ class ModelProviderAdapter(ABC):
         tools: list[dict[str, Any]] | None = None,
     ) -> AsyncGenerator[dict[str, Any], None]:
         """Stream real-time tokens, thoughts, and tool calls."""
-        pass
 
     @abstractmethod
     async def health(self, secret_reference: str) -> bool:
         """Health check for provider availability."""
-        pass
 
 
 class GoogleProviderAdapter(ModelProviderAdapter):

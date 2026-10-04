@@ -4,8 +4,7 @@ Intelligence Module Models
 Data representations for Codebase Knowledge Graph and AST Symbols.
 """
 
-from typing import Any
-from pydantic import BaseModel, Field
+from pydantic import BaseModel
 
 
 class SymbolMetadata(BaseModel):

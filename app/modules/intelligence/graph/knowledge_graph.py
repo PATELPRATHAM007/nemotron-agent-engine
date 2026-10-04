@@ -9,17 +9,15 @@ and business rule into concrete code evidence, separating WHAT the system is fro
 HOW it is implemented.
 """
 
-from dataclasses import asdict, dataclass, field
 import datetime
-import json
 import os
 import re
+from dataclasses import dataclass, field
 from typing import Any
 
 from app.modules.intelligence.graph.schema import (
     ConfidenceLevel,
     EdgeKind,
-    FeatureSubgraph,
     GraphEdge,
     GraphNode,
     NodeKind,
@@ -140,7 +138,7 @@ class ProjectKnowledgeGraph:
             subgraph_edges.append(edge)
 
         # Secondary hops for rules, tests, and database entities
-        for nid in list(connected_node_ids):
+        for nid in connected_node_ids:
             for edge in self.get_out_edges(nid):
                 target = self.get_node(edge.target_id)
                 if target and target.kind in (
@@ -331,9 +329,7 @@ class ProjectKnowledgeGraph:
                 if w in evidence_lower:
                     score += 1.5
                 for meta_val in node.metadata.values():
-                    if isinstance(meta_val, str) and w in meta_val.lower():
-                        score += 2.0
-                    elif isinstance(meta_val, list) and any(w in str(x).lower() for x in meta_val):
+                    if isinstance(meta_val, str) and w in meta_val.lower() or isinstance(meta_val, list) and any(w in str(x).lower() for x in meta_val):
                         score += 2.0
 
             if score > 0:

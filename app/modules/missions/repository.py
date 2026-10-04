@@ -5,24 +5,20 @@ Handles CRUD for missions, messages, events, plans, selections,
 permission requests, diffs, checkpoints, and artifacts.
 """
 
-from datetime import datetime, timezone
 import json
-import os
+import uuid
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
-import uuid
 
 from sqlalchemy import desc, select
-from sqlalchemy.orm import Session
 
 from app.core.logging_config import get_logger
 from app.db.session import DatabaseService
 from app.modules.missions.models import (
     Mission,
     MissionArtifact,
-    MissionAttachment,
     MissionCheckpoint,
-    MissionDiff,
     MissionEvent,
     MissionMessage,
     MissionPermissionRequest,

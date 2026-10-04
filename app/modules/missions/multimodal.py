@@ -7,11 +7,10 @@ hashes, verifies MIME types, and formats multimodal context for model reasoning.
 
 import base64
 import hashlib
-import mimetypes
 import os
+import uuid
 from pathlib import Path
 from typing import Any
-import uuid
 
 from app.core.logging_config import get_logger
 

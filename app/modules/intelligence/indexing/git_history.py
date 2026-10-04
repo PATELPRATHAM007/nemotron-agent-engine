@@ -5,8 +5,7 @@ Provides historical commit context, recent file changes, and line-level blame
 metadata to explain why past architectural decisions and bug fixes were made.
 """
 
-from dataclasses import dataclass, field
-from typing import Any
+from dataclasses import dataclass
 
 from app.modules.agent.tools.git_tool import GitTool, git_tool
 from app.modules.agent.tools.workspace import WorkspaceSandbox, workspace_sandbox

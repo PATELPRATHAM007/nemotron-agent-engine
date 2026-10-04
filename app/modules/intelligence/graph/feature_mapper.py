@@ -8,7 +8,12 @@ Discovers and clusters business features, mapping them to files, routes, models,
 import os
 
 from app.modules.intelligence.graph.repo_graph import RepoGraph
-from app.modules.intelligence.graph.schema import EdgeKind, GraphEdge, GraphNode, NodeKind
+from app.modules.intelligence.graph.schema import (
+    EdgeKind,
+    GraphEdge,
+    GraphNode,
+    NodeKind,
+)
 from app.modules.intelligence.indexing.ast_parser import SymbolDefinition
 from app.modules.intelligence.indexing.symbol_extractor import SymbolIndex
 

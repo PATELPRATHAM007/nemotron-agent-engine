@@ -14,12 +14,10 @@ import json
 import os
 import re
 import time
-from typing import Any
 
 from app.core.logging_config import get_logger
 from app.modules.intelligence.memory.schema import (
     MemoryCandidate,
-    MemoryTier,
     ProjectMemoryItem,
     SessionMemory,
     UserPreference,

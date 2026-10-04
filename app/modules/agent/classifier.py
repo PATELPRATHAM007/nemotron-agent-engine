@@ -10,9 +10,9 @@ Classifies user requests into discrete agent workflows:
   - REVIEW: Static analysis, diff review, and constitutional security audit.
 """
 
-from enum import Enum
 import re
-from typing import Any
+from enum import Enum
+
 from pydantic import BaseModel, Field
 
 from app.core.logging_config import get_logger
@@ -94,8 +94,20 @@ class DynamicTaskClassifier:
         """
         Classifies user prompt into the most appropriate TaskWorkflow.
         """
-        text = prompt.strip()
+        text = prompt.strip() if prompt else ""
+        if not text:
+            return ClassificationResult(
+                workflow=TaskWorkflow.QUESTION,
+                confidence=1.0,
+                recommended_subagent="DirectResponder",
+                requires_workspace_write=False,
+                requires_test_run=False,
+                allowed_tools=["read_file", "get_repo_map"],
+                rationale="Empty prompt received; defaulting to conversational QUESTION response.",
+            )
+
         lower = text.lower()
+
 
         # 1. Check DEBUG patterns
         for pattern in self.DEBUG_PATTERNS:

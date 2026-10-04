@@ -8,22 +8,18 @@ Tests:
   4. Skills System Loader (procedural skill discovery, query matching, context formatting).
 """
 
-import os
 import pytest
 
 from app.modules.agent.classifier import (
     DynamicTaskClassifier,
     TaskWorkflow,
-    task_classifier,
 )
 from app.modules.agent.react_engine import ReActEngine
 from app.modules.agent.subagents.coordinator import (
     SubagentCoordinator,
     SubagentRole,
-    subagent_coordinator,
 )
 from app.modules.intelligence.skills.loader import SkillRegistry
-
 
 # ==============================================================================
 # 1. Multi-Turn ReAct Loop Tests

@@ -7,16 +7,12 @@ Tests:
   3. Three-Tier Memory Architecture (Session, Project, User) and MemoryDurabilityGate.
 """
 
-import os
-import pytest
 
 from app.modules.intelligence.context.budget_allocator import (
     ContextBudgetAllocator,
     ContextLayer,
     LayeredContextBudgetConfig,
     LayerQuotas,
-    estimate_tokens,
-    truncate_to_tokens,
 )
 from app.modules.intelligence.context.compactor import (
     ContextCompactor,
@@ -24,16 +20,12 @@ from app.modules.intelligence.context.compactor import (
     ToolResultPolicy,
 )
 from app.modules.intelligence.memory.schema import (
-    CompactionSnapshot,
     MemoryCandidate,
-    MemoryTier,
-    SessionMemory,
 )
 from app.modules.intelligence.memory.three_tier_store import (
     MemoryDurabilityGate,
     ThreeTierMemoryStore,
 )
-
 
 # ==============================================================================
 # 1. Context Budget Allocator Tests

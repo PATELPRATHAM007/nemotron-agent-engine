@@ -11,19 +11,19 @@ Validates that all domain modules adhere to the clean pattern:
   - messages.py
 """
 
-from fastapi.testclient import TestClient
 import pytest
+from fastapi.testclient import TestClient
 
-from app.main import app
 from app.core import messages as core_messages
+from app.main import app
 from app.modules.auth import messages as auth_messages
 from app.modules.auth.validation import AuthValidator
+from app.modules.cost import messages as cost_messages
+from app.modules.cost.validation import CostValidator
 from app.modules.gateway import messages as gateway_messages
 from app.modules.gateway.validation import GatewayValidator
 from app.modules.missions import messages as mission_messages
 from app.modules.missions.validation import MissionValidator
-from app.modules.cost import messages as cost_messages
-from app.modules.cost.validation import CostValidator
 
 client = TestClient(app)
 

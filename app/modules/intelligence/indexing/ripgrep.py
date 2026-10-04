@@ -6,13 +6,12 @@ a fast Python regex fallback. Supports file-type filtering, path boundaries,
 case sensitivity, and bounded result sets to protect context token budgets.
 """
 
-from dataclasses import dataclass, field
 import json
 import os
 import re
 import shutil
 import subprocess
-from typing import Any
+from dataclasses import dataclass, field
 
 from app.core.logging_config import get_logger
 from app.modules.agent.tools.workspace import WorkspaceSandbox, workspace_sandbox

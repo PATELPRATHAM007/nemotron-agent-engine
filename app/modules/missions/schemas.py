@@ -5,6 +5,7 @@ Request & response models for the Autonomous Mission Chat.
 """
 
 from typing import Any
+
 from pydantic import BaseModel, Field
 
 

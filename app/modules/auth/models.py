@@ -8,11 +8,11 @@ Implements:
   - Immutable Security Audit Events & Security Violations
 """
 
+import uuid
 from datetime import datetime, timezone
 from typing import Any
-import uuid
 
-from sqlalchemy import Boolean, DateTime, Float, ForeignKey, Integer, String, Text, JSON
+from sqlalchemy import JSON, Boolean, DateTime, ForeignKey, String, Text
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.db.session import Base

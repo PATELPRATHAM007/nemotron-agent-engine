@@ -6,6 +6,7 @@ against known magic bytes, and enforces size constraints.
 """
 
 import os
+
 from app.modules.missions import messages
 
 SUPPORTED_IMAGE_MIMES = {

@@ -13,6 +13,7 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
 from app.db.session import Base
+from app.main import app
 from app.modules.cost.models import CostRecord
 from app.modules.cost.repository import CostRepository
 from app.modules.cost.schema import (
@@ -20,7 +21,6 @@ from app.modules.cost.schema import (
     PricingMode,
     TokenUsageBreakdown,
 )
-from app.main import app
 
 
 @pytest.fixture

@@ -6,17 +6,17 @@ plan approvals, solution selections, and permission grants.
 """
 
 import json
-from typing import Any
 import uuid
 
-from fastapi import Depends, HTTPException, Query, status
+from fastapi import Depends, HTTPException, Query
 from sse_starlette.sse import EventSourceResponse
 
+from app.modules.auth.context import AuthContext
+from app.modules.auth.dependencies import get_current_auth_context
+from app.modules.missions import messages
 from app.modules.missions.multimodal import multimodal_storage
 from app.modules.missions.permissions import PermissionScope, mission_permissions
 from app.modules.missions.repository import mission_repository
-from app.modules.missions.state_machine import MissionState
-from app.modules.missions import messages
 from app.modules.missions.schemas import (
     CreateMissionRequest,
     ImageUploadPayload,
@@ -25,8 +25,7 @@ from app.modules.missions.schemas import (
     SelectionDecisionRequest,
 )
 from app.modules.missions.service import unified_mission_engine
-from app.modules.auth.context import AuthContext
-from app.modules.auth.dependencies import get_current_auth_context
+from app.modules.missions.state_machine import MissionState
 
 
 async def create_mission(

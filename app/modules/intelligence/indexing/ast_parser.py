@@ -15,7 +15,10 @@ from typing import Any
 
 from pydantic import BaseModel, Field
 
-from app.modules.intelligence.indexing.fingerprint import CodeFingerprint, fingerprint_file
+from app.modules.intelligence.indexing.fingerprint import (
+    CodeFingerprint,
+    fingerprint_file,
+)
 
 
 class SymbolDefinition(BaseModel):

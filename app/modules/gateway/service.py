@@ -9,17 +9,17 @@ Executes the audited 18-step verification pipeline for all model calls:
   Call Provider -> Stream Response -> Record Usage -> Record Audit Event.
 """
 
-from collections.abc import AsyncGenerator
 import time
-from typing import Any
 import uuid
+from collections.abc import AsyncGenerator
+from typing import Any
 
 from app.core.logging_config import get_logger
-from app.modules.gateway.adapters import get_provider_adapter
-from app.modules.gateway.models import RegisteredModel
 from app.modules.auth.auditing import security_audit
 from app.modules.auth.context import AuthContext
 from app.modules.auth.policy_engine import AuthorizationDecision, policy_engine
+from app.modules.gateway.adapters import get_provider_adapter
+from app.modules.gateway.models import RegisteredModel
 
 logger = get_logger(__name__)
 
@@ -271,10 +271,10 @@ model_gateway = ModelGateway()
 
 __all__ = [
     "ModelGateway",
-    "model_gateway",
-    "ModelRouter",
-    "model_router",
-    "ModelRoutingError",
-    "ModelGatewaySecurityError",
     "ModelGatewayQuotaError",
+    "ModelGatewaySecurityError",
+    "ModelRouter",
+    "ModelRoutingError",
+    "model_gateway",
+    "model_router",
 ]

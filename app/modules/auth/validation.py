@@ -31,7 +31,7 @@ class AuthValidator:
     @staticmethod
     def compute_device_fingerprint(device_id: str, public_key: str) -> str:
         """Compute SHA256 checksum binding device ID and public key."""
-        payload = f"{device_id}:{public_key}".encode("utf-8")
+        payload = f"{device_id}:{public_key}".encode()
         return hashlib.sha256(payload).hexdigest()
 
     @staticmethod

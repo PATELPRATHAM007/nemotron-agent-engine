@@ -257,3 +257,12 @@ class LLMGatewayError(NemotronEngineError):
             details={"model_id": self.model_id, "retry_count": self.retry_count},
             suggested_fix="Verify vLLM spot server endpoint connectivity and token limits.",
         )
+
+
+class PathTraversalError(PermissionError):
+    """Raised when an operation attempts directory traversal outside the workspace boundary."""
+
+
+class ConcurrencyConflictError(RuntimeError):
+    """Raised when a file on disk has changed since the agent retrieved its context."""
+

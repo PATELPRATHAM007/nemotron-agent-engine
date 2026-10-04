@@ -14,17 +14,20 @@ Simulates a complete real-world coding mission executing across all 8 phases:
 
 import pytest
 
+from app.modules.agent.orchestrator import MissionOrchestrator
+from app.modules.agent.roles.base import AgentState, TestRunOutput
+from app.modules.agent.verification.gates import VerificationPipeline
 from app.modules.constitution.service import ConstitutionScaffolder
-from app.modules.intelligence.context.budget_manager import ContextBudget, ContextBudgetManager
+from app.modules.intelligence.context.budget_manager import (
+    ContextBudget,
+    ContextBudgetManager,
+)
 from app.modules.intelligence.graph.repo_graph import RepoGraph
 from app.modules.intelligence.graph.schema import GraphNode, NodeKind
 from app.modules.intelligence.impact.scope_lock import ScopeViolationError, TaskScope
 from app.modules.intelligence.indexing.watcher import IncrementalFileWatcher
 from app.modules.intelligence.memory.memory_store import InstitutionalMemoryStore
 from app.modules.intelligence.memory.schema import HistoricalLesson, LessonCategory
-from app.modules.agent.orchestrator import MissionOrchestrator
-from app.modules.agent.roles.base import AgentState, TestRunOutput
-from app.modules.agent.verification.gates import VerificationPipeline
 
 
 def test_incremental_watcher_handles_whitespace_and_logic_changes(tmp_path):

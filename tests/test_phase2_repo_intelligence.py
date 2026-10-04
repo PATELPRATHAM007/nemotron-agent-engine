@@ -10,12 +10,11 @@ Verifies:
 
 import pytest
 
-from app.modules.agent.tools.registry import TOOLS_SCHEMA, dispatch_tool
+from app.modules.agent.tools.registry import dispatch_tool
 from app.modules.intelligence.context.budget_manager import estimate_tokens
 from app.modules.intelligence.indexing.git_history import git_history_retriever
 from app.modules.intelligence.indexing.repo_map import repo_map_generator
 from app.modules.intelligence.indexing.ripgrep import ripgrep_search
-
 
 # ------------------------------------------------------------------------------
 # 1. Ripgrep & Regex Search Engine Tests

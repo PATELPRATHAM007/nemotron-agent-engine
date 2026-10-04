@@ -5,21 +5,20 @@ Processes model generation, streaming, usage auditing, and administrative manage
 """
 
 import json
-from typing import Any
-from fastapi import Depends, HTTPException, Query, status
+
+from fastapi import Depends, HTTPException, Query
 from sse_starlette.sse import EventSourceResponse
 
-from app.modules.gateway import messages
-from app.modules.gateway.schemas import (
-    ModelGeneratePayload,
-    ProviderCreatePayload,
-    ModelCreatePayload,
-    CredentialRotatePayload,
-)
-from app.modules.gateway.service import model_gateway, model_router
 from app.modules.auth.context import AuthContext
 from app.modules.auth.dependencies import get_current_auth_context
-from app.modules.auth.secrets import secret_manager
+from app.modules.gateway import messages
+from app.modules.gateway.schemas import (
+    CredentialRotatePayload,
+    ModelCreatePayload,
+    ModelGeneratePayload,
+    ProviderCreatePayload,
+)
+from app.modules.gateway.service import model_gateway, model_router
 
 
 async def list_authorized_models(auth: AuthContext = Depends(get_current_auth_context)):

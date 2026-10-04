@@ -3,14 +3,18 @@ from sqlalchemy import create_engine, text
 
 from app.modules.intelligence.database.explain_engine import ExplainPlanEngine
 from app.modules.intelligence.database.graph_connector import DatabaseGraphConnector
-from app.modules.intelligence.database.performance_baseline import DatabasePerformanceBaseline
+from app.modules.intelligence.database.performance_baseline import (
+    DatabasePerformanceBaseline,
+)
 from app.modules.intelligence.database.query_analyzer import QueryAnalyzer
 from app.modules.intelligence.database.safety_guard import (
     DatabaseSafetyGuard,
     DatabaseSafetyViolationError,
 )
 from app.modules.intelligence.database.schema import DatabaseType, QueryRiskLevel
-from app.modules.intelligence.database.schema_introspect import DatabaseIntrospectionEngine
+from app.modules.intelligence.database.schema_introspect import (
+    DatabaseIntrospectionEngine,
+)
 from app.modules.intelligence.graph.repo_graph import RepoGraph
 
 

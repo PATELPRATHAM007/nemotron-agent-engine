@@ -5,6 +5,7 @@ Request and response validation models for the authentication subsystem.
 """
 
 from typing import Any
+
 from pydantic import BaseModel, EmailStr, Field
 
 
