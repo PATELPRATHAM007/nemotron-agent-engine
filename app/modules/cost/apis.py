@@ -6,7 +6,9 @@ Retrieves cost records, aggregates token analytics, and evaluates budget guardra
 
 from fastapi import Query
 
+from app.db.session import DatabaseService
 from app.modules.cost import messages
+from app.modules.cost.repository import CostRepository
 from app.modules.cost.schemas import BudgetCheckPayload
 from app.modules.cost.service import budget_guard, cost_ledger, cost_tracker
 
@@ -14,9 +16,6 @@ from app.modules.cost.service import budget_guard, cost_ledger, cost_tracker
 async def get_cost_summary():
     """Retrieve aggregated token counts and costs."""
     try:
-        from app.db.session import DatabaseService
-        from app.modules.cost.repository import CostRepository
-
         session = DatabaseService.get_session()
         try:
             repo = CostRepository(session)
@@ -33,9 +32,6 @@ async def list_cost_records(
 ):
     """List recent persistent cost reports from the ledger."""
     try:
-        from app.db.session import DatabaseService
-        from app.modules.cost.repository import CostRepository
-
         session = DatabaseService.get_session()
         try:
             repo = CostRepository(session)
@@ -50,9 +46,6 @@ async def list_cost_records(
 async def get_mission_cost(mission_id: str):
     """Get total cost and tokens for a specific mission."""
     try:
-        from app.db.session import DatabaseService
-        from app.modules.cost.repository import CostRepository
-
         session = DatabaseService.get_session()
         try:
             repo = CostRepository(session)

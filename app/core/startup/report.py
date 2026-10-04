@@ -12,6 +12,7 @@ from pathlib import Path
 from typing import Any
 
 from app.core.config import settings
+from app.db.session import engine
 from logger_manager import LoggerManager
 
 system_logger = LoggerManager(folder_name="system")
@@ -58,8 +59,6 @@ def _probe(
 def _check_database() -> str:
     from sqlalchemy import text
 
-    from app.db.session import engine
-
     with engine.connect() as conn:
         conn.execute(text("SELECT 1"))
     return f"Connection established ({engine.dialect.name})"
@@ -74,8 +73,6 @@ def _check_migrations() -> str:
         from alembic.config import Config
         from alembic.runtime.migration import MigrationContext
         from alembic.script import ScriptDirectory
-
-        from app.db.session import engine
 
         project_root = Path(__file__).resolve().parent.parent.parent.parent
         ini_path = project_root / "alembic.ini"

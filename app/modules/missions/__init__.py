@@ -24,13 +24,6 @@ from app.modules.missions.slash_commands import SlashCommandParser
 from app.modules.missions.state_machine import MissionState, MissionStateMachine
 
 
-def __getattr__(name: str):
-    if name == "router":
-        from app.modules.missions.router import router
-        return router
-    raise AttributeError(f"module {__name__!r} has no attribute {name!r}")
-
-
 __all__ = [
     "CommandRiskClassifier",
     "Mission",
@@ -50,5 +43,4 @@ __all__ = [
     "mission_permissions",
     "mission_repository",
     "multimodal_storage",
-    "router",
 ]

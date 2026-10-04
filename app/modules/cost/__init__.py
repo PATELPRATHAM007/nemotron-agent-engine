@@ -25,13 +25,6 @@ from app.modules.cost.service import (
 )
 
 
-def __getattr__(name: str):
-    if name == "router":
-        from app.modules.cost.router import router
-        return router
-    raise AttributeError(f"module {__name__!r} has no attribute {name!r}")
-
-
 __all__ = [
     "BudgetGuard",
     "CostAlertLevel",
@@ -50,5 +43,4 @@ __all__ = [
     "cost_calculator",
     "cost_ledger",
     "cost_tracker",
-    "router",
 ]

@@ -11,7 +11,6 @@ from app.modules.agent.classifier import (
 )
 from app.modules.agent.engine import agent_engine
 from app.modules.agent.react_engine import ReActEngine
-from app.modules.agent.routes import router as agent_router
 from app.modules.agent.subagents.coordinator import (
     SubagentCoordinator,
     SubagentRole,
@@ -25,7 +24,6 @@ __all__ = [
     "SubagentRole",
     "TaskWorkflow",
     "agent_engine",
-    "agent_router",
     "subagent_coordinator",
     "task_classifier",
 ]

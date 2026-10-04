@@ -336,3 +336,8 @@ class MissionOrchestrator:
             yield self.transition_to(
                 AgentState.CODING, f"Applying remediation patch {self.debug_attempts}"
             )
+
+
+# Backwards compatibility alias
+AgentOrchestrator = MissionOrchestrator
+

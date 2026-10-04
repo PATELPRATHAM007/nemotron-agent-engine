@@ -11,6 +11,7 @@ import uuid
 from fastapi import Depends, HTTPException, Query
 from sse_starlette.sse import EventSourceResponse
 
+from app.modules.agent.tools.terminal import terminal_tool
 from app.modules.auth.context import AuthContext
 from app.modules.auth.dependencies import get_current_auth_context
 from app.modules.missions import messages
@@ -200,7 +201,6 @@ async def rollback_mission(
     auth: AuthContext = Depends(get_current_auth_context),
 ):
     """Revert changes back to clean Git working tree state."""
-    from app.modules.agent.tools.terminal import terminal_tool
     res = await terminal_tool.execute("git checkout .")
     return {"success": res["exit_code"] == 0, "message": messages.ROLLBACK_SUCCESS}
 
@@ -232,7 +232,6 @@ async def get_mission_diff(
     auth: AuthContext = Depends(get_current_auth_context),
 ):
     """Retrieve current Git diff for review."""
-    from app.modules.agent.tools.terminal import terminal_tool
     res = await terminal_tool.execute("git diff")
     return {"diff": res["stdout"]}
 

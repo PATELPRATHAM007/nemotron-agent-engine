@@ -36,6 +36,11 @@ class ExecutionResult:
     timed_out: bool = False
     truncated: bool = False
 
+    @property
+    def duration_seconds(self) -> float:
+        """Process duration in floating-point seconds."""
+        return self.duration_ms / 1000.0
+
 
 @dataclass
 class BackgroundTask:

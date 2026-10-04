@@ -12,6 +12,8 @@ import time
 from datetime import datetime, timezone
 
 from app.core.logging_config import get_logger
+from app.db.session import DatabaseService
+from app.modules.cost.repository import CostRepository
 from app.modules.cost.schemas import (
     LedgerSummary,
     MissionCostReport,
@@ -61,9 +63,6 @@ class CostLedger:
     def _save_to_db(self, report: MissionCostReport, model_engine: str = "nemotron-3-ultra") -> None:
         """Persist report to the SQL database (primary store)."""
         try:
-            from app.db.session import DatabaseService
-            from app.modules.cost.repository import CostRepository
-
             session = DatabaseService.get_session()
             try:
                 repo = CostRepository(session)
@@ -96,9 +95,6 @@ class CostLedger:
         Tries the database first, falls back to JSON records.
         """
         try:
-            from app.db.session import DatabaseService
-            from app.modules.cost.repository import CostRepository
-
             session = DatabaseService.get_session()
             try:
                 repo = CostRepository(session)
@@ -134,9 +130,6 @@ class CostLedger:
         falls back to in-memory JSON records.
         """
         try:
-            from app.db.session import DatabaseService
-            from app.modules.cost.repository import CostRepository
-
             session = DatabaseService.get_session()
             try:
                 repo = CostRepository(session)

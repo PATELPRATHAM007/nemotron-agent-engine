@@ -40,6 +40,7 @@ class CommandRegistry:
     def __init__(self):
         self._commands: dict[str, CommandDefinition] = {}
         self._handlers: dict[str, Callable[..., AsyncGenerator[dict[str, Any], None]]] = {}
+        UtilityCommandHandlers.registry_provider = lambda: self
         self._register_default_commands()
 
     def register(

@@ -55,6 +55,8 @@ class UtilityCommandHandlers:
             "payload": {"cleared_messages": cleared_count},
         }
 
+    registry_provider: Any = None
+
     @classmethod
     async def handle_help(
         cls,
@@ -62,8 +64,6 @@ class UtilityCommandHandlers:
         workspace_root: str,
         mission_id: str = "",
     ) -> AsyncGenerator[dict[str, Any], None]:
-        from app.modules.agent.commands.registry import command_registry
-
         start_time = time.time()
         subcommand = (parsed.args[0] if parsed.args else "").lower()
         if subcommand.startswith("/"):
@@ -77,9 +77,11 @@ class UtilityCommandHandlers:
             "payload": {"subcommand": subcommand},
         }
 
+        reg = cls.registry_provider() if callable(cls.registry_provider) else cls.registry_provider
+
         if subcommand:
             # Specific command help
-            definition = command_registry.get("/" + subcommand)
+            definition = reg.get("/" + subcommand) if reg else None
             if definition:
                 examples_md = "\n".join([f"  - `{ex}`" for ex in definition.examples]) or "  - None"
                 content = (
@@ -95,7 +97,7 @@ class UtilityCommandHandlers:
                 content = f"❌ Unknown command `/{subcommand}`. Type `/help` to see all available commands.\n"
         else:
             # Full commands table
-            commands = command_registry.list_commands()
+            commands = reg.list_commands() if reg else []
             
             by_risk: dict[str, list] = {"LOW": [], "MEDIUM": [], "HIGH": [], "SPECIAL": []}
             for cmd in commands:

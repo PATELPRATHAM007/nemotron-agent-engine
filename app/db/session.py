@@ -1,7 +1,7 @@
 from collections.abc import Generator
 
 from sqlalchemy import create_engine
-from sqlalchemy.orm import DeclarativeBase, Session, sessionmaker
+from sqlalchemy.orm import Session, sessionmaker
 
 from app.core.config import settings
 from logger_manager import LoggerManager
@@ -25,8 +25,7 @@ engine = create_engine(settings.DATABASE_URL, **_engine_kwargs())
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 
-class Base(DeclarativeBase):
-    pass
+from app.db.base_class import Base
 
 
 class DatabaseService:
@@ -55,10 +54,7 @@ class DatabaseService:
     def init_db_schema(cls) -> None:
         """Create all database tables if they do not exist."""
         try:
-            import app.modules.auth.models
-            import app.modules.cost.models
-            import app.modules.gateway.models
-            import app.modules.missions.models  # noqa: F401
+            import app.db.base  # noqa: F401
 
             Base.metadata.create_all(bind=cls.engine, checkfirst=True)
             database_logger.info("Database schema initialized successfully.")

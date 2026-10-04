@@ -6,7 +6,7 @@ Declares /agent routes and attaches handlers from apis.py.
 
 from fastapi import APIRouter
 
-from app.modules.agent import apis
+import app.modules.agent.apis as apis
 from app.modules.agent.schemas import AgentConfigResponse, MissionResponse
 
 router = APIRouter(prefix="/agent", tags=["Agent"])

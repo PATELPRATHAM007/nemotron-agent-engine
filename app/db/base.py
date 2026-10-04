@@ -5,7 +5,7 @@ Imports Base and all persistent SQLAlchemy models across domain modules
 so that Alembic migrations and database initialization see the full schema.
 """
 
-from app.db.session import Base
+from app.db.base_class import Base
 from app.modules.auth.models import (
     Agent,
     AuditEvent,

@@ -21,13 +21,6 @@ from app.modules.auth.service import AuthenticationService, auth_service
 from app.modules.auth.ssrf import SSRFFilter, SSRFProtectionError, ssrf_filter
 
 
-def __getattr__(name: str):
-    if name == "router":
-        from app.modules.auth.router import router
-        return router
-    raise AttributeError(f"module {__name__!r} has no attribute {name!r}")
-
-
 __all__ = [
     "Agent",
     "AuditEvent",
@@ -45,7 +38,6 @@ __all__ = [
     "UserSession",
     "auth_service",
     "policy_engine",
-    "router",
     "secret_manager",
     "secret_redactor",
     "security_audit",

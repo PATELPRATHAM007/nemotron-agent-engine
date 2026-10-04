@@ -18,19 +18,8 @@ from app.modules.agent.commands.models import (
 )
 from app.modules.agent.commands.parser import CommandParser
 from app.modules.agent.commands.registry import CommandRegistry, command_registry
-from app.modules.agent.commands.handlers.init_handler import InitCommandHandler
-from app.modules.agent.commands.handlers.plan_handler import PlanCommandHandler
-from app.modules.agent.commands.handlers.review_handler import ReviewCommandHandler
-from app.modules.agent.commands.handlers.test_handler import TestCommandHandler
-from app.modules.agent.commands.handlers.debug_handler import DebugCommandHandler
-from app.modules.agent.commands.handlers.fix_handler import FixCommandHandler
-from app.modules.agent.commands.handlers.explain_handler import ExplainCommandHandler
-from app.modules.agent.commands.handlers.search_handler import SearchCommandHandler
-from app.modules.agent.commands.handlers.inspect_handler import InspectCommandHandler
-from app.modules.agent.commands.handlers.status_handler import StatusCommandHandler
-from app.modules.agent.commands.handlers.diff_handler import DiffCommandHandler
-from app.modules.agent.commands.handlers.git_handlers import GitCommandHandlers
-from app.modules.agent.commands.handlers.utility_handlers import UtilityCommandHandlers
+from app.modules.agent.tools.process_runner import ExecutionResult, process_runner
+
 
 
 class TestCommandParser:
@@ -210,7 +199,19 @@ class TestCommandHandlersExecution:
         assert "command.started" in event_types
         assert "command.completed" in event_types
 
-    async def test_test_handler_resolves_and_runs(self):
+    async def test_test_handler_resolves_and_runs(self, monkeypatch):
+        async def mock_run(cmd, cwd=None, timeout=30, env_vars=None):
+            return ExecutionResult(
+                success=True,
+                exit_code=0,
+                stdout="202 passed in 1.2s",
+                stderr="",
+                duration_ms=1200,
+                command=cmd,
+            )
+
+        monkeypatch.setattr(process_runner, "run", mock_run)
+
         p_test = CommandParser.parse("/test")
         events = []
         async for ev in command_registry.dispatch(p_test, workspace_root="."):

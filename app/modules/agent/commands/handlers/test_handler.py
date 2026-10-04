@@ -11,7 +11,7 @@ from typing import Any, AsyncGenerator
 
 from app.core.logging_config import get_logger
 from app.modules.agent.commands.models import ParsedCommand
-from app.modules.agent.tools.process_runner import ProcessRunner
+from app.modules.agent.tools.process_runner import process_runner
 
 logger = get_logger(__name__)
 
@@ -52,8 +52,7 @@ class TestCommandHandler:
         }
 
         # 2. Execute tests
-        runner = ProcessRunner(working_directory=cwd, timeout_seconds=120)
-        result = await runner.run_command(cmd)
+        result = await process_runner.run(cmd, cwd=cwd, timeout=120)
 
         yield {
             "type": "command.tool_completed",
@@ -61,7 +60,7 @@ class TestCommandHandler:
             "tool": "process_runner",
             "payload": {
                 "exit_code": result.exit_code,
-                "duration_seconds": result.duration_seconds,
+                "duration_seconds": result.duration_ms / 1000.0,
             },
         }
 
@@ -118,7 +117,9 @@ class TestCommandHandler:
         pytest_cmd = venv_pytest if os.path.isfile(venv_pytest) else "pytest"
 
         if target and target not in ("backend", "all", "unit", "integration"):
-            # Target is a specific file or filter
+            # Target is a specific file, directory, or pattern
+            if target.endswith(".py") or "/" in target or "\\" in target:
+                return f"{pytest_cmd} {target} -q", root
             return f"{pytest_cmd} -k '{target}' -q", root
         
         # Check if tests directory exists
