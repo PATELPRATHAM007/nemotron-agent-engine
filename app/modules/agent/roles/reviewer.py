@@ -34,14 +34,37 @@ class ReviewerRole(AgentRole):
     def build_context_prompt(
         self, goal: str, context: dict[str, Any]
     ) -> list[dict[str, str]]:
-        plan: PlanOutput = context.get("plan")
+        raw_plan = context.get("plan")
         arch_rules = context.get("architecture_rules", "No rules configured.")
 
-        plan_summary = (
-            f"Summary: {plan.summary}\nPrimary Files: {plan.primary_files}\nTest Files: {plan.test_files}"
-            if plan
-            else "No plan provided."
-        )
+        if isinstance(raw_plan, PlanOutput):
+            plan_summary = (
+                f"Summary: {raw_plan.summary}\n"
+                f"Primary Files: {raw_plan.primary_files}\n"
+                f"Test Files: {raw_plan.test_files}"
+            )
+        elif isinstance(raw_plan, dict):
+            summary = raw_plan.get("summary", "")
+            primary_files = raw_plan.get("primary_files", [])
+            test_files = raw_plan.get("test_files", [])
+            plan_summary = (
+                f"Summary: {summary}\n"
+                f"Primary Files: {primary_files}\n"
+                f"Test Files: {test_files}"
+            )
+        elif isinstance(raw_plan, str) and raw_plan.strip():
+            plan_summary = f"Summary: {raw_plan.strip()}"
+        elif raw_plan:
+            summary = getattr(raw_plan, "summary", str(raw_plan))
+            primary_files = getattr(raw_plan, "primary_files", [])
+            test_files = getattr(raw_plan, "test_files", [])
+            plan_summary = (
+                f"Summary: {summary}\n"
+                f"Primary Files: {primary_files}\n"
+                f"Test Files: {test_files}"
+            )
+        else:
+            plan_summary = "No plan provided."
 
         user_content = f"""## Mission Goal:
 {goal}

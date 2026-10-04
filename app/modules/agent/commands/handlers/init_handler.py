@@ -108,11 +108,21 @@ class InitCommandHandler:
         # 6. Static Code-Quality, Import/Export & Circular Dependency Audit
         yield {"type": "command.progress", "step": "code_audit", "message": "Performing static import/export & circular dependency audit"}
         audit = cls._audit_repository(workspace_root)
+        import_health = (
+            "✓ Healthy (0 broken imports)"
+            if audit["broken_imports_count"] == 0
+            else f"⚠️ {audit['broken_imports_count']} broken imports"
+        )
+        export_health = (
+            "✓ Healthy (0 invalid exports)"
+            if audit["export_errors_count"] == 0
+            else f"⚠️ {audit['export_errors_count']} invalid exports"
+        )
         yield {
             "type": "token",
             "content": f"✓ **Source Files**: {audit['source_files_count']:,} | **Test Files**: {audit['test_files_count']:,}\n"
-                       f"✓ **Import Health**: {'✓ Healthy (0 broken imports)' if audit['broken_imports_count'] == 0 else f'⚠️ {audit['broken_imports_count']} broken imports'}\n"
-                       f"✓ **Export Health**: {'✓ Healthy (0 invalid exports)' if audit['export_errors_count'] == 0 else f'⚠️ {audit['export_errors_count']} invalid exports'}\n"
+                       f"✓ **Import Health**: {import_health}\n"
+                       f"✓ **Export Health**: {export_health}\n"
                        f"✓ **Circular Dependencies**: {audit['circular_dependencies_count']} detected\n",
         }
 
@@ -374,6 +384,17 @@ class InitCommandHandler:
         warnings_md = "\n".join([f"- ⚠️ {w}" for w in audit.get("warnings", [])]) or "None"
         recs_md = "\n".join([f"- {r}" for r in audit.get("recommendations", [])]) or "None"
 
+        import_health = (
+            "✓ Healthy (0 broken imports)"
+            if audit.get("broken_imports_count", 0) == 0
+            else f"⚠️ {audit.get('broken_imports_count', 0)} broken imports"
+        )
+        export_health = (
+            "✓ Healthy (0 invalid exports)"
+            if audit.get("export_errors_count", 0) == 0
+            else f"⚠️ {audit.get('export_errors_count', 0)} invalid exports"
+        )
+
         return f"""### Project Initialization Complete
 
 **Project**:
@@ -395,10 +416,10 @@ class InitCommandHandler:
 {entry_md}
 
 **Import Health**:
-{'✓ Healthy (0 broken imports)' if audit['broken_imports_count'] == 0 else f'⚠️ {audit['broken_imports_count']} broken imports'}
+{import_health}
 
 **Export Health**:
-{'✓ Healthy (0 invalid exports)' if audit['export_errors_count'] == 0 else f'⚠️ {audit['export_errors_count']} invalid exports'}
+{export_health}
 
 **Circular Dependencies**:
 {audit['circular_dependencies_count']}
@@ -620,6 +641,16 @@ class InitCommandHandler:
         file_count: int,
         audit: dict[str, Any],
     ) -> str:
+        import_health = (
+            "Healthy (0 broken imports)"
+            if audit.get("broken_imports_count", 0) == 0
+            else f"{audit.get('broken_imports_count', 0)} broken imports"
+        )
+        export_health = (
+            "Healthy (0 invalid exports)"
+            if audit.get("export_errors_count", 0) == 0
+            else f"{audit.get('export_errors_count', 0)} invalid exports"
+        )
         return f"""# PROJECT CONTEXT & AGENT DIRECTIVES
 
 ## Project Overview
@@ -646,8 +677,8 @@ class InitCommandHandler:
 ## Code Quality & Import Health
 - **Source Files**: {audit['source_files_count']:,}
 - **Test Files**: {audit['test_files_count']:,}
-- **Import Health**: {'Healthy (0 broken imports)' if audit['broken_imports_count'] == 0 else f"{audit['broken_imports_count']} broken imports"}
-- **Export Health**: {'Healthy (0 invalid exports)' if audit['export_errors_count'] == 0 else f"{audit['export_errors_count']} invalid exports"}
+- **Import Health**: {import_health}
+- **Export Health**: {export_health}
 - **Circular Dependencies**: {audit['circular_dependencies_count']} detected
 
 ## Configuration Manifests

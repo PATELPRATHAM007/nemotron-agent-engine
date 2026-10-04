@@ -202,6 +202,10 @@ class GitTool:
             "message": "Workspace cleanly rolled back to pre-edit state." if success else "Rollback failed.",
         }
 
+    async def arollback(self, name: str = "default", files: list[str] | None = None) -> dict[str, Any]:
+        """Async helper to revert uncommitted modifications in working tree."""
+        return self.rollback(name=name, files=files)
+
     async def status(self) -> dict[str, Any]:
         """Async helper returning working tree status dictionary."""
         s = self.get_status()

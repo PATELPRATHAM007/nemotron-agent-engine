@@ -59,9 +59,28 @@ class BackgroundTask:
 class ProcessRunner:
     """Sandboxed process execution engine and background job manager."""
 
-    def __init__(self, sandbox: WorkspaceSandbox | None = None):
-        self.sandbox = sandbox or workspace_sandbox
+    def __init__(
+        self,
+        sandbox: WorkspaceSandbox | None = None,
+        working_directory: str | None = None,
+    ):
+        if sandbox is not None:
+            self.sandbox = sandbox
+        elif working_directory is not None:
+            self.sandbox = WorkspaceSandbox(workspace_root=working_directory)
+        else:
+            self.sandbox = workspace_sandbox
         self._background_tasks: dict[str, BackgroundTask] = {}
+
+    async def run_command(
+        self,
+        command: str,
+        cwd: str | None = None,
+        timeout: int = 30,
+        env_vars: dict[str, str] | None = None,
+    ) -> ExecutionResult:
+        """Alias for run() ensuring backward and cross-caller compatibility."""
+        return await self.run(command=command, cwd=cwd, timeout=timeout, env_vars=env_vars)
 
     async def run(
         self,

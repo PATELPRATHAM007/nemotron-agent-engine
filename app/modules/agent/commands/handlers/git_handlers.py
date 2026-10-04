@@ -6,6 +6,7 @@ pre-commit test verification, and safety confirmations.
 CRITICAL SAFETY INVARIANT: Never automatically push to remote repositories.
 """
 
+import inspect
 import time
 from typing import Any, AsyncGenerator
 
@@ -128,14 +129,17 @@ class GitCommandHandlers:
 
         modified = status_res.get("modified", [])
 
-        # Rollback via git checkout
+        # Rollback uncommitted modifications
         yield {"type": "command.progress", "step": "rollback", "message": "Reverting uncommitted changes in working tree"}
-        rollback_res = await git_tool.rollback(files=modified)
+        rollback_res = git_tool.rollback(files=modified if modified else None)
+        if inspect.isawaitable(rollback_res):
+            rollback_res = await rollback_res
 
         if rollback_res.get("success"):
+            reverted_count = len(modified) if modified else "all"
             yield {
                 "type": "token",
-                "content": f"↺ **Reverted uncommitted changes in {len(modified)} files successfully.**\n"
+                "content": f"↺ **Reverted uncommitted changes ({reverted_count} files) successfully.**\n"
                            f"Working tree restored to clean state.\n",
             }
             yield {
@@ -212,8 +216,23 @@ class GitCommandHandlers:
         # Confirmed execution
         yield {"type": "command.progress", "step": "reset", "message": "Executing hard reset and cleaning untracked files"}
         runner = ProcessRunner(working_directory=workspace_root)
-        await runner.run_command("git reset --hard HEAD")
-        await runner.run_command("git clean -fd")
+        res1 = await runner.run("git reset --hard HEAD", cwd=workspace_root)
+        res2 = await runner.run("git clean -fd", cwd=workspace_root)
+
+        if not res1.success or not res2.success:
+            err = res1.stderr or res2.stderr or "Git reset/clean execution failed"
+            yield {
+                "type": "token",
+                "content": f"❌ **Reset failed**: {err}\n",
+            }
+            yield {
+                "type": "command.failed",
+                "command": "/reset",
+                "mission_id": mission_id,
+                "duration": time.time() - start_time,
+                "payload": {"error": err},
+            }
+            return
 
         yield {
             "type": "token",
