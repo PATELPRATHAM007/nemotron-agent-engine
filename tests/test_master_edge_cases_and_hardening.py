@@ -398,3 +398,33 @@ async def test_react_engine_iteration_cap_and_cycle_breaker(tmp_path):
     assert "react_started" in event_types
     # Must terminate cleanly within iteration limit
     assert len([e for e in events if e["type"] == "react_iteration_started"]) <= 2
+
+
+@pytest.mark.asyncio
+async def test_react_engine_final_step_with_none_final_answer(tmp_path):
+    """Verifies ReAct engine cleanly handles final step when final_answer is None."""
+    from unittest.mock import AsyncMock
+
+    from app.modules.agent.react_engine import ReActStep
+
+    engine = ReActEngine(workspace_root=str(tmp_path), max_iterations=5)
+    mock_step = ReActStep(
+        iteration=1,
+        thought="Resolved immediately without text",
+        is_final=True,
+        final_answer=None,
+    )
+    engine._plan_and_execute_turn = AsyncMock(return_value=mock_step)
+
+    events = []
+    async for ev in engine.execute_react_loop("m-none-test", "Quick task"):
+        events.append(ev)
+
+    event_types = [e["type"] for e in events]
+    assert "react_completed" in event_types
+    completed_event = next(e for e in events if e["type"] == "react_completed")
+    assert completed_event["final_answer"] is None
+
+    session = engine.memory_store.get_session_memory("m-none-test")
+    assert "Completed at iteration 1. Final: " in session.scratchpad
+

@@ -37,6 +37,19 @@ class QueryAnalyzer:
     )
     DESTRUCTIVE_PATTERN = re.compile(r"\b(DROP|TRUNCATE|ALTER)\b", re.IGNORECASE)
 
+    def analyze(
+        self,
+        query: str,
+        table_metadata: TableMetadata | None = None,
+        estimated_table_rows: int = 0,
+    ) -> QueryAnalysisReport:
+        """Analyze SQL query string for anti-patterns, performance risks, and safety hazards."""
+        return self.analyze_query(
+            query=query,
+            table_metadata=table_metadata,
+            estimated_table_rows=estimated_table_rows,
+        )
+
     def analyze_query(
         self,
         query: str,

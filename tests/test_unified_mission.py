@@ -11,9 +11,11 @@ Asserts:
   - Slash Commands (/status, /diff, /permissions, /stop)
 """
 
+import pytest
 from fastapi.testclient import TestClient
 
 from app.main import app
+from app.modules.agent.unified_engine import unified_mission_engine
 from app.modules.missions.permissions import (
     CommandRiskClassifier,
     MissionPermissionEngine,
@@ -137,3 +139,57 @@ def test_mission_stream_directive():
     assert stream_resp.status_code == 200
     assert "text/event-stream" in stream_resp.headers.get("content-type", "")
     assert len(stream_resp.text) > 0
+
+
+@pytest.mark.asyncio
+async def test_unified_mission_engine_execution_policy_none():
+    """Verify execution_policy=None does not raise AttributeError and defaults safely."""
+    events = []
+    async for ev in unified_mission_engine.execute_mission_turn(
+        mission_id="test_ep_none_mission",
+        user_input="Refactor authentication layer",
+        execution_policy=None,
+    ):
+        events.append(ev)
+        if ev.get("type") in ("waiting_for_approval", "tool_start", "plan_created"):
+            if ev.get("type") != "plan_created":
+                break
+
+    event_types = [e.get("type") for e in events]
+    assert "state_change" in event_types
+    assert "plan_created" in event_types
+
+
+@pytest.mark.asyncio
+async def test_unified_mission_engine_manual_autonomy():
+    """Verify manual autonomy stops at waiting_for_approval."""
+    events = []
+    async for ev in unified_mission_engine.execute_mission_turn(
+        mission_id="test_manual_autonomy_mission",
+        user_input="Implement billing module",
+        execution_policy={"autonomy": "manual"},
+    ):
+        events.append(ev)
+
+    event_types = [e.get("type") for e in events]
+    assert "plan_created" in event_types
+    assert "waiting_for_approval" in event_types
+
+
+@pytest.mark.asyncio
+async def test_unified_mission_engine_handle_directive_none_command():
+    """Verify _handle_directive safely handles directive with command=None."""
+    from app.modules.agent.unified_engine import MissionState, MissionStateMachine
+
+    sm = MissionStateMachine(MissionState.IDLE)
+    events = []
+    async for ev in unified_mission_engine._handle_directive(
+        mission_id="test_none_cmd_mission",
+        directive={"command": None, "args": ""},
+        state_machine=sm,
+    ):
+        events.append(ev)
+
+    assert any(e.get("type") == "token" for e in events)
+
+

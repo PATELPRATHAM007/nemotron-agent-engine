@@ -127,7 +127,7 @@ class SecretRedactor:
             elif isinstance(v, dict):
                 sanitized[k] = cls.redact_dict(v)
             elif isinstance(v, list):
-                sanitized[k] = [cls.redact_dict(item) if isinstance(item, dict) else (cls.redact(str(item)) if isinstance(item, str) else item) for item in v]
+                sanitized[k] = [cls.redact_dict(item) if isinstance(item, dict) else (cls.redact(item) if isinstance(item, str) else item) for item in v]
             elif isinstance(v, str):
                 sanitized[k] = cls.redact(v)
             else:

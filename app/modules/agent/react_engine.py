@@ -193,7 +193,8 @@ class ReActEngine:
                     "total_iterations": len(history),
                 }
                 # Update session memory
-                session.scratchpad = f"Completed at iteration {iteration}. Final: {step.final_answer[:100]}"
+                final_preview = step.final_answer[:100] if step.final_answer else ""
+                session.scratchpad = f"Completed at iteration {iteration}. Final: {final_preview}"
                 self.memory_store.save_session_memory(session)
                 return
 

@@ -53,8 +53,10 @@ class CommandRegistry:
         self._commands[canonical] = definition
         self._handlers[canonical] = handler
 
-    def get(self, command_name: str) -> CommandDefinition | None:
+    def get(self, command_name: str | None) -> CommandDefinition | None:
         """Retrieve command definition by name (with or without leading slash)."""
+        if not command_name or not isinstance(command_name, str):
+            return None
         name = command_name.lower()
         if not name.startswith("/"):
             name = "/" + name

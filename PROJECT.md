@@ -3,7 +3,7 @@
 ## Project Overview
 - **Name**: `nemotron-agent-engine`
 - **Root**: `.`
-- **Files Indexed**: 510
+- **Files Indexed**: 516
 - **Git Branch**: `main` (Clean: `False`)
 
 ## Technology Stack
@@ -23,7 +23,7 @@
 - **Test_Entry**: `pytest.ini`
 
 ## Code Quality & Import Health
-- **Source Files**: 220
+- **Source Files**: 209
 - **Test Files**: 34
 - **Import Health**: Healthy (0 broken imports)
 - **Export Health**: 1 invalid exports

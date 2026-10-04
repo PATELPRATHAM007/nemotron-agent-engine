@@ -76,6 +76,12 @@ class UnifiedMissionEngine:
 
         # 1. Retrieve or create persistent Mission record
         mission = mission_repository.get_mission(mission_id)
+        if not execution_policy and isinstance(mission, dict):
+            execution_policy = mission.get("execution_policy")
+
+        if not isinstance(execution_policy, dict):
+            execution_policy = {"autonomy": "high", "review_policy": "interactive"}
+
         if not mission:
             mission = mission_repository.create_mission(
                 mission_id=mission_id,
@@ -153,7 +159,7 @@ class UnifiedMissionEngine:
         }
 
         # If policy allows immediate auto-execution or user already approved:
-        auto_execute = execution_policy.get("autonomy", "high") == "high"
+        auto_execute = (execution_policy or {}).get("autonomy", "high") == "high"
         if not auto_execute:
             yield {
                 "type": "waiting_for_approval",
@@ -266,7 +272,7 @@ class UnifiedMissionEngine:
             yield state_machine.transition(MissionState.COMPLETED, "Rollback completed")
             return
 
-        elif command_registry.get(cmd):
+        elif cmd and command_registry.get(cmd):
             # First-class Agent Command Execution
             yield state_machine.transition(MissionState.EXECUTING, f"Executing command: {cmd}")
             async for ev in command_registry.dispatch(parsed, self.workspace_root, mission_id):

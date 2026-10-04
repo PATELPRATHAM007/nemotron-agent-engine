@@ -77,8 +77,8 @@ class InspectCommandHandler:
             if full_path.endswith(".py"):
                 try:
                     mod = parse_python_file(full_path)
-                    classes = [s.name for s in mod.symbols if getattr(s.kind, "value", str(s.kind)) == "class"]
-                    funcs = [s.name for s in mod.symbols if getattr(s.kind, "value", str(s.kind)) in ("function", "method")]
+                    classes = [s.name for s in mod.symbols if getattr(s.kind, "value", s.kind) == "class"]
+                    funcs = [s.name for s in mod.symbols if getattr(s.kind, "value", s.kind) in ("function", "method")]
                     imports_count = len(mod.imports)
                 except Exception:
                     pass

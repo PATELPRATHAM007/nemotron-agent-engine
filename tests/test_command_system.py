@@ -133,6 +133,12 @@ class TestCommandRegistry:
         init_hits = command_registry.search("init")
         assert any(c.command == "/init" for c in init_hits)
 
+    def test_get_none_or_empty_returns_none(self):
+        assert command_registry.get(None) is None
+        assert command_registry.get("") is None
+        assert command_registry.get("   ") is None
+
+
 
 @pytest.mark.asyncio
 class TestCommandHandlersExecution:

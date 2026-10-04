@@ -6,6 +6,7 @@ permission requests, diffs, checkpoints, and artifacts.
 """
 
 import json
+import os
 import uuid
 from datetime import datetime, timezone
 from pathlib import Path
@@ -36,6 +37,7 @@ class MissionRepository:
         self.workspace_root = workspace_root
         self._fallback_dir = Path(workspace_root) / ".agent" / "missions"
         self._fallback_dir.mkdir(parents=True, exist_ok=True)
+        self.missions_dir = self._fallback_dir
         # Ensure database tables exist
         self._init_db_tables()
 
@@ -143,12 +145,12 @@ class MissionRepository:
         except Exception as e:
             logger.warning(f"DB update failed for mission status: {e}")
 
-        meta = self._load_fallback(mission_id, "meta.json") or {"id": mission_id}
+        meta: dict[str, Any] = self._load_fallback(mission_id, "meta.json") or {"id": mission_id}
         meta["status"] = status
         if current_phase:
             meta["current_phase"] = current_phase
-        meta["total_tokens"] = meta.get("total_tokens", 0) + tokens_added
-        meta["total_cost_usd"] = meta.get("total_cost_usd", 0.0) + cost_added
+        meta["total_tokens"] = int(meta.get("total_tokens", 0) or 0) + tokens_added
+        meta["total_cost_usd"] = float(meta.get("total_cost_usd", 0.0) or 0.0) + cost_added
         self._save_fallback(mission_id, "meta.json", meta)
 
     def save_message(
@@ -209,12 +211,11 @@ class MissionRepository:
         except Exception as e:
             logger.warning(f"DB clear messages failed: {e}")
 
-        fallback_path = os.path.join(self.missions_dir, mission_id, "messages.json")
-        if os.path.exists(fallback_path):
-            try:
-                os.remove(fallback_path)
-            except Exception:
-                pass
+        fallback_path = self._fallback_dir / mission_id / "messages.json"
+        try:
+            fallback_path.unlink(missing_ok=True)
+        except OSError as e:
+            logger.debug(f"Could not remove fallback messages file: {e}")
         return count
 
 

@@ -62,8 +62,8 @@ class ExplainCommandHandler:
             yield {"type": "command.progress", "step": "ast_inspection", "message": f"Parsing AST symbols for {target}"}
             try:
                 mod = parse_python_file(potential_path)
-                classes = [s.name for s in mod.symbols if getattr(s.kind, "value", str(s.kind)) == "class"]
-                functions = [s.name for s in mod.symbols if getattr(s.kind, "value", str(s.kind)) in ("function", "method")]
+                classes = [s.name for s in mod.symbols if getattr(s.kind, "value", s.kind) == "class"]
+                functions = [s.name for s in mod.symbols if getattr(s.kind, "value", s.kind) in ("function", "method")]
                 imports_len = len(mod.imports)
             except Exception:
                 classes, functions, imports_len = [], [], 0

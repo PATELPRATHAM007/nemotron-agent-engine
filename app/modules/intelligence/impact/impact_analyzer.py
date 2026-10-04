@@ -6,6 +6,7 @@ are modified. Traverses the knowledge graph to quantify affected callers,
 impacted API routes, test suites, and cross-module dependencies.
 """
 
+import os
 from typing import Any
 
 from pydantic import BaseModel, Field
@@ -45,17 +46,69 @@ class ImpactReport(BaseModel):
 class ImpactAnalyzer:
     """Analyzes the blast radius of target symbols or files."""
 
-    def __init__(self, graph: RepoGraph):
-        self.graph = graph
-        self.call_graph = CallGraph(graph)
+    def __init__(
+        self,
+        graph: RepoGraph | None = None,
+        workspace_root: str = ".",
+    ):
+        self.workspace_root = os.path.abspath(workspace_root)
+        if graph is not None:
+            self.graph = graph
+        else:
+            from app.modules.intelligence.graph.graph_storage import GraphStorage
+
+            storage = GraphStorage(self.workspace_root)
+            loaded = storage.load()
+            if loaded is not None:
+                self.graph = loaded
+            else:
+                self.graph = RepoGraph()
+        self.call_graph = CallGraph(self.graph)
+
+    def calculate_blast_radius(
+        self, changed_files: list[str], max_depth: int = 3
+    ) -> list[str]:
+        """Calculate affected files for a collection of changed files."""
+        affected_files: set[str] = set()
+        for f in changed_files:
+            norm_f = os.path.normpath(f)
+            rel_f = (
+                os.path.relpath(f, self.workspace_root)
+                if os.path.isabs(f)
+                else norm_f
+            )
+            affected_files.add(f)
+
+            candidate_ids = [rel_f, f"file:{rel_f}", norm_f, f"file:{norm_f}"]
+            for cid in candidate_ids:
+                if self.graph.get_node(cid):
+                    report = self.analyze(cid, max_depth=max_depth)
+                    affected_files.update(report.affected_files)
+
+            for node in self.graph.nodes.values():
+                if node.file_path and os.path.normpath(node.file_path) in (
+                    norm_f,
+                    rel_f,
+                ):
+                    report = self.analyze(node.id, max_depth=max_depth)
+                    affected_files.update(report.affected_files)
+
+        return sorted(affected_files)
 
     def analyze(self, target_id: str, max_depth: int = 3) -> ImpactReport:
         """Calculate complete impact report for a target symbol or file."""
         target_node = self.graph.get_node(target_id)
+        if not target_node and not target_id.startswith("file:"):
+            target_node = self.graph.get_node(f"file:{target_id}")
+            if target_node:
+                target_id = f"file:{target_id}"
+
         target_files: list[str] = []
 
         if target_node and target_node.file_path:
             target_files.append(target_node.file_path)
+        elif not target_node:
+            target_files.append(target_id)
 
         # 1. Reverse Call Graph Traversal (Who calls target?)
         reverse_calls = self.call_graph.get_reverse_call_tree(
