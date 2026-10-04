@@ -1,12 +1,13 @@
 # ⚡ NVIDIA Nemotron 3 Ultra Autonomous Agent Engine
 
-> **Production-Grade Repository Intelligence, Multi-Stage Planning, Verification Guardrails & Autonomous Coding Agent powered by NVIDIA Nemotron 3 Ultra (550B LatentMoE) with 1M-Token Context Window.**
+> **Production-Grade Repository Intelligence, Multi-Stage Planning, Verification Guardrails & Autonomous Coding Agent Harness powered by NVIDIA Nemotron 3 Ultra (550B LatentMoE) with 1M-Token Context Window.**
 
 [![FastAPI](https://img.shields.io/badge/FastAPI-0.110+-009688?logo=fastapi)](https://fastapi.tiangolo.com/)
 [![Python](https://img.shields.io/badge/Python-3.11%20%7C%203.12-3776AB?logo=python)](https://python.org/)
-[![Tests](https://img.shields.io/badge/Tests-115%20Passed-10B981?logo=pytest)](https://docs.pytest.org/)
+[![Tests](https://img.shields.io/badge/Backend%20Tests-177%20Passed-10B981?logo=pytest)](https://docs.pytest.org/)
+[![Frontend Tests](https://img.shields.io/badge/Frontend%20Tests-19%20Passed-10B981?logo=vitest)](https://vitest.dev/)
 [![NVIDIA](https://img.shields.io/badge/NVIDIA-Nemotron--3--Ultra-76B900?logo=nvidia)](https://huggingface.co/nvidia/Nemotron-3-Ultra)
-[![UI](https://img.shields.io/badge/UI-Jinja2%20%2B%20Bootstrap%205-7928CA)](http://localhost:8000/ui)
+[![Frontend](https://img.shields.io/badge/Frontend-React%2018%20%2B%20Vite%20%2B%20Tailwind-61DAFB)](http://localhost:5173)
 [![Architecture](https://img.shields.io/badge/Architecture-Clean%20Modular%20Domain-FF6B6B)](app/modules/)
 [![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](LICENSE)
 
@@ -14,927 +15,437 @@
 
 ## 📑 Table of Contents
 
-1. [System Overview & Core Philosophy](#-system-overview--core-philosophy)
-   - [The Fatal Flaw of Naive Coding Agents](#the-fatal-flaw-of-naive-coding-agents)
-   - [The Repository Intelligence Paradigm](#the-repository-intelligence-paradigm)
-   - [Source-of-Truth Hierarchy](#source-of-truth-hierarchy)
-2. [Model Anatomy: NVIDIA Nemotron 3 Ultra](#-model-anatomy-nvidia-nemotron-3-ultra)
-   - [Why Nemotron 3 Ultra is Built for Agents](#why-nemotron-3-ultra-is-built-for-agents)
-   - [Technical Specifications & Architecture](#technical-specifications--architecture)
-   - [Multi-Tier Dual-Engine Routing](#multi-tier-dual-engine-routing)
-   - [The 4 Frontier Agent Workflows](#the-4-frontier-agent-workflows)
-3. [End-to-End System Topology](#-end-to-end-system-topology)
-   - [High-Level Architectural Diagram](#high-level-architectural-diagram)
-   - [The Autonomous Mission Lifecycle](#the-autonomous-mission-lifecycle)
-   - [29 Required Engineering Disciplines & Architectural Mapping](#29-required-engineering-disciplines--architectural-mapping)
-   - [Architectural Evaluation Across 7 Engineering Lenses](#architectural-evaluation-across-7-engineering-lenses)
-4. [Deep-Dive: Core Subsystems](#-deep-dive-core-subsystems)
-   - [Subsystem 1: Deterministic AST & Invariant Code Fingerprinting](#subsystem-1-deterministic-ast--invariant-code-fingerprinting)
-   - [Subsystem 2: Multi-Layer Repository Knowledge Graph & Feature Mapping](#subsystem-2-multi-layer-repository-knowledge-graph--feature-mapping)
-   - [Subsystem 3: Change Impact Analysis & Task Scope Lock](#subsystem-3-change-impact-analysis--task-scope-lock)
-   - [Subsystem 4: Context Budget Manager & Progressive Hierarchical Expansion](#subsystem-4-context-budget-manager--progressive-hierarchical-expansion)
-   - [Subsystem 5: Multi-Stage Planning (Phases A–H) & 6-Review Loop Engine](#subsystem-5-multi-stage-planning-phases-ah--6-review-loop-engine)
-   - [Subsystem 6: 8-Gate Verification Battery & Bounded Auto-Debugger](#subsystem-6-8-gate-verification-battery--bounded-auto-debugger)
-   - [Subsystem 7: Database Intelligence, Performance & Safety Engine](#subsystem-7-database-intelligence-performance--safety-engine)
-   - [Subsystem 8: 7-Level Permission Architecture & Human Approval Gates](#subsystem-8-7-level-permission-architecture--human-approval-gates)
-   - [Subsystem 9: Real-Time Token Tracking & Financial Cost Ledger](#subsystem-9-real-time-token-tracking--financial-cost-ledger)
-   - [Subsystem 10: Institutional Memory, Constitution & Modular Skills](#subsystem-10-institutional-memory-constitution--modular-skills)
-   - [Subsystem 11: Enterprise Security, RBAC/ABAC Policy Engine & Secret Redaction](#subsystem-11-enterprise-security-rbacabac-policy-engine--secret-redaction)
-5. [Cloud Infrastructure, Weights Streaming & Zero-Disk-Fee Strategy](#-cloud-infrastructure-weights-streaming--zero-disk-fee-strategy)
-   - [The 1.12 TB Storage Challenge: Avoiding $190/mo in Idle Disk Fees](#the-112-tb-storage-challenge-avoiding-190mo-in-idle-disk-fees)
-   - [Downloading 1.12 TB Checkpoint with 0 MB on Mac Disk](#downloading-112-tb-checkpoint-with-0-mb-on-mac-disk)
-   - [Google Cloud Spot GPU Cluster (8x A100 80GB)](#google-cloud-spot-gpu-cluster-8x-a100-80gb)
-   - [Streaming Weights to Ephemeral NVMe RAID-0 (20 GB/s)](#streaming-weights-to-ephemeral-nvme-raid-0-20-gbs)
-   - [vLLM Distributed Serving Configuration](#vllm-distributed-serving-configuration)
-   - [5-Minute Inactivity Watchdog Daemon (Credit Protection)](#5-minute-inactivity-watchdog-daemon-credit-protection)
+1. [Project Overview & Core Capabilities](#-project-overview--core-capabilities)
+2. [End-to-End System Architecture](#-end-to-end-system-architecture)
+3. [Key Workflows & Agent Lifecycle](#-key-workflows--agent-lifecycle)
+4. [Implemented Subsystems Deep Dive](#-implemented-subsystems-deep-dive)
+   - [Subsystem 1: Foundation Hardening & Tool Sandbox Engine](#subsystem-1-foundation-hardening--tool-sandbox-engine)
+   - [Subsystem 2: Multi-Mode Repository Intelligence & Compact RepoMap](#subsystem-2-multi-mode-repository-intelligence--compact-repomap)
+   - [Subsystem 3: Context Engine & Three-Tier Memory Architecture](#subsystem-3-context-engine--three-tier-memory-architecture)
+   - [Subsystem 4: Agent Planning Harness & Isolated Subagents](#subsystem-4-agent-planning-harness--isolated-subagents)
+   - [Subsystem 5: Visual UI Verification, Database Safety & Artifact Delivery](#subsystem-5-visual-ui-verification-database-safety--artifact-delivery)
+5. [Tech Stack](#-tech-stack)
 6. [Clean Modular Project Structure](#-clean-modular-project-structure)
-7. [User & Developer Getting Started Guide](#-user--developer-getting-started-guide)
-   - [Local Installation & Setup](#local-installation--setup)
-   - [Running the 115-Test Battery](#running-the-115-test-battery)
-   - [Launching the Web Application & UI Walkthrough](#launching-the-web-application--ui-walkthrough)
-   - [Deploying the Remote GCP GPU Node](#deploying-the-remote-gcp-gpu-node)
-8. [API & Server-Sent Events (SSE) Reference](#-api--server-sent-events-sse-reference)
-9. [Troubleshooting & Error Resolution](#-troubleshooting--error-resolution)
+7. [Installation & Setup](#-installation--setup)
+8. [Environment Variables Reference](#-environment-variables-reference)
+9. [Local Development Guide](#-local-development-guide)
+10. [Comprehensive Testing Strategy & Results](#-comprehensive-testing-strategy--results)
+11. [Agent Modes & Supported Workflows](#-agent-modes--supported-workflows)
+12. [Tool Registry & MCP Integration](#-tool-registry--mcp-integration)
+13. [Permissions, Safety Guardrails & Human Approval Gates](#-permissions-safety-guardrails--human-approval-gates)
+14. [Security & Isolation Guarantees](#-security--isolation-guarantees)
+15. [Troubleshooting & FAQ](#-troubleshooting--faq)
+16. [Limitations & Known Constraints](#-limitations--known-constraints)
 
 ---
 
-## 🌟 System Overview & Core Philosophy
+## 🌟 Project Overview & Core Capabilities
 
-### The Fatal Flaw of Naive Coding Agents
-Most LLM coding assistants operate on a fundamentally flawed premise: dumping hundreds of raw files, arbitrary text snippets, or large vector search chunks ($50\text{k}\text{--}200\text{k}+$ tokens) into a prompt window. In enterprise codebases, this approach inevitably suffers from:
-1. **Context Rot & Attentional Degradation**: Critical instructions, business rules, and constraints drown under mountains of boilerplate code.
-2. **Exponential Latency & Token Burn**: Ingesting $100\text{k}+$ tokens per turn costs dollars and creates response delays exceeding 60–90 seconds per step.
-3. **Unconstrained Wandering & Regressions**: Without an explicit containment barrier, the LLM hallucinates dependencies, modifies unrelated modules, breaks public API contracts, and causes regressions across the repository.
+The **Nemotron Agent Engine** provides a full-featured, autonomous software engineering platform modeled after OpenAI Codex, Claude Code, and Google Antigravity, anchored by **NVIDIA Nemotron 3 Ultra** (550B LatentMoE) with dual-engine fallback (Groq LPU / Gemini Flash).
 
-### The Repository Intelligence Paradigm
-This engine enforces a strict architectural boundary: **Deterministic tools establish deterministic facts; NVIDIA Nemotron 3 Ultra provides frontier reasoning, planning, code synthesis, and diagnosis.**
+### The Core Mandate
+> **The Model Context Window is Working Memory, NOT a Database or Permanent Storage.**
 
-$$\text{User Request} \xrightarrow{\text{Identify}} \text{Feature Node} \xrightarrow{\text{Traverse}} \text{Scoped Subgraph} \xrightarrow{\text{Lock}} \text{Task Scope} \xrightarrow{\text{Reason}} \text{Nemotron 3 Ultra} \xrightarrow{\text{Verify}} \text{8 Gates}$$
+Most AI assistants fail in enterprise codebases because they dump raw dumps of entire repositories into the prompt, resulting in context rot, hallucinations, and destructive regressions. The Nemotron Agent Engine enforces a strict boundary:
+- **Deterministic Tools** establish facts (AST analysis, ripgrep, Git diffs, test runners, DB reflection).
+- **Nemotron 3 Ultra** reasons, plans, diagnoses, and synthesizes surgical diffs.
+- **Verification Gates & Guardrails** verify code syntax, type safety, test passage, and database mutation safety before changes are accepted.
 
-```
-Deterministic Tooling (AST, Symbol Index, Graph, DB Reflection, Linters, Test Runners)
-                                    │
-                                    ▼
-       High-Signal, Compact Structural Context (Strictly <= 32k Tokens)
-                                    │
-                                    ▼
-       NVIDIA Nemotron 3 Ultra (Multi-Step Reasoning, Planning, Coding, Diagnosis)
-                                    │
-                                    ▼
-8-Gate Verification Battery & Guardrails (Syntax, Imports, Types, Scope, Tests, DB Safety)
-                                    │
-                                    ▼
-               Autonomous Healing or Automatic Git Rollback
-```
+---
 
-### Source-of-Truth Hierarchy
-When resolving conflicts, the engine adheres to an inviolable priority hierarchy:
+## 🏛️ End-to-End System Architecture
 
-```
-1. Actual Current Source Code & ASTs (Absolute Truth)
-                    ↓
-2. Test Suite Executions & Assertions (Behavioral Truth)
-                    ↓
-3. Live Database Schema Introspection & Reflection (Data Truth)
-                    ↓
-4. Explicit Project Rules & Accepted ADRs (Intentional Truth)
-                    ↓
-5. Verified Repository Memory & Lessons (Historical Truth)
-                    ↓
-6. Generated Summaries & Heuristics (Heuristic Truth)
-                    ↓
-7. Model Speculation / Hallucination (Zero Authority - Blocked)
+```text
+                           CLIENT / WEB UI STUDIO / CLI
+                                        │
+                                        ▼
+                         ┌──────────────────────────────┐
+                         │     FASTAPI API GATEWAY      │
+                         │    (/api/v1/* Domain API)    │
+                         └──────────────┬───────────────┘
+                                        │
+              ┌─────────────────────────┼─────────────────────────┐
+              ▼                         ▼                         ▼
+      Task & Mission Service     Memory Service           Repo & DB Intel
+              │                         │                         │
+              └─────────────────────────┼─────────────────────────┘
+                                        ▼
+                         ┌──────────────────────────────┐
+                         │     CONTEXT ORCHESTRATOR     │
+                         │   L0-L10 Budget Allocator    │
+                         │  Context Compactor (> 75%)   │
+                         └──────────────┬───────────────┘
+                                        │
+              ┌─────────────────────────┼─────────────────────────┐
+              ▼                         ▼                         ▼
+       Compact RepoMap           Target AST Code         Three-Tier Memory
+      (AST Centrality)          (Surgical Scope)        (Session/Proj/User)
+              │                         │                         │
+              └─────────────────────────┼─────────────────────────┘
+                                        ▼
+                         ┌──────────────────────────────┐
+                         │   PRIMARY LLM / GATEWAY      │
+                         │   NVIDIA Nemotron 3 Ultra    │
+                         │ (Fallback: Gemini / Groq)    │
+                         └──────────────┬───────────────┘
+                                        │
+                                        ▼
+                         ┌──────────────────────────────┐
+                         │    AGENT REACT EXECUTOR      │
+                         │   Reasoning ➔ Tool ➔ Obs     │
+                         │ Circuit Breakers (Max 25)    │
+                         └──────────────┬───────────────┘
+                                        │
+         ┌──────────────────────────────┴──────────────────────────────┐
+         ▼                                                             ▼
+┌──────────────────────────────┐                              ┌──────────────────────────────┐
+│     TOOL SANDBOX ENGINE      │                              │    8-GATE VERIFICATION       │
+│ • Workspace Sandbox          │                              │ 1. Python/TS Syntax Gate     │
+│ • Surgical Diff Patcher      │                              │ 2. Import & Symbol Integrity │
+│ • Hardened Process Runner    │                              │ 3. Static Typecheck (mypy)   │
+│ • Native Git Checkpoints     │                              │ 4. Unit & Integration Tests  │
+│ • Browser UI Verification    │                              │ 5. Task Scope Lock Check     │
+│ • Safe Migration Proposer    │                              │ 6. DB Mutation Safety Gate   │
+└──────────────────────────────┘                              │ 7. Diff Size / Regression    │
+                                                              │ 8. Visual UI Check (Browser) │
+                                                              └──────────────────────────────┘
 ```
 
 ---
 
-## 🧠 Model Anatomy: NVIDIA Nemotron 3 Ultra
+## 🔄 Key Workflows & Agent Lifecycle
 
-### Why Nemotron 3 Ultra is Built for Agents
-NVIDIA Nemotron 3 Ultra is an open-weights foundation model explicitly engineered for autonomous software engineering, complex multi-step reasoning, and tool-augmented workflows:
+The complete autonomous lifecycle executes the following stages:
 
-```mermaid
-graph TD
-    subgraph Architecture ["Nemotron 3 Ultra Architecture (550B Total / 55B Active)"]
-        MoE["LatentMoE: 550B Total / 55B Active Parameters"]
-        Mamba["Mamba-2 Hybrid Sequence Modeling"]
-        Attention["Transformer Multi-Head Self-Attention"]
-        MTP["Multi-Token Prediction (MTP Engine)"]
-        Context["1,000,000 Token Ultra-Long Context Window"]
-    end
-
-    subgraph AgentCapabilities ["Frontier Agent Superpowers"]
-        Reasoning["Inference-Time Chain-of-Thought (<thought> tokens)"]
-        Coding["Repo-Level Software Engineering & Refactoring"]
-        RAG["High-Stakes 1M-Token Cross-Document Reasoning"]
-        ToolCalling["Structured Tool Calling & Sandboxed Execution"]
-        MultiAgent["Hierarchical Multi-Agent Orchestration"]
-    end
-
-    MoE --> Reasoning
-    Mamba --> Context
-    Attention --> Coding
-    MTP --> ToolCalling
-    Context --> RAG
-    Reasoning --> MultiAgent
+```text
+User Request
+     ↓
+1. Dynamic Task Classification (QUESTION | RESEARCH | PLAN | BUILD | DEBUG | REVIEW)
+     ↓
+2. Context Assembly & Three-Tier Memory Retrieval (L0–L10 Layer Budget Allocator)
+     ↓
+3. Repository Intelligence (Compact RepoMap, AST Search, Ripgrep)
+     ↓
+4. Multi-Stage Planning (Phases A–H with Dependency Ordering)
+     ↓
+5. Risk Assessment & Interactive Approval ([Allow Once] | [Allow Mission] | [Deny])
+     ↓
+6. Surgical Execution (Diff Patcher minimal hunks under TaskScope Lock)
+     ↓
+7. 8-Gate Verification Battery (Syntax ➔ Imports ➔ Tests ➔ DB Safety)
+     ↓
+8. Self-Healing Auto-Debugger (Bounded to 3 repair iterations, or rollback)
+     ↓
+9. Completion Artifact Delivery (Plan, Diff, Test Report, Screenshot)
 ```
-
-### Technical Specifications & Architecture
-
-| Feature | Specification | Practical Impact on Agent Engineering |
-| :--- | :--- | :--- |
-| **Model Size** | **550B Total / 55B Active (LatentMoE)** | Unlocks the vast parametric knowledge of a 550B model while operating at the latency and cost footprint of a 55B model. |
-| **Sequence Model** | **Hybrid Mamba-2 + Transformer Attention** | Delivers linear-time scaling across massive contexts, eliminating quadratic memory explosion during deep repository indexing. |
-| **Context Window** | **1,000,000 Tokens (1M)** | Allows digesting entire repositories, dozens of technical specifications, and extensive mission logs without truncation. |
-| **Decoding Engine** | **Multi-Token Prediction (MTP)** | Generates multiple tokens per forward pass, cutting agent execution latency by up to $2.5\times$. |
-| **Reasoning Mode** | **Native `<thought>` Reasoning Stream** | Dynamically scales computation during planning, complex debugging, and edge-case evaluation. |
-| **Checkpoint Size** | **1.12 TB (BF16 / FP16)** | Sharded across 224 SafeTensors files, serving 8x A100 80GB or 8x H200 141GB clusters. |
-
-### Multi-Tier Dual-Engine Routing
-To optimize cost and latency, the system utilizes a multi-tier routing architecture:
-
-```mermaid
-flowchart LR
-    A["Incoming Mission / Query"] --> B{"Router Classification"}
-    B -->|"Routine Scrapes / Fast Triage / Summaries"| C["Tier 1: Jio Gemini 2.5 Flash / 1.5 Pro<br>(Ultra-Fast Throughput • $0 / Free Tier)"]
-    B -->|"Complex Planning / Coding / Debugging"| D["Primary: NVIDIA Nemotron 3 Ultra<br>(550B LatentMoE • Deep Reasoning)"]
-    B -->|"Batch Enterprise Private Execution"| E["GCP Spot GPU Cluster (vLLM)<br>(8x A100 80GB • Auto-Shutdown)"]
-```
-
-### The 4 Frontier Agent Workflows
-
-Nemotron 3 Ultra is uniquely capable across four high-value enterprise engineering workflows:
-
-```mermaid
-graph TD
-    subgraph W1 ["1. Autonomous Coding & Repo Engineering"]
-        Task["User Task / Feature / Bug"] --> Plan["Nemotron Repo Plan (Phases A-H)"]
-        Plan --> Diff["Surgical Code Diffs"]
-        Diff --> Sandbox["Sandboxed Test Runner"]
-        Sandbox -->|Tests Fail| Debug["Nemotron Auto-Debug (<= 3 tries)"]
-        Debug --> Sandbox
-        Sandbox -->|Tests Pass| PR["Git Commit & Clean PR"]
-    end
-
-    subgraph W2 ["2. High-Stakes 1M-Token RAG"]
-        Docs["Dozens of Technical Specs & PDFs"] --> Ingest["Dense & Lexical Indexing"]
-        Ingest --> Retrieve["Top-K + 1M Direct Context"]
-        Retrieve --> Synthesis["Nemotron Deep Cross-Doc Reasoning"]
-        Synthesis --> Report["Fact-Checked Architecture Synthesis"]
-    end
-```
-
-1. **Autonomous Software Engineering & Refactoring Agent**:
-   - Takes an issue description or feature request, analyzes the entire Git repository, proposes surgical file modifications, runs tests in a sandbox, analyzes stack traces, and self-corrects until tests pass.
-   - *Nemotron Superpower*: 1M context lets it hold the AST, dependencies, and full codebase architecture simultaneously without forgetting context or hallucinating interfaces.
-2. **Deep Research & High-Stakes 1M-Token RAG**:
-   - Ingests hundreds of financial filings, legal contracts, or technical architecture specs.
-   - *Nemotron Superpower*: Traditional RAG is limited to small 2k–4k chunks, losing cross-document context. Nemotron 3 Ultra feeds up to **1,000,000 tokens directly into active reasoning**, allowing it to identify subtle contradictions and cross-cutting dependencies across disparate files.
-3. **Autonomous Browser & Sandboxed Tool-Calling Agent**:
-   - *Workflow*: Goal $\rightarrow$ Task Decomposition $\rightarrow$ Tool Call (Search, SQL, Terminal, AST, Git) $\rightarrow$ Observe Result $\rightarrow$ Verify Completion $\rightarrow$ Next Action.
-   - *Nemotron Superpower*: Native reasoning loops that detect tool failures (e.g., API 429 rate limit or schema mismatch) and dynamically reroute to alternate tools.
-4. **Hierarchical Multi-Agent Swarm**:
-   - Nemotron 3 Ultra serves as the **Executive Planner**, delegating sub-tasks to specialized worker personas (Planner, Reviewer, Coder, Tester, Debugger).
 
 ---
 
-## 🏛️ End-to-End System Topology
+## 🛠️ Implemented Subsystems Deep Dive
 
-### High-Level Architectural Diagram
+### Subsystem 1: Foundation Hardening & Tool Sandbox Engine
+- **Workspace Sandbox (`app/modules/agent/tools/workspace.py`)**: Confines all file operations strictly to the workspace root. Blocks path traversal attempts (e.g. `../../etc/passwd`, URL-encoded `%2e%2e%2f`, and tilde `~` escapes) with `PathTraversalError`.
+- **Concurrency Conflict Detection**: Computes SHA-256 and modification time fingerprints (`st_mtime`) before and after edits. If disk state changes externally, operations are aborted with `ConcurrencyConflictError` to prevent clobbering user edits.
+- **Surgical Diff Patcher (`app/modules/agent/tools/patcher.py`)**: Replaces only minimal targeted code hunks rather than rewriting entire files. Handles newline differences, trailing spaces, and prevents ambiguous multi-match replacements.
+- **Hardened Process Runner (`app/modules/agent/tools/process_runner.py`)**: Confined strictly to `workspace_root`. Enforces timeouts (default 30s, max 300s), terminates runaway subprocesses cleanly via process groups (`os.killpg`), and truncates stdout (32 KB) and stderr (16 KB).
+- **Native Git Engine (`app/modules/agent/tools/git_tool.py`)**: Implements `git_status`, `git_diff`, `git_log`, `git_blame`, `git_checkpoint`, and `git_rollback`.
 
-```
-┌────────────────────────────────────────────────────────────────────────────────────────────────────────┐
-│                                       PRESENTATION & API LAYER                                         │
-│   Jinja2 Web Dashboard (/ui)    │    OpenAPI Docs (/docs)    │    Server-Sent Events (SSE) Stream      │
-└───────────────────────────────────────────────────┬────────────────────────────────────────────────────┘
-                                                    │
-┌───────────────────────────────────────────────────▼────────────────────────────────────────────────────┐
-│                                     DOMAIN MODULES (app/modules/)                                      │
-│  ┌──────────────────────┐  ┌──────────────────────┐  ┌──────────────────────┐  ┌────────────────────┐  │
-│  │     agent/           │  │      auth/           │  │    constitution/     │  │      cost/         │  │
-│  │ Orchestrator, FSM,   │  │ Argon2id, JWT, RBAC, │  │ Standards, Rules,    │  │ Pricing, Ledger,   │  │
-│  │ Planning, Auto-Debug │  │ KMS, SSRF, Auditing  │  │ ADR Scaffolding      │  │ Budget Guard       │  │
-│  └──────────────────────┘  └──────────────────────┘  └──────────────────────┘  └────────────────────┘  │
-│  ┌──────────────────────┐  ┌──────────────────────┐  ┌──────────────────────┐  ┌────────────────────┐  │
-│  │    gateway/          │  │   intelligence/      │  │    missions/         │  │    security/       │  │
-│  │ Model Registry, vLLM │  │ AST, Graph, Context, │  │ Mission FSM, State,  │  │ Compatibility      │  │
-│  │ Adapters, Router     │  │ Impact, DB, Memory   │  │ Multimodal Storage   │  │ Forwarding Layer   │  │
-│  └──────────────────────┘  └──────────────────────┘  └──────────────────────┘  └────────────────────┘  │
-└───────────────────────────────────────────────────┬────────────────────────────────────────────────────┘
-                                                    │
-┌───────────────────────────────────────────────────▼────────────────────────────────────────────────────┐
-│                                8-GATE VERIFICATION & GUARDRAIL BATTERY                                 │
-│   Gate 1: AST Syntax Check       Gate 2: Import Graph        Gate 3: Type Signature & Linter           │
-│   Gate 4: Architecture Boundary  Gate 5: Task Scope Lock     Gate 6: Unit Test Execution               │
-│   Gate 7: Full Regression Suite  Gate 8: Lint Cleanliness    Level 5: Human DB Mutation Gate           │
-└───────────────────────────────────────────────────┬────────────────────────────────────────────────────┘
-                                                    │
-┌───────────────────────────────────────────────────▼────────────────────────────────────────────────────┐
-│                                    STORAGE & REPOSITORY MEMORY                                         │
-│   Code Property Graph (AST)  │  SQL Database (SQLite / PG)  │  Cost Ledger  │  ADR & Lesson Store      │
-└────────────────────────────────────────────────────────────────────────────────────────────────────────┘
-```
+### Subsystem 2: Multi-Mode Repository Intelligence & Compact RepoMap
+- **High-Speed Ripgrep Search (`app/modules/intelligence/indexing/ripgrep.py`)**: Dispatches `rg` with file-type filters, path restrictions, and Python regex fallback.
+- **Compact RepoMap Generator (`app/modules/intelligence/indexing/repo_map.py`)**: Parses Python AST to extract classes, functions, and FastAPI routes ranked by centrality into a compact representation guaranteed to stay under 2,000 tokens.
+- **Git History & Blame Retriever (`app/modules/intelligence/indexing/git_history.py`)**: Retrieves commit summaries and line-by-line blame metadata.
 
-### The Autonomous Mission Lifecycle
+### Subsystem 3: Context Engine & Three-Tier Memory Architecture
+- **L0–L10 Context Budget Allocator (`app/modules/intelligence/context/budget_allocator.py`)**: Allocates discrete token quotas across 10 layers:
+  - `L0`: System Instructions (~1,000 tokens) [CRITICAL]
+  - `L1`: Constitutional Rules (~800 tokens) [CRITICAL]
+  - `L2`: Project Identity (~500 tokens)
+  - `L3`: Task Objective (~300 tokens) [CRITICAL]
+  - `L4`: Compact RepoMap (~1,500 tokens)
+  - `L5`: Primary Code Snippets (~6,000 tokens) [CRITICAL]
+  - `L6`: Architecture Decisions & ADRs (~1,000 tokens)
+  - `L7`: Recent Turns (~2,000 tokens)
+  - `L8`: Tool Observations (~2,000 tokens)
+  - `L9`: Working Memory & Scratchpad (~800 tokens)
+  - `L10`: Output Reservation (~4,000 tokens)
+  - *Dynamic Progressive Trimming:* Non-critical layers (L8, L6, L7, L4) are trimmed during token pressure while critical layers (L0, L1, L3, L5) are strictly preserved.
+- **Automated Context Compactor (`app/modules/intelligence/context/compactor.py`)**: Monitors context pressure (`GREEN`, `YELLOW`, `ORANGE`, `RED`, `CRITICAL`). Triggers at 75% window ceiling, synthesizing conversation turns and tool observations into structured `CompactionSnapshot` state snapshots with zero loss of active errors or modified files.
+- **Three-Tier Memory Store (`app/modules/intelligence/memory/three_tier_store.py`)**:
+  - *Tier 1 — Session Memory (Ephemeral):* Active task, working plan, staged files, transient tool outputs. Cleared upon mission completion.
+  - *Tier 2 — Project Memory (Durable, per-repo):* `.agent/memory/project_memory.json`. Stores coding standards, architectural rules, database conventions, and past bug resolutions.
+  - *Tier 3 — User Memory (Cross-project, per-developer):* Stores individual developer preferences.
+  - *Memory Durability Gate:* Filters candidate memories; rejects transient noise ("fixed typo on line 12", "button color red") and saves only persistent, reusable engineering knowledge.
 
-```mermaid
-sequenceDiagram
-    autonumber
-    actor Dev as Developer / User
-    participant WebUI as Web UI & API (/api/v1/missions)
-    participant Orch as Mission Orchestrator
-    participant Intel as Repository Intelligence (AST/Graph)
-    participant Model as NVIDIA Nemotron 3 Ultra
-    participant Gates as 8-Gate Verification Battery
-    participant AutoFix as Bounded Auto-Debugger
+### Subsystem 4: Agent Planning Harness & Isolated Subagents
+- **Iterative ReAct Execution Loop (`app/modules/agent/react_engine.py`)**: Autonomous multi-turn cycle (Reasoning ➔ Tool ➔ Observation). Features circuit breakers (max 25 iterations, loop/cycle detection for repeated tool invocations).
+- **Dynamic Task Classifier (`app/modules/agent/classifier.py`)**: Accurately categorizes prompts into 6 workflows:
+  - `QUESTION`: Conversational responses.
+  - `RESEARCH`: Read-only repository exploration.
+  - `PLAN`: Architecture evaluation and multi-stage roadmaps.
+  - `BUILD`: Full autonomous engineering with verification.
+  - `DEBUG`: Stack-trace diagnosis and targeted patch repair.
+  - `REVIEW`: Static diff inspection and security audits.
+- **Isolated Subagent Coordinator (`app/modules/agent/subagents/coordinator.py`)**: Coordinates specialized subagents with isolated context windows (`ResearcherSubagent`, `CoderSubagent`, `ReviewerSubagent`, `TesterSubagent`). Subagent traces never pollute the primary context.
 
-    Dev->>WebUI: Submit Mission Goal ("Implement secure session revocation")
-    WebUI->>Orch: Initialize Mission FSM (PLANNING)
-    Orch->>Intel: Index repository, traverse graph, compute blast radius
-    Intel-->>Orch: Scoped Context (< 32k tokens) + Authorized File Set
-    Orch->>Model: Request Multi-Stage Implementation Plan (Phases A–H)
-    Model-->>Orch: Structured Plan & 6-Lens Review Outputs
-    Orch->>Dev: Stream Plan for Interactive Review & Approval
-    Dev-->>Orch: Approve Plan
-    Orch->>Model: Synthesize Code Diffs within TaskScope
-    Model-->>Orch: Surgical Code Edits
-    Orch->>Gates: Run 8-Gate Verification Battery
-    alt All 8 Gates Pass
-        Gates-->>Orch: Verification Success
-        Orch->>Orch: Transition to COMMITTING -> Record Memory & Costs
-        Orch-->>Dev: Mission Completed Successfully
-    else Any Gate Fails (e.g. Broken Test or Scope Violation)
-        Gates-->>AutoFix: Trigger Bounded Auto-Debugger (Attempt 1/3)
-        AutoFix->>Model: Diagnose Traceback & Request Surgical Patch
-        Model-->>AutoFix: Corrective Diff
-        AutoFix->>Gates: Re-verify Gates
-        opt Max 3 Attempts Exceeded
-            AutoFix->>Orch: Execute Automatic Git Rollback (git checkout --)
-            Orch-->>Dev: Mission Failed Safely • Zero Dirty Edits
-        end
-    end
-```
-
-### 29 Required Engineering Disciplines & Architectural Mapping
-
-The engine directly addresses all 29 core engineering capabilities required for enterprise-grade autonomous software engineering:
-
-| # | Required Discipline | Subsystem / Component | Implementation Strategy & Guarantees |
-| :---: | :--- | :--- | :--- |
-| **1** | **Repository discovery** | `app/modules/intelligence/indexing/ast_parser.py` | Directory walker, file type classification, ignore lists |
-| **2** | **Repository indexing** | `app/modules/intelligence/indexing/symbol_extractor.py` | Incremental catalog, file/AST hash cache with $O(1)$ lookups |
-| **3** | **AST & symbol analysis** | `app/modules/intelligence/indexing/ast_parser.py` | Python AST visitor, classes, methods, routes, calls |
-| **4** | **Dependency analysis** | `app/modules/intelligence/indexing/import_resolver.py` | Absolute & relative resolver, internal vs third-party packages |
-| **5** | **Feature discovery** | `app/modules/intelligence/graph/feature_mapper.py` | Route-to-service clustering and architectural boundary detection |
-| **6** | **Feature knowledge graphs** | `app/modules/intelligence/graph/repo_graph.py` | 8 node layers, 11 edge kinds, feature subgraph extraction |
-| **7** | **Repository memory** | `app/modules/intelligence/memory/memory_store.py` | Persistent lessons with adaptive confidence scoring (+0.1 / -0.2) |
-| **8** | **Hybrid retrieval** | `app/modules/intelligence/context/ranker.py` | Proximity + exact symbol + semantic + lexical ranker |
-| **9** | **Context engineering** | `app/modules/intelligence/context/budget_manager.py` | Strict $\le 32\text{k}$ ceiling, 4-tier progressive hierarchy |
-| **10**| **Coding-style discovery** | `app/modules/constitution/` & rules | Conventional pattern detection vs legacy tech debt |
-| **11**| **Project rules & skills** | `skills/` & `app/modules/constitution/` | General skills (`skills/`) vs repo memory (`.agent/`) |
-| **12**| **Task analysis** | `app/modules/agent/roles/planner.py` | Goal $\rightarrow$ Feature $\rightarrow$ Files $\rightarrow$ Scope Lock |
-| **13**| **Impact analysis** | `app/modules/intelligence/impact/impact_analyzer.py` | Direct & transitive blast radius, affected routes/tests |
-| **14**| **Implementation planning** | `app/modules/agent/planning/multi_stage.py` | 8-phase planning pipeline (Phases A through H) |
-| **15**| **Plan review** | `app/modules/agent/planning/review_loops.py` | 6 review loops (Arch, Correct, Sec, Perf, Maint, Best Pract) |
-| **16**| **Code implementation** | `app/modules/agent/roles/coder.py` | Surgical edits strictly within `TaskScope` |
-| **17**| **Automatic debugging** | `app/modules/agent/verification/auto_debugger.py` | Bounded root-cause diagnosis, max 3 attempts, auto-rollback |
-| **18**| **Test generation/exec** | `app/modules/agent/roles/tester.py` | Pytest automation, boundary value and regression asserts |
-| **19**| **Static analysis** | `app/modules/agent/verification/gates.py` | Gate 8: Ruff check with zero critical syntax/lint breaks |
-| **20**| **Build verification** | `app/modules/agent/verification/gates.py` | Compilation and import graph sanity checks |
-| **21**| **Regression verification** | `app/modules/agent/verification/gates.py` | Gate 7: Regression test suite on affected features |
-| **22**| **Git/diff verification** | `app/modules/agent/verification/gates.py` | Git diff audit preventing accidental modifications |
-| **23**| **Database intelligence** | `app/modules/intelligence/database/schema_introspect.py` | Schema, tables, columns, indexes, foreign keys, ORM |
-| **24**| **DB performance analysis** | `app/modules/intelligence/database/query_analyzer.py` | N+1, full table scan, EXPLAIN plan, covering index, pagination |
-| **25**| **Security & permissions** | `app/core/permissions.py` & `app/modules/auth/` | 7-Level permissions, default read-only, credential safety |
-| **26**| **Incremental learning** | `app/modules/intelligence/indexing/watcher.py` | $O(\Delta)$ invalidation on AST change, whitespace invariant |
-| **27**| **Observability** | `app/core/logging_config.py` & telemetry | Structured JSON logs, latency, token usage, audit trails |
-| **28**| **Failure recovery** | `app/modules/agent/verification/auto_debugger.py` | Automatic Git checkout / stash rollback |
-| **29**| **Human approval gates** | `app/core/permissions.py` | Mandatory approval token for DB mutations & deployment |
-
-### Architectural Evaluation Across 7 Engineering Lenses
-
-1. **Architecture & Modular Decomposition**:
-   - Clean domain isolation inside `app/modules/` (`agent`, `auth`, `constitution`, `cost`, `gateway`, `intelligence`, `missions`, `security`).
-   - Abstract interfaces for storage and models, permitting seamless drop-in replacements.
-2. **Dependencies & Technology Selection**:
-   - Zero-bloat philosophy: Python standard library `ast` and `symtable` provide native, ultra-fast AST parsing without heavy C-extensions.
-   - Pydantic v2 ensures microsecond-level serialization and strict schema validation.
-3. **Edge Cases & Failure Mode Analysis**:
-   - Cycle detection in dependency graphs prevents infinite loops on circular imports.
-   - Catching `SyntaxError` and `UnicodeDecodeError` gracefully during AST traversal.
-   - Bounded debug loops ($\le 3$ attempts) prevent infinite self-healing cost burns.
-4. **Scalability & Incremental Performance**:
-   - Three-tier code fingerprinting (`file_hash`, `ast_hash`, `symbol_hash`). When 1 file changes in a 20,000-file repo, only that single file is re-indexed in $\sim 5\text{ms}$.
-   - Hierarchical summarization serves minimal context on demand.
-5. **Security, Isolation & Secret Redaction**:
-   - Automated redaction pipeline scrubs AWS keys, private tokens, and passwords from logs and prompts.
-   - Scope lock enforces directory containment, blocking writes to `/etc`, `.git/`, or `.env`.
-   - Subprocesses execute with timeouts and command blocklists.
-6. **Token Efficiency & Context Budgeting**:
-   - Strict 32,000-token ceiling ensures high attention focus and fast inference times.
-7. **Production SOTA Best Practices**:
-   - Decoupled FastAPI backend with Server-Sent Events (SSE).
-   - High-performance Jinja2 web interface with JetBrains Mono styling.
+### Subsystem 5: Visual UI Verification, Database Safety & Artifact Delivery
+- **Browser Visual UI Tool (`app/modules/agent/tools/browser_tool.py`)**: Headless browser automation (`open`, `screenshot`, `click`, `type`, `evaluate_js`) for multimodal UI verification with offline simulated engine fallback.
+- **Database EXPLAIN Intelligence & Safe Migrations (`app/modules/intelligence/database/`)**:
+  - `ExplainPlanEngine`: Analyzes execution plans, detects sequential scans on large tables, and suggests indexes.
+  - `SafeMigrationGenerator`: Proposes reversible Alembic migration scripts (`upgrade()` / `downgrade()`).
+  - *Absolute Safety Invariant:* DDL execution or data deletion strictly requires explicit human authorization token (`MUTATION_APPROVAL_REQUIRED`).
+- **Structured Artifact Delivery System (`app/modules/missions/artifacts.py`)**: Stores and serves reviewable artifacts (Plans, Diffs, Test Reports, Screenshots) via `/api/v1/missions/{id}/artifacts`.
 
 ---
 
-## 🔬 Deep-Dive: Core Subsystems
+## 💻 Tech Stack
 
-### Subsystem 1: Deterministic AST & Invariant Code Fingerprinting
-*Located in [app/modules/intelligence/indexing/](file:///Users/mac/Desktop/nemotron-agent-engine/app/modules/intelligence/indexing/)*
-
-The indexing subsystem parses Python source trees into structured symbols without invoking LLMs.
-* **Three-Tier Invariant Fingerprinting**:
-  - `file_hash`: SHA-256 of raw bytes on disk.
-  - `ast_hash`: SHA-256 computed exclusively over normalized AST node structures. Formatting adjustments, comment edits, and blank lines yield **identical AST hashes**, preventing unnecessary cache invalidation.
-  - `symbol_hash`: SHA-256 computed across public class definitions, method signatures, return type annotations, and exported module members.
-* **Symbol Catalog**: Provides $O(1)$ lookup for classes, methods, docstrings, decorators, and function signatures.
-* **Import Resolver**: Resolves relative imports (`from .service import ...`), absolute package paths, and classifies internal dependencies versus third-party packages.
-
-### Subsystem 2: Multi-Layer Repository Knowledge Graph & Feature Mapping
-*Located in [app/modules/intelligence/graph/](file:///Users/mac/Desktop/nemotron-agent-engine/app/modules/intelligence/graph/)*
-
-Maintains an in-memory directed multi-layer graph (`networkx`) mapping business capabilities directly to lines of code:
-
-```mermaid
-graph TD
-    Repo["REPOSITORY Node"] --> Mod["MODULE Nodes (e.g., auth, gateway, cost)"]
-    Mod --> File["FILE Nodes (service.py, models.py, apis.py)"]
-    File --> Sym["SYMBOL Nodes (Classes, Functions, Methods)"]
-    Sym --> Route["ROUTE Nodes (HTTP Endpoints)"]
-    Sym --> DB["DATABASE Nodes (Tables, Indexes, Columns)"]
-    Mod --> Feat["FEATURE Nodes (e.g., 'Argon2id Auth', 'Token Ledger')"]
-    Feat -.-> Sym
-    Sym --> Test["TEST Nodes (pytest cases)"]
-    Mod --> ADR["ADR Nodes (Architectural Decisions)"]
-```
-
-* **8 Node Kinds**: `REPOSITORY`, `MODULE`, `FILE`, `SYMBOL`, `FEATURE`, `TEST`, `ADR`, `BUG`.
-* **11 Edge Kinds**: `CONTAINS`, `IMPORTS`, `CALLS`, `INHERITS`, `IMPLEMENTS`, `TESTS`, `DEFINES_ROUTE`, `ACCESSES_DB`, `MODIFIES`, `DOCUMENTS`, `FIXES`.
-* **Cycle-Safe Traversals**: All depth-first and breadth-first search algorithms enforce visited node tracking, preventing infinite recursion on circular dependencies.
-
-### Subsystem 3: Change Impact Analysis & Task Scope Lock
-*Located in [app/modules/intelligence/impact/](file:///Users/mac/Desktop/nemotron-agent-engine/app/modules/intelligence/impact/)*
-
-* **Blast Radius Calculation**: When modifying a symbol or file, `ImpactAnalyzer` traverses incoming and outgoing call graphs to compute:
-  - Direct dependents (immediate callers).
-  - Transitive dependents (upstream services and API controllers).
-  - Impacted test suites that must run to verify changes.
-* **Task Scope Lock (`TaskScope`)**: Enforces an architectural barrier around file modifications:
-  ```python
-  # Hard architectural boundary: throws ScopeViolationError if an edit attempts
-  # to touch files outside the authorized task boundaries.
-  task_scope.validate_path("app/modules/auth/service.py")  # Allowed
-  task_scope.validate_path("app/modules/gateway/router.py") # Raises ScopeViolationError!
-  ```
-
-### Subsystem 4: Context Budget Manager & Progressive Hierarchical Expansion
-*Located in [app/modules/intelligence/context/](file:///Users/mac/Desktop/nemotron-agent-engine/app/modules/intelligence/context/)*
-
-Instead of saturating model context, `ContextBudgetManager` strictly caps prompt payloads at **$\le 32,000$ tokens**:
-
-```
-Total Context Ceiling: 32,000 Tokens
-├── System Prompt & Agent Persona:       1,500 tokens
-├── Active Task & Scope Lock Rules:      1,000 tokens
-├── Repository Architecture & ADR Rules: 2,000 tokens
-├── Feature Subgraph & Signatures:       2,500 tokens
-├── Scoped Target Code:                 15,000 tokens
-├── Targeted Tests & Fixtures:           5,000 tokens
-├── Historical Bug Lessons:              2,000 tokens
-└── Reserve Dynamic Headroom:            3,000 tokens
-```
-
-* **4-Tier Progressive Expansion**:
-  1. *Tier 1 (Module Summary)*: High-level architectural role of each package.
-  2. *Tier 2 (Feature Subgraph)*: Relevant feature documentation and ADR references.
-  3. *Tier 3 (Symbol Signatures)*: Compact class interfaces and method type signatures.
-  4. *Tier 4 (Full Source Code)*: Injected **only** for the exact files under active modification.
-* **Hybrid Ranker**: Combines graph proximity ($40\%$), symbol match ($30\%$), semantic similarity ($20\%$), and lexical overlap ($10\%$).
-
-### Subsystem 5: Multi-Stage Planning (Phases A–H) & 6-Review Loop Engine
-*Located in [app/modules/agent/planning/](file:///Users/mac/Desktop/nemotron-agent-engine/app/modules/agent/planning/)*
-
-Before writing code, the agent executes an 8-phase planning pipeline:
-* **Phase A — Discovery**: Ingests goal, queries the feature graph, and identifies components.
-* **Phase B — Retrieval**: Gathers symbol signatures, dependency trees, and relevant ADRs.
-* **Phase C — Architecture**: Evaluates architectural patterns and dependency inversion.
-* **Phase D — Impact Analysis**: Calculates blast radius and identifies impacted routes.
-* **Phase E — Database Analysis**: Checks for schema migrations, indexes, and queries.
-* **Phase F — Implementation Plan**: Formulates atomic, ordered modification steps.
-* **Phase G — Test Plan**: Defines unit and integration test assertions *before* coding.
-* **Phase H — Risk Plan**: Outlines edge cases, failure modes, and rollback strategies.
-
-The plan is evaluated across **6 independent review lenses**:
-1. *Architecture Review*: Component boundaries and dependency directions.
-2. *Correctness Review*: Nullability, concurrency, error branches, and edge cases.
-3. *Security Review*: Permissions, input validation, SQL injection, secret safety.
-4. *Performance Review*: Algorithmic complexity, token budget, query latency.
-5. *Maintainability Review*: Code clarity, docstrings, and naming standards.
-6. *Best Practices Review*: Framework conventions and clean-architecture compliance.
-
-### Subsystem 6: 8-Gate Verification Battery & Bounded Auto-Debugger
-*Located in [app/modules/agent/verification/](file:///Users/mac/Desktop/nemotron-agent-engine/app/modules/agent/verification/)*
-
-The engine rejects unverified code through an 8-gate fail-fast validation pipeline:
-
-| Gate | Verification Check | Pass Condition | Failure Action |
-| :---: | :--- | :--- | :--- |
-| **1** | **AST Syntax Validation** | 100% valid Python AST syntax | Instant rejection; syntax repair |
-| **2** | **Import Graph Resolution** | All imports resolve; zero broken references | Flags missing modules |
-| **3** | **Type & Linter Check** | Type signatures intact; zero critical linter breaks | Auto-formats code |
-| **4** | **Layer Rules** | Clean architecture boundary enforcement | Rejects layer violations |
-| **5** | **Task Scope Lock** | Modified files $\subseteq$ Authorized File Set | Raises `ScopeViolationError` |
-| **6** | **Unit Test Suite** | 100% unit tests pass | Triggers Auto-Debugger |
-| **7** | **Regression Suite** | Pre-existing repository tests pass | Reverts breaking changes |
-| **8** | **Static Quality Audit** | Ruff hygiene and cleanliness standards met | Formats code |
-
-* **Bounded Auto-Debugger**:
-  - Automatically captures failure tracebacks, isolates root causes, and formulates targeted patches.
-  - Enforces a hard limit of **$\le 3$ fix attempts**.
-  - If tests remain broken after attempt 3, the engine executes an **automated Git rollback** (`git checkout -- <files>`), leaving the workspace clean and outputting a post-mortem report.
-
-### Subsystem 7: Database Intelligence, Performance & Safety Engine
-*Located in [app/modules/intelligence/database/](file:///Users/mac/Desktop/nemotron-agent-engine/app/modules/intelligence/database/)*
-
-* **Multi-Engine Schema Introspection**: Live reflection of tables, columns, constraints, foreign keys, and indexes across PostgreSQL, MySQL, and SQLite.
-* **Query & ORM Anti-Pattern Analyzer**:
-  - Detects N+1 query loops inside iteration blocks.
-  - Identifies unindexed `WHERE` predicates and non-sargable expressions (e.g., `WHERE UPPER(email) = ...`).
-  - Warns against `OFFSET 100000` pagination on large tables, recommending keyset/cursor pagination.
-* **Explain Plan Intelligence**: Parses `EXPLAIN (FORMAT JSON)` execution plans on sandboxed environments, flagging sequential scans, disk spills, and unindexed joins.
-* **Database Safety Guardrail**:
-  - Default connection mode is strictly **READ-ONLY**.
-  - Destructive DDL/DML (`DROP`, `TRUNCATE`, `ALTER`, `DELETE` without `WHERE`) are hard-blocked.
-  - State-mutating schema changes require a **Level 5 Human Approval Token**.
-
-### Subsystem 8: 7-Level Permission Architecture & Human Approval Gates
-*Located in [app/core/permissions.py](file:///Users/mac/Desktop/nemotron-agent-engine/app/core/permissions.py)*
-
-The engine enforces a 7-tier permission ladder:
-
-```
-LEVEL 0: READ ONLY
-  └── Inspect files, view ASTs, query graph, read logs (zero side-effects)
-
-LEVEL 1: ANALYZE
-  └── Static analysis, AST linting, read-only EXPLAIN query plans
-
-LEVEL 2: MODIFY SOURCE (Scope-Locked)
-  └── Edit authorized files strictly within TaskScope
-
-LEVEL 3: RUN TESTS & BUILD
-  └── Execute pytest, ruff, build scripts inside execution sandbox
-
-LEVEL 4: GIT OPERATIONS
-  └── Create local branches, stage diffs, make local conventional commits
-
-LEVEL 5: DATABASE MUTATION / MIGRATIONS ──► [HUMAN APPROVAL GATE REQUIRED]
-  └── Alembic migrations, database schema alterations, data seeding
-
-LEVEL 6: DEPLOYMENT ─────────────────────────► [HUMAN APPROVAL GATE REQUIRED]
-  └── Production releases or CI/CD deployments (disabled by default)
-```
-
-### Subsystem 9: Real-Time Token Tracking & Financial Cost Ledger
-*Located in [app/modules/cost/](file:///Users/mac/Desktop/nemotron-agent-engine/app/modules/cost/)*
-
-Instruments token consumption with sub-category precision (prompt tokens, completion tokens, reasoning `<thought>` tokens):
-* **Dual Pricing Modes**:
-  - **GCP Spot Amortized Mode**: Computed against active GPU cluster operational costs ($12.80/hr node $\approx \$0.003$ / 1k tokens).
-  - **Serverless API Mode**: Configurable per-million token rates ($2.00 / 1M prompt, $6.00 / 1M completion).
-* **Budget Circuit Breakers**:
-  - Per-mission spending caps (defaults to $2.00 / mission).
-  - Daily spending ceiling (defaults to $25.00 / day).
-  - Instantly halts execution if budget thresholds are breached.
-* **Persistent SQLite Ledger**: Records every mission's duration, token breakdown, and financial burn into `.agent/memory/cost_ledger.db`.
-
-### Subsystem 10: Institutional Memory, Constitution & Modular Skills
-*Located in [app/modules/constitution/](file:///Users/mac/Desktop/nemotron-agent-engine/app/modules/constitution/) and [skills/](file:///Users/mac/Desktop/nemotron-agent-engine/skills/)*
-
-The platform strictly separates **General Procedural Skills** from **Project-Specific Institutional Memory**:
-
-```
-skills/ (General & Reusable Across Any Project)
-├── architecture/ (Clean Architecture, DDD, Layer Boundaries)
-├── database/     (Query Optimization, Migration Safety, Indexing, N+1 Prevention)
-└── fastapi/      (Async Endpoints, Dependency Injection, Validation)
-
-.agent/ (Project-Specific Institutional Knowledge)
-├── rules/        (Coding standards, testing rules, Git commit conventions)
-├── architecture/ (Architectural Decision Records: ADR-001, ADR-002, ...)
-└── memory/       (Historical bug lessons, confidence scores, performance baselines)
-```
-
-* **Adaptive Confidence Scoring**: Learned bug lessons store an adaptive confidence score: reinforced by $+0.1$ when successfully preventing a bug, penalized by $-0.2$ upon invalid advice.
-
-### Subsystem 11: Enterprise Security, RBAC/ABAC Policy Engine & Secret Redaction
-*Located in [app/modules/auth/](file:///Users/mac/Desktop/nemotron-agent-engine/app/modules/auth/)*
-
-* **Argon2id Password Hashing**: Complies with NIST SP 800-63B and OWASP guidelines (64 MB memory cost, 3 iterations, 4 parallelism threads).
-* **JWT Authentication with HttpOnly Cookies**: Short-lived access tokens (15 minutes) paired with rotating refresh tokens (RFC 6749 / RFC 9700 family reuse detection).
-* **RBAC & ABAC Policy Engine**: Role-to-permission mapping (`SUPER_ADMIN`, `ORG_ADMIN`, `PROJECT_ADMIN`, `DEVELOPER`, `LOCAL_AGENT`) with explicit precedence:
-  $$\text{DENY} > \text{ASK} > \text{ALLOW}$$
-* **SecretManager & KMS Envelope Encryption**: Secrets encrypted using AES-256-GCM. Automatic redaction scrubs AWS keys, private certificates, and tokens before logs or context files are written.
-* **SSRF Protection Filter**: Validates outgoing webhooks and model URLs, blocking private IP ranges (`10.0.0.0/8`, `172.16.0.0/12`, `192.168.0.0/16`, `127.0.0.0/8`) and cloud metadata endpoints (`169.254.169.254`).
+| Component | Technology | Description |
+|---|---|---|
+| **Backend Framework** | Python 3.12 / FastAPI | High-performance async REST and SSE API gateway |
+| **Primary LLM** | NVIDIA Nemotron 3 Ultra | 550B LatentMoE parameter model with 1M-token context |
+| **Fallback Models** | Google Gemini 3.1 Flash / Groq LPU | Fast preprocessing, summarization, and context compaction |
+| **Database & ORM** | PostgreSQL / SQLite / SQLAlchemy 2.0 | Async session management with relational audit logging |
+| **Migrations** | Alembic | Version-controlled database schema migrations |
+| **Indexing & Search** | Python `ast` + Ripgrep (`rg`) | Centrality-ranked symbol maps and high-speed text search |
+| **Security & Cryptography** | Argon2id + PyJWT + cryptography | Secret redaction, SSRF filter, RBAC/ABAC policy engine |
+| **Frontend Framework** | React 18 + Vite + Tailwind CSS | Responsive developer UI studio with real-time SSE streaming |
+| **Test Runners** | Pytest (Backend) / Vitest (Frontend) | Full test suites across unit, integration, and security |
 
 ---
 
-## ☁️ Cloud Infrastructure, Weights Streaming & Zero-Disk-Fee Strategy
+## 📁 Clean Modular Project Structure
 
-### The 1.12 TB Storage Challenge: Avoiding $190/mo in Idle Disk Fees
-The native **BF16 checkpoint for Nemotron 3 Ultra is ~1.12 TB** (224 sharded SafeTensors files). Storing this model on a standard Google Cloud Persistent SSD (`pd-ssd`) costs **$0.17 / GB / month = ~$190 / month**. This fee is billed **24/7 even when your VM is powered off**, draining a $300 cloud credit in less than 45 days without running a single inference.
-
-```mermaid
-graph TD
-    Master["1.12 TB SafeTensors Checkpoint<br>(224 Shards @ ~5GB each)"] --> Drive["4TB Google Drive (via Jio Plan)<br>Storage Cost: $0/month"]
-    Drive -->|"Parallel rclone Multi-Thread Stream (10-25 Gbps)"| LocalNVMe["GCP Ephemeral Local NVMe RAID-0<br>(8x 375GB NVMe Disks = 3 TB Scratch Array)"]
-    LocalNVMe -->|"Multi-Process mmap Load in ~90s"| VRAM["640 GB - 1,280 GB GPU VRAM<br>(8x A100 80GB or 16x A100 Cluster)"]
-```
-
-* **The Zero-Cost Strategy**:
-  1. Store the master **1.12 TB SafeTensors files on your 4TB Google Drive** at **$0 / month**.
-  2. Boot the GCP GPU instance with its **built-in Ephemeral Local NVMe SSDs** (included free with high-GPU instances during runtime).
-  3. Stream the weights from Google Drive directly into the local NVMe RAID-0 array during VM boot via high-throughput parallel `rclone` in ~12–15 minutes.
-  4. When done, shut down the VM. **$0 in ongoing storage fees!**
-
-### Downloading 1.12 TB Checkpoint with 0 MB on Mac Disk
-
-> [!CAUTION]
-> **Do NOT download the 1.12 TB model to your local Mac!**  
-> Downloading 1.12 TB over home Wi-Fi would completely fill your laptop SSD, crash your operating system, and take 20–30 hours.
-
-Instead, use **Cloud-to-Cloud Direct Streaming**: the weights download directly from Hugging Face into your 4TB Google Drive through Google's internal datacenter backbone at **150–300 MB/s**:
-
-```mermaid
-sequenceDiagram
-    autonumber
-    actor Dev as Developer / User
-    participant CloudRunner as Cloud Transfer Worker (Colab or GCP e2-VM)
-    participant HF as Hugging Face Hub (nvidia/Nemotron-3-Ultra)
-    participant GDrive as Your 4TB Google Drive
-
-    Dev->>CloudRunner: Launch Download Script with HF_TOKEN
-    CloudRunner->>GDrive: Mount / Stream Destination (/models/nemotron-3-ultra-bf16)
-    CloudRunner->>HF: Request 1.12 TB SafeTensors Shards (hf_transfer, 16 parallel workers)
-    HF-->>CloudRunner: Multi-Gigabit Direct Ingestion
-    CloudRunner-->>GDrive: Direct Write to Drive (0 Bytes on Mac!)
-    GDrive-->>Dev: 1.12 TB Checkpoint Ready & Verified
-```
-
-#### Method 1: Google Colab Direct Cloud-to-Drive (Free & 1-Click)
-Run the following script in a Google Colab notebook:
-
-```python
-from google.colab import drive
-drive.mount('/content/drive')
-
-import os
-!pip install -q huggingface_hub[hf_transfer]
-os.environ["HF_HUB_ENABLE_HF_TRANSFER"] = "1"
-os.environ["HF_TOKEN"] = "hf_your_huggingface_token"
-
-DESTINATION = "/content/drive/MyDrive/models/nemotron-3-ultra-bf16"
-os.makedirs(DESTINATION, exist_ok=True)
-
-from huggingface_hub import snapshot_download
-
-print("Starting cloud-to-drive direct transfer (0 MB on local disk)...")
-snapshot_download(
-    repo_id="nvidia/Nemotron-3-Ultra",
-    local_dir=DESTINATION,
-    max_workers=16,
-    ignore_patterns=["*.msgpack", "*.h5", "*.ot"]
-)
-print("Download complete! Model stored safely in 4TB Google Drive.")
-```
-
-#### Method 2: Headless GCP Transfer VM ($0.15 Total Cost)
-Alternatively, run [infra/download_nemotron_to_gdrive.py](file:///Users/mac/Desktop/nemotron-agent-engine/infra/download_nemotron_to_gdrive.py) on a temporary, cheap CPU instance (`e2-standard-4`, ~$0.13/hr). Once the download finishes, the VM self-terminates.
-
-### Google Cloud Spot GPU Cluster (8x A100 80GB)
-To run inference on the model with 640 GB VRAM, the automated script [infra/launch_gcp_nemotron_spot.sh](file:///Users/mac/Desktop/nemotron-agent-engine/infra/launch_gcp_nemotron_spot.sh) provisions an `a2-ultragpu-8g` Spot GPU instance:
-
-```bash
-export GCP_PROJECT_ID="netron-3-models"
-export GCP_ZONE="us-central1-a"
-bash infra/launch_gcp_nemotron_spot.sh
-```
-
-**Key Features Configured by the Script**:
-* Ubuntu 22.04 with CUDA 12.9 and NVIDIA 580 drivers (`common-cu129-ubuntu-2204-nvidia-580`).
-* Firewall rule `allow-vllm-8000` opening TCP port 8000.
-* Dynamic multi-zone failover (`us-central1-a` $\to$ `us-central1-c` $\to$ `us-east4-c` $\to$ `europe-west4-a`) to bypass Spot capacity stockouts.
-* Assembles 8x Local NVMe SSDs into a fast RAID-0 array.
-
-### Streaming Weights to Ephemeral NVMe RAID-0 (20 GB/s)
-Inside the GPU node, [infra/setup_gdrive_rclone.sh](file:///Users/mac/Desktop/nemotron-agent-engine/infra/setup_gdrive_rclone.sh) mounts the NVMe array and streams the model:
-
-```bash
-# Assembles 8x NVMe scratch drives into a 3TB RAID-0 array
-mdadm --create /dev/md0 --level=0 --raid-devices=8 /dev/nvme0n*
-mkfs.ext4 -F /dev/md0
-mkdir -p /mnt/fast-nvme/nemotron-bf16
-mount -o noatime /dev/md0 /mnt/fast-nvme/nemotron-bf16
-
-# Parallel rclone streaming from 4TB Google Drive (32 workers)
-rclone copy "gdrive:models/nemotron-3-ultra-bf16" /mnt/fast-nvme/nemotron-bf16 \
-  --transfers=32 --checkers=32 --drive-chunk-size=256M --buffer-size=128M --progress
-```
-
-### vLLM Distributed Serving Configuration
-Launched via [infra/start_vllm_nemotron.sh](file:///Users/mac/Desktop/nemotron-agent-engine/infra/start_vllm_nemotron.sh):
-
-```bash
-python3 -m vllm.entrypoints.openai.api_server \
-  --model /mnt/fast-nvme/nemotron-bf16 \
-  --tensor-parallel-size 8 \
-  --dtype bfloat16 \
-  --max-model-len 32768 \
-  --gpu-memory-utilization 0.95 \
-  --port 8000
-```
-
-### 5-Minute Inactivity Watchdog Daemon (Credit Protection)
-To protect your $300 GCP credit from running down while you sleep, launch [infra/idle-watchdog.sh](file:///Users/mac/Desktop/nemotron-agent-engine/infra/idle-watchdog.sh):
-
-```bash
-nohup bash infra/idle-watchdog.sh > watchdog.log 2>&1 &
-```
-* **How It Works**: Queries `nvidia-smi` and active HTTP requests every 30 seconds. If GPU utilization is 0% and no requests arrive for **5 minutes (300 seconds)**, it automatically issues `sudo shutdown -h now`.
-
----
-
-## 🗂️ Clean Modular Project Structure
-
-The project has been refactored into a clean, domain-driven modular structure:
-
-```
+```text
 nemotron-agent-engine/
 ├── app/
-│   ├── api/                           # API Router & Versioning
-│   │   ├── endpoints/health.py        # System health endpoints
-│   │   └── v1/router.py               # Central API v1 router mounting all modules
-│   ├── core/                          # Cross-cutting foundational services
-│   │   ├── config.py                  # Pydantic BaseSettings & environment configs
-│   │   ├── create_application.py      # FastAPI application factory
-│   │   ├── exception_handlers.py      # Standardized exception envelopes
-│   │   ├── exceptions.py              # Domain error hierarchy
-│   │   ├── lifespan.py                # Startup/shutdown lifecycle hooks
-│   │   ├── logging_config.py          # Structured logging & foreign logger adoption
-│   │   ├── messages.py                # Static string constants
-│   │   ├── middleware.py              # Context & request ID tracing middleware
-│   │   ├── permissions.py             # 7-level permission engine & approval gates
-│   │   ├── routers.py                 # Core routing assembler
-│   │   └── setup_middleware.py        # CORS & security middleware
-│   ├── db/                            # Database connectivity
-│   │   ├── base.py                    # Declarative base & metadata registry
-│   │   └── session.py                 # SQLAlchemy engine & session manager
-│   ├── modules/                       # Domain Modules (Clean Architecture)
-│   │   ├── agent/                     # Autonomous coding engine
-│   │   │   ├── orchestrator.py        # Multi-role agent orchestrator
-│   │   │   ├── unified_engine.py      # Unified Autonomous Mission Chat engine
-│   │   │   ├── planning/              # Multi-Stage Planner (Phases A-H) & Review Loops
-│   │   │   ├── roles/                 # Planner, Coder, Reviewer, Tester, Debugger
-│   │   │   ├── tools/                 # Filesystem, terminal, registry tools
-│   │   │   └── verification/          # 8-Gate verification battery & Auto-Debugger
-│   │   ├── auth/                      # Identity & Security subsystem
-│   │   │   ├── apis.py, router.py     # Authentication HTTP endpoints
-│   │   │   ├── models.py, schemas.py  # User, Session, RefreshToken models
-│   │   │   ├── service.py             # Argon2id hashing & JWT token lifecycle
-│   │   │   ├── policy_engine.py       # RBAC & ABAC policy engine
-│   │   │   ├── secrets.py             # AES-256-GCM KMS & SecretRedactor
-│   │   │   ├── ssrf.py                # SSRF IP/DNS protection filter
-│   │   │   └── auditing.py            # Security & audit event logger
-│   │   ├── constitution/              # Repository standards & governance
-│   │   │   ├── service.py, models.py  # Scaffolder for .agent/rules/ & ADRs
-│   │   │   └── apis.py, router.py     # Constitution governance endpoints
-│   │   ├── cost/                      # Token analytics & financial ledger
-│   │   │   ├── tracker.py, ledger.py  # Real-time token accountant & SQLite ledger
-│   │   │   ├── budget_guard.py        # Financial circuit breakers
-│   │   │   ├── pricing.py             # Dual pricing formulas (Spot vs Serverless)
-│   │   │   └── apis.py, router.py     # Cost summary and history endpoints
-│   │   ├── gateway/                   # Model registry & provider adapters
-│   │   │   ├── service.py, models.py  # Model Gateway & capability matcher
-│   │   │   ├── adapters.py            # vLLM, OpenAI, Google Gemini adapters
-│   │   │   └── apis.py, router.py     # Model catalog & routing endpoints
-│   │   ├── intelligence/              # Codebase Intelligence Engine
-│   │   │   ├── context/               # BudgetManager & hierarchical expander
-│   │   │   ├── database/              # Schema reflection, N+1 analyzer, safety guard
-│   │   │   ├── graph/                 # RepoGraph & feature mapper
-│   │   │   ├── impact/                # Call graph, blast radius, TaskScope
-│   │   │   ├── indexing/              # AST parser, symbol extractor, watcher
-│   │   │   ├── memory/                # Institutional memory store & ADRs
-│   │   │   └── skills/                # Modular skill loader & registry
-│   │   ├── missions/                  # Unified Autonomous Mission execution
-│   │   │   ├── state_machine.py       # Mission FSM lifecycle
-│   │   │   ├── permissions.py         # Command risk classifier & decision scopes
-│   │   │   ├── repository.py          # Mission persistence repository
-│   │   │   ├── slash_commands.py      # /plan, /debug, /test, /review, /commit parsers
-│   │   │   └── multimodal.py          # Screenshot & image upload handler
-│   │   └── security/                  # Backward compatibility re-export layer
-│   ├── routes/
-│   │   └── pages.py                   # Server-rendered web routes (/ui, /)
-│   ├── static/                        # CSS design system (style.css), client JS (app.js)
-│   ├── templates/                     # Jinja2 templates (base.html, index.html)
-│   └── main.py                        # Application entrypoint
-├── infra/                             # Cloud cluster & weight streaming scripts
-│   ├── launch_gcp_nemotron_spot.sh    # Automated 8x A100 Spot VM provisioner
-│   ├── setup_gdrive_rclone.sh         # High-speed Google Drive to NVMe streamer
-│   ├── start_vllm_nemotron.sh         # Distributed vLLM OpenAI API server
-│   ├── idle-watchdog.sh               # 5-min inactivity credit protector
-│   └── download_nemotron_to_gdrive.py # Cloud-to-Drive direct downloader
-├── scripts/
-│   └── test_engine_connection.py      # Live streaming inference diagnostic
-├── skills/                            # Modular engineering cheatsheets
-│   ├── architecture/SKILL.md          # Architectural rules & design patterns
-│   ├── database/                      # Query optimization, safety & migrations
-│   └── fastapi/SKILL.md               # FastAPI standards & async best practices
-├── tests/                             # 115 comprehensive unit & integration tests
-│   ├── test_ast_parser.py
-│   ├── test_context_budget.py
-│   ├── test_cost_analytics.py
-│   ├── test_cost_db.py
-│   ├── test_database_intelligence.py
-│   ├── test_e2e_agent_mission.py
-│   ├── test_exceptions_and_performance.py
-│   ├── test_fingerprint.py
-│   ├── test_impact_scope.py
-│   ├── test_import_resolver.py
-│   ├── test_logger_manager.py
-│   ├── test_logging_integration.py
-│   ├── test_main.py
-│   ├── test_memory_system.py
-│   ├── test_middleware.py
-│   ├── test_modular_architecture.py
-│   ├── test_multi_stage_planning.py
-│   ├── test_orchestrator_roles.py
-│   ├── test_permissions_and_gates.py
-│   ├── test_repo_graph.py
-│   ├── test_security_and_gateway.py
-│   ├── test_skills_engine.py
-│   ├── test_ui_and_chat.py
-│   ├── test_unified_mission.py
-│   └── test_verification_gates.py
-├── pytest.ini
-├── requirements.txt
-└── README.md
+│   ├── api/v1/router.py          # Unified API router mounting all modules
+│   ├── core/
+│   │   ├── config.py             # Pydantic v2 application settings
+│   │   ├── exceptions.py         # Unified exception hierarchy
+│   │   └── logging_config.py     # Rotating structured JSON logger
+│   ├── db/
+│   │   ├── base.py               # All 24 SQLAlchemy models registered for inspection
+│   │   └── session.py            # Database connection pool and session generator
+│   └── modules/
+│       ├── agent/                # Agent core, ReAct loop, task classifier, subagents
+│       │   ├── classifier.py     # 6-workflow dynamic task classifier
+│       │   ├── react_engine.py   # Iterative ReAct loop engine with circuit breakers
+│       │   ├── subagents/        # Isolated Researcher, Coder, Reviewer, Tester
+│       │   ├── tools/            # Workspace sandbox, patcher, process runner, browser
+│       │   └── verification/     # 8-gate verification battery & auto-debugger
+│       ├── auth/                 # Authentication, Argon2id hashing, SSRF guard
+│       ├── constitution/         # Quality invariants, coding standards, ADRs
+│       ├── cost/                 # Token cost tracker and financial ledger
+│       ├── gateway/              # Model gateway, provider router, model registry
+│       ├── intelligence/         # Context budget allocator, compactor, memory store
+│       │   ├── context/          # L0-L10 budget allocator & automated compactor
+│       │   ├── database/         # EXPLAIN plan analyzer & safe migration generator
+│       │   ├── indexing/         # Ripgrep search, compact repo map, git history
+│       │   └── memory/           # Three-tier store (Session, Project, User)
+│       └── missions/             # Mission state machine, permissions, artifacts
+│           ├── artifacts.py      # Plan, diff, test report, screenshot artifacts
+│           └── permissions.py    # Command risk classification & permission scopes
+└── tests/                        # 32 test suites covering 177 automated test cases
 ```
 
 ---
 
-## 🚀 User & Developer Getting Started Guide
+## ⚙️ Installation & Setup
 
-### Local Installation & Setup
+### Prerequisites
+- Python 3.11 or 3.12
+- Node.js 18+ and npm
+- Git
+- (Optional) PostgreSQL and Redis (SQLite fallback supported by default)
 
-#### 1. Clone & Set Up Virtual Environment
+### 1. Clone & Setup Backend
 ```bash
-git clone https://github.com/PATELPRATHAM007/nemotron-agent-engine.git
-cd nemotron-agent-engine
-
-# Create and activate Python 3.12 virtual environment
-python3.12 -m venv .venv
+cd /Users/mac/Desktop/nemotron-agent-engine
+python3 -m venv .venv
 source .venv/bin/activate
-
-# Install all dependencies
 pip install -r requirements.txt
-```
-
-#### 2. Configure Environment Variables
-Copy `.env.example` to `.env`:
-```bash
 cp .env.example .env
 ```
 
-Key configuration options in `.env`:
-```env
-# Application Settings
-PROJECT_NAME="NVIDIA Nemotron 3 Ultra Autonomous Agent Engine"
-ENVIRONMENT=development
-PORT=8000
-DEBUG=true
-
-# Model Gateway Settings
-# Defaults to local standby; set to your remote GCP Spot External IP when active:
-NEMOTRON_API_BASE=http://localhost:8000/v1
-NEMOTRON_API_KEY=EMPTY
-NEMOTRON_MODEL_NAME=nvidia/Nemotron-3-Ultra
-NEMOTRON_ENABLE_THINKING=true
-
-# Optional: Tier-1 Fast Triage / Fallback
-GEMINI_API_KEY=""
-GEMINI_MODEL_NAME=gemini-2.5-flash
-
-# Security & Secrets
-SECRET_KEY="replace-with-a-secure-random-secret-key-in-production"
-ARGON2_MEMORY_COST=65536
-```
-
-### Running the 115-Test Battery
-Execute the automated test suite verifying all 115 test cases across security, AST indexing, graph algorithms, gate verification, database safety, and cost tracking:
-
+### 2. Setup Frontend
 ```bash
-.venv/bin/pytest tests/ -v
+cd /Users/mac/Desktop/nemotron-agent-frontend
+npm install
 ```
 
-Expected output:
+---
+
+## 🔐 Environment Variables Reference
+
+Source of truth: `.env.example`
+
+| Variable | Default Value | Description |
+|---|---|---|
+| `PROJECT_NAME` | `"Nemotron Agent Engine"` | Name of application instance |
+| `ENVIRONMENT` | `"development"` | Active runtime mode (`development` or `production`) |
+| `DEBUG` | `True` | Enable debug logs and tracebacks |
+| `HOST` | `"0.0.0.0"` | API bind address |
+| `PORT` | `8000` | API bind port |
+| `DATABASE_URL` | `postgresql+psycopg2://...` | Relational database connection string (SQLite fallback supported) |
+| `REDIS_URL` | `redis://localhost:6379/0` | Ephemeral caching broker |
+| `NEMOTRON_API_BASE` | `http://localhost:8000/v1` | vLLM or Nemotron 3 Ultra inference endpoint |
+| `NEMOTRON_API_KEY` | `EMPTY` | API authorization key for model endpoint |
+| `NEMOTRON_MODEL_NAME` | `nvidia/Nemotron-3-Ultra` | Model identifier |
+| `NEMOTRON_MAX_TOKENS` | `16384` | Maximum output generation token ceiling |
+| `NEMOTRON_ENABLE_THINKING`| `true` | Enable latent reasoning `thought` streaming |
+| `GEMINI_API_KEY` | `""` | Optional Google GenAI API key for Tier-1 fast compaction |
+| `GEMINI_MODEL_NAME` | `gemini-3.1-flash-lite` | Optional Tier-1 fast summarizer model |
+
+---
+
+## 🚀 Local Development Guide
+
+### Running Backend API Server
+```bash
+cd /Users/mac/Desktop/nemotron-agent-engine
+source .venv/bin/activate
+uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+```
+API Documentation is available at:
+- Swagger UI: `http://localhost:8000/docs`
+- OpenAPI Schema: `http://localhost:8000/openapi.json`
+
+### Running Frontend Development Studio
+```bash
+cd /Users/mac/Desktop/nemotron-agent-frontend
+npm run dev
+```
+Frontend Web App is accessible at `http://localhost:5173`.
+
+---
+
+## 🧪 Comprehensive Testing Strategy & Results
+
+The system is tested across the entire spectrum from **EXTREMELY BAD** to **EXTREMELY GOOD**:
+
 ```text
-============================= 115 passed in 17.63s =============================
+EXTREMELY BAD (Injections, Traversal, Concurrency, Runaway Loops, Destructive Queries)
+        ↓
+Invalid & Boundary (Malformed JSON, Missing Fields, Empty Strings, Wrong Types)
+        ↓
+Stress & Concurrency (Extreme Token Overflow, Multi-Turn Compaction, Rapid Edits)
+        ↓
+Recovery & Normal (Self-Healing Auto-Debugger, Reversible Migrations)
+        ↓
+EXTREMELY GOOD (Flawless Verification, Zero Regressions, Verified Artifacts)
 ```
 
-### Launching the Web Application & UI Walkthrough
-Start the server locally:
+### Automated Test Summary
+
+```text
+Backend Test Results:
+  Total Test Suites: 32
+  Total Tests Passed: 177 / 177
+  Time to Run: ~12.4 seconds
+  Test Command: .venv/bin/pytest
+
+Frontend Test Results:
+  Total Test Suites: 4
+  Total Tests Passed: 19 / 19
+  TypeScript Checks: 0 errors (npx tsc --noEmit)
+  Test Command: npm test -- --run
+```
+
+### Running Test Batteries
+
 ```bash
-.venv/bin/python3 -m uvicorn app.main:app --reload --port 8000
+# Run complete backend test suite
+.venv/bin/pytest
+
+# Run master edge-case and hardening tests
+.venv/bin/pytest tests/test_master_edge_cases_and_hardening.py
+
+# Run Phase 1 tools and sandbox tests
+.venv/bin/pytest tests/test_phase1_tools_and_sandbox.py
+
+# Run Phase 2 repository intelligence tests
+.venv/bin/pytest tests/test_phase2_repo_intelligence.py
+
+# Run Phase 3 context and three-tier memory tests
+.venv/bin/pytest tests/test_phase3_context_and_memory.py
+
+# Run Phase 4 ReAct loop and subagent tests
+.venv/bin/pytest tests/test_phase4_agent_harness.py
+
+# Run Phase 5 browser and database capability tests
+.venv/bin/pytest tests/test_phase5_advanced_capabilities.py
 ```
 
-Open your browser:
-* **Interactive Mission Dashboard**: [http://localhost:8000/ui](http://localhost:8000/ui) (or [http://localhost:8000/](http://localhost:8000/))
-* **Interactive API Swagger Docs**: [http://localhost:8000/docs](http://localhost:8000/docs)
-* **ReDoc API Reference**: [http://localhost:8000/redoc](http://localhost:8000/redoc)
+---
 
-#### UI Highlights:
-1. **Mission Control Tab**: Type your coding objective (e.g., `Add Argon2id password hashing with unit tests`). The agent generates an interactive multi-stage plan, exposes diffs, runs tests, and streams real-time status updates via SSE.
-2. **Chain-of-Thought Drawer**: Click the collapsible thought panel to inspect Nemotron's real-time `<thought>` tokens as it breaks down architectural problems.
-3. **Telemetry & Cost Ledger**: Inspect live prompt tokens, reasoning tokens, generation speed (tokens/sec), and cumulative financial expenditures.
+## 🧭 Agent Modes & Supported Workflows
 
-### Deploying the Remote GCP GPU Node
-When ready to connect to a live NVIDIA A100 GPU cluster:
-1. Authenticate with Google Cloud:
-   ```bash
-   gcloud auth login
-   gcloud config set project your-project-id
-   ```
-2. Provision the Spot GPU node:
-   ```bash
-   bash infra/launch_gcp_nemotron_spot.sh
-   ```
-3. Connect via SSH and stream weights from Google Drive:
-   ```bash
-   gcloud compute ssh nemotron-spot-node --zone=us-central1-a
-   bash infra/setup_gdrive_rclone.sh
-   ```
-4. Start the 5-min inactivity watchdog and vLLM server:
-   ```bash
-   nohup bash infra/idle-watchdog.sh > watchdog.log 2>&1 &
-   bash infra/start_vllm_nemotron.sh
-   ```
-5. Point your local `.env` to the cluster:
-   ```env
-   NEMOTRON_API_BASE=http://<GCP_EXTERNAL_IP>:8000/v1
-   ```
-6. Run the live diagnostic verification:
-   ```bash
-   .venv/bin/python3 scripts/test_engine_connection.py
-   ```
+The `DynamicTaskClassifier` automatically classifies user intents into discrete workflows:
+
+| Workflow | Description | Primary Tools Allowed | Default Subagent |
+|---|---|---|---|
+| **`QUESTION`** | Direct conversational answer without workspace modifications | `read_file`, `get_repo_map` | `DirectResponder` |
+| **`RESEARCH`** | Read-only exploration of repository and dependencies | `read_file`, `ripgrep_search`, `get_repo_map`, `git_history` | `ResearcherSubagent` |
+| **`PLAN`** | Architecture evaluation with Option A / B / C tradeoffs | `read_file`, `get_repo_map`, `list_dir` | `PlannerSubagent` |
+| **`BUILD`** | Full autonomous engineering with code synthesis and verification | `read_file`, `edit_file`, `apply_diff_patch`, `execute_command`, `browser_open` | `CoderSubagent` |
+| **`DEBUG`** | Stack-trace diagnosis, reproducing bugs, and surgical repair | `read_file`, `edit_file`, `apply_diff_patch`, `execute_command` | `DebuggerSubagent` |
+| **`REVIEW`** | Static analysis, diff review, and constitutional security audit | `read_file`, `ripgrep_search`, `git_diff`, `get_git_history` | `ReviewerSubagent` |
 
 ---
 
-## 📡 API & Server-Sent Events (SSE) Reference
+## 🧰 Tool Registry & MCP Integration
 
-### Core Endpoints
+All tools conform to the Model Context Protocol (MCP) and OpenAI Function schemas, dispatched via `dispatch_tool`:
 
-| Method | Endpoint | Description |
-| :--- | :--- | :--- |
-| `GET` | `/` or `/ui` | Server-rendered Web UI Mission Control Dashboard. |
-| `POST` | `/api/v1/agent/run` | Registers and launches a new autonomous coding mission. |
-| `GET` | `/api/v1/agent/stream/{id}` | Real-time Server-Sent Events (SSE) stream of mission events. |
-| `POST` | `/api/v1/agent/chat/stream` | Direct conversational chat stream with deep CoT reasoning. |
-| `GET` | `/api/v1/models` | Lists registered models, providers, and capabilities. |
-| `GET` | `/api/v1/cost/summary` | Returns aggregated token consumption and financial spend. |
-| `GET` | `/api/v1/cost/records` | Lists historical mission cost reports. |
-| `GET` | `/api/v1/auth/me` | Returns active user profile, roles, and session info. |
-| `GET` | `/api/v1/constitution/rules`| Returns active repository standards, ADRs, and guidelines. |
-| `GET` | `/api/v1/intelligence/graph`| Returns repository graph topology and feature nodes. |
-| `GET` | `/api/v1/health` | Comprehensive system health check. |
-
-### SSE Event Stream Types (`/api/v1/agent/stream/{id}`)
-* `thought`: Internal reasoning tokens emitted by Nemotron 3 Ultra.
-* `plan`: Multi-stage plan with approval state.
-* `tool_call`: Tool invocation request (e.g., `terminal`, `filesystem`, `pytest`).
-* `tool_output`: Output or exit status returned by execution tools.
-* `diff`: Unified code diff generated for review.
-* `gate_result`: Pass/fail report from each of the 8 validation gates.
-* `error`: Error details and auto-recovery action taken.
-* `done`: Mission completion payload with token summary.
+- **Filesystem Tools**: `read_file`, `write_file`, `edit_file`, `list_dir`
+- **Search & Indexing Tools**: `ripgrep_search`, `get_repo_map`, `get_git_history`
+- **Subprocess & Execution Tools**: `execute_command`, `run_process`
+- **Git Tools**: `git_status`, `git_diff`, `git_checkpoint`, `git_rollback`
+- **Visual UI Tools**: `browser_open`, `browser_screenshot`, `browser_click`
 
 ---
 
-## 🛠️ Troubleshooting & Error Resolution
+## 🛡️ Permissions, Safety Guardrails & Human Approval Gates
 
-| Error / Symptom | Root Cause | Automated Resolution |
-| :--- | :--- | :--- |
-| `ScopeViolationError: File write to ... outside authorized scope` | Gate 5 blocked an unauthorized file modification. | The agent is prevented from touching files outside its active `TaskScope`. If needed, expand task scope in the mission prompt. |
-| `CostBudgetExceededError: Mission exceeded budget limit` | The mission exceeded its financial threshold. | Adjust `MAX_MISSION_BUDGET_USD` in `.env` or review query efficiency. |
-| `VerificationGateFailedError: Gate 1 Syntax check failed` | Syntactically invalid code generated by model. | Auto-Debugger catches the exception, isolates the syntax error, and prompts for a corrected patch (up to 3 attempts). |
-| `Your billing account is currently in the free tier where non-TPU accelerators are not available` | Google Cloud Evaluator accounts block GPU quotas. | Click **[Upgrade]** in [Google Cloud Billing](https://console.cloud.google.com/billing). 100% of your $300 trial credit remains active! |
-| `Quota 'NVIDIA_A100_GPUS' exceeded. Limit: 0.0 in region us-central1` | New GCP accounts start with a default quota of 0 for A100 GPUs. | Request a quota increase of `8` GPUs for `us-central1` in [IAM & Admin > Quotas](https://console.cloud.google.com/iam-admin/quotas). |
-| `ZONE_RESOURCE_POOL_EXHAUSTED (Stockout)` | The requested GCP zone is temporarily out of Spot A100 capacity. | `launch_gcp_nemotron_spot.sh` automatically falls back across candidate zones (`us-central1-a`, `us-central1-c`, `us-east4-c`, `europe-west4-a`). |
-| `Table '...' is already defined for this MetaData instance` | Duplicate declarative model definitions in multiple files. | All models are consolidated in `app/modules/<domain>/models.py`. Ensure imports point to `app.modules.*.models`. |
+1. **Dangerous Command Interception**: Commands matching `CRITICAL_PATTERNS` (`rm -rf /`, `rm -rf /*`, `chmod -R 777 /`, `mkfs`, fork bombs) are unconditionally **`DENIED`**.
+2. **High-Risk Command Evaluation**: Commands like `git push`, `docker run --privileged`, `curl ... | bash` require explicit human approval (`ASK`).
+3. **Database Mutation Safety Gate**: Any query attempting data or schema mutation (`INSERT`, `UPDATE`, `DELETE`, `DROP`, `ALTER`) requires:
+   - Level 5 Permission Gate.
+   - An active human authorization token (`MUTATION_APPROVAL_REQUIRED`).
+4. **Unconditional Block on Unbounded SQL**: Any `UPDATE` or `DELETE` statement missing a `WHERE` clause is strictly blocked by `DatabaseSafetyGuard` with `DatabaseSafetyViolationError`.
 
 ---
 
-## 📜 License
+## 🔒 Security & Isolation Guarantees
 
-This project is licensed under the [Apache 2.0 License](LICENSE).  
-NVIDIA Nemotron 3 Ultra weights are subject to the [NVIDIA Open Model License](https://huggingface.co/nvidia/Nemotron-3-Ultra).
+- **Path Traversal Isolation**: Normalizes all incoming file paths. Detects and blocks `..`, URL-encoded `%2e%2e%2f`, and tilde `~` escapes.
+- **SSRF Filter**: Model gateway rejects target URLs resolving to internal private ranges (`10.0.0.0/8`, `172.16.0.0/12`, `192.168.0.0/16`, `127.0.0.1`) and cloud metadata endpoints (`169.254.169.254`).
+- **Prompt Injection Defense**: Repository content (e.g., comments or markdown containing *"IGNORE ALL PREVIOUS INSTRUCTIONS"*) is processed strictly as inert data strings and cannot override safety invariants or system instructions.
+- **Secret Redaction**: API keys, tokens, and passwords are automatically redacted from error traces, logs, and prompt context.
+
+---
+
+## ❓ Troubleshooting & FAQ
+
+#### Q: How does the agent handle large repositories without running out of tokens?
+The engine uses the AST-based `RepoMapGenerator` to construct an architectural outline (< 2,000 tokens) and the `ContextBudgetAllocator` to strictly enforce a <= 32,000 token ceiling. When conversation history grows, the `ContextCompactor` triggers at 75% capacity to compress old turns into structured state snapshots.
+
+#### Q: What happens if an external developer edits a file while the agent is running?
+`WorkspaceSandbox` compares SHA-256 fingerprints before applying edits. If the disk fingerprint has changed since context retrieval, the patch is rejected with `ConcurrencyConflictError`, prompting the agent to re-read the latest disk state.
+
+#### Q: Can the agent accidentally delete database tables?
+No. `DatabaseSafetyGuard` blocks destructive commands (`DROP`, `TRUNCATE`, `ALTER`) unless an explicit human authorization token (`MUTATION_APPROVAL_REQUIRED`) is provided. Unbounded `UPDATE` and `DELETE` queries lacking a `WHERE` clause are rejected unconditionally.
+
+---
+
+## ⚠️ Limitations & Known Constraints
+
+1. **Hardware Requirements for Nemotron 3 Ultra**: Running the full 550B LatentMoE model locally requires an 8x A100/H100 80GB GPU node with vLLM. For local development on Mac/Linux, dual-engine fallbacks (Gemini Flash or Groq LPU) are fully supported.
+2. **Headless Browser in Headless Environments**: If Playwright or Chromium binaries are not installed in the operating environment, `BrowserTool` falls back gracefully to synthetic screenshot capture and simulated DOM verification.
+3. **Workspace Boundary**: The sandbox strictly confines the agent to the project root. Multi-repo workflows require configuring multiple distinct workspace sandboxes.
+
+---
+
+## 📄 License
+
+Licensed under the [Apache License, Version 2.0](LICENSE).
